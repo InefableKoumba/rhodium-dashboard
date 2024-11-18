@@ -55,31 +55,45 @@ const usersData = [
 const recentEvents = [
   {
     id: 1,
-    name: "Summer Music Festival",
+    name: "Concert Fally Ipupa",
     date: "2023-07-15",
     attendees: 5000,
     revenue: 150000,
   },
   {
     id: 2,
-    name: "Tech Conference 2023",
+    name: "La fête de la musique",
     date: "2023-08-22",
     attendees: 3000,
     revenue: 90000,
   },
   {
     id: 3,
-    name: "Food & Wine Expo",
-    date: "2023-09-10",
+    name: "Festival de Jazz",
+    date: "2023-09-12",
+    attendees: 2000,
+    revenue: 60000,
+  },
+  {
+    id: 4,
+    name: "Festival de la mode",
+    date: "2023-10-05",
+    attendees: 1000,
+    revenue: 30000,
+  },
+  {
+    id: 5,
+    name: "Festival de la gastronomie",
+    date: "2023-11-20",
     attendees: 4000,
     revenue: 120000,
   },
   {
-    id: 4,
-    name: "Art Gallery Opening",
-    date: "2023-10-05",
-    attendees: 1000,
-    revenue: 30000,
+    id: 6,
+    name: "Festival de la culture",
+    date: "2023-12-10",
+    attendees: 6000,
+    revenue: 180000,
   },
 ];
 
@@ -89,7 +103,7 @@ export default function Dashboard() {
   return (
     <SidebarProvider>
       <div className="flex h-screen bg-gray-100 w-full">
-        <Sidebar>
+        <Sidebar className="bg-red-300">
           <SidebarHeader>
             <h2 className="text-xl font-bold">RHODIUM</h2>
           </SidebarHeader>
@@ -201,7 +215,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 mt-8">
-            <Card className="col-span-2">
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader>
                 <CardTitle>Tickets distribués</CardTitle>
               </CardHeader>
@@ -242,7 +256,7 @@ export default function Dashboard() {
                 </ChartContainer>
               </CardContent>
             </Card>
-            <Card className="col-span-2">
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader>
                 <CardTitle>Utilisateurs de l'application</CardTitle>
               </CardHeader>
@@ -285,18 +299,18 @@ export default function Dashboard() {
             </Card>
             <Card className="col-span-2">
               <CardHeader>
-                <CardTitle>Recent Events</CardTitle>
+                <CardTitle>Evenement récents</CardTitle>
                 <CardDescription>
-                  You have {recentEvents.length} events this period.
+                  List des {recentEvents.length} derniers événements.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Event</TableHead>
+                      <TableHead>Evènement</TableHead>
                       <TableHead>Date</TableHead>
-                      <TableHead>Attendees</TableHead>
+                      <TableHead>Invités</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

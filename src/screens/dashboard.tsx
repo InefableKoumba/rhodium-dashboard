@@ -103,18 +103,18 @@ export default function Dashboard() {
   return (
     <SidebarProvider>
       <div className="flex h-screen bg-gray-100 w-full">
-        <Sidebar className="bg-red-300">
-          <SidebarHeader>
-            <h2 className="text-xl font-bold">RHODIUM</h2>
+        <Sidebar>
+          <SidebarHeader className="px-4 pt-4">
+            <h2 className="text-xl font-bold text-black">RHODIUM</h2>
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="p-4">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={() => setActiveMenuItem("dashboard")}
                   isActive={activeMenuItem === "dashboard"}
                 >
-                  Dashboard
+                  Accueil
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -122,7 +122,7 @@ export default function Dashboard() {
                   onClick={() => setActiveMenuItem("events")}
                   isActive={activeMenuItem === "events"}
                 >
-                  Events
+                  Evènements
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -130,7 +130,7 @@ export default function Dashboard() {
                   onClick={() => setActiveMenuItem("users")}
                   isActive={activeMenuItem === "users"}
                 >
-                  Users
+                  Utilisateurs
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -138,7 +138,7 @@ export default function Dashboard() {
                   onClick={() => setActiveMenuItem("analytics")}
                   isActive={activeMenuItem === "analytics"}
                 >
-                  Analytics
+                  Analytiques
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

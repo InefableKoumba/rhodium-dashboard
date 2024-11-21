@@ -33,6 +33,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const ticketsData = [
   { name: "Jan", total: 7600 },
@@ -213,6 +214,84 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+          <div className="flex gap-4 mt-4">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Evenement récents</CardTitle>
+                <CardDescription>
+                  List des {recentEvents.length} derniers événements.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Evènement</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Invités</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentEvents.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell className="font-medium">
+                          {event.name}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(event.date).toLocaleDateString("fr-FR", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {event.attendees.toLocaleString("fr-FR")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>En attente de validation</CardTitle>
+                <CardDescription>
+                  Les évènements ci-dessous sont en attente de validation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Evènement</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentEvents.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell className="font-medium">
+                          {event.name}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(event.date).toLocaleDateString("fr-FR", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          <Button>Ouvrir</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2 mt-8">
             <Card className="col-span-2 md:col-span-1">
@@ -295,38 +374,6 @@ export default function Dashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle>Evenement récents</CardTitle>
-                <CardDescription>
-                  List des {recentEvents.length} derniers événements.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Evènement</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Invités</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentEvents.map((event) => (
-                      <TableRow key={event.id}>
-                        <TableCell className="font-medium">
-                          {event.name}
-                        </TableCell>
-                        <TableCell>{event.date}</TableCell>
-                        <TableCell>
-                          {event.attendees.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
               </CardContent>
             </Card>
           </div>

@@ -1,4 +1,3 @@
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Bell, CalendarDays, DollarSign, Users } from "lucide-react";
 
 import {
@@ -21,11 +20,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SidebarNavigation from "@/components/navigation";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import UsersChart from "@/components/analytics/charts/users";
+import TicketsChart from "@/components/analytics/charts/tickets";
 
 const ticketsData = [
   { name: "Jan", total: 7600 },
@@ -241,90 +237,9 @@ export default function Page() {
               </CardContent>
             </Card>
           </div>
-
           <div className="grid gap-4 md:grid-cols-2 mt-8">
-            <Card className="col-span-2 md:col-span-1">
-              <CardHeader>
-                <CardTitle>Tickets distribués</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <ChartContainer
-                  config={{
-                    total: {
-                      label: "Tickets distribués",
-                      color: "hsl(var(--chart-1))",
-                    },
-                  }}
-                  className="h-[300px]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={ticketsData}>
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}`}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="total"
-                        fill="var(--color-total)"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card className="col-span-2 md:col-span-1">
-              <CardHeader>
-                <CardTitle>Utilisateurs de l'application</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <ChartContainer
-                  config={{
-                    total: {
-                      label: "Utilisateurs de l'application",
-                      color: "hsl(var(--chart-1))",
-                    },
-                  }}
-                  className="h-[300px]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={usersData}>
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}`}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="total"
-                        fill="var(--color-total)"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
+            <TicketsChart data={ticketsData} />
+            <UsersChart data={usersData} />
           </div>
         </main>
       </div>

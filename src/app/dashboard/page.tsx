@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Bell, CalendarDays, DollarSign, Users } from "lucide-react";
 
@@ -9,22 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./../components/ui/table";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarRail,
-} from "@/components/ui/sidebar";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/components/ui/table";
+
 import {
   Card,
   CardContent,
@@ -33,6 +18,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import SidebarNavigation from "@/components/navigation";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const ticketsData = [
   { name: "Jan", total: 7600 },
@@ -97,54 +90,11 @@ const recentEvents = [
   },
 ];
 
-export default function Dashboard() {
-  const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
-
+export default function Page() {
   return (
     <SidebarProvider>
       <div className="flex h-screen bg-gray-100 w-full">
-        <Sidebar>
-          <SidebarHeader className="px-4 pt-4">
-            <h2 className="text-xl font-bold text-black">RHODIUM</h2>
-          </SidebarHeader>
-          <SidebarContent className="p-4">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setActiveMenuItem("dashboard")}
-                  isActive={activeMenuItem === "dashboard"}
-                >
-                  Accueil
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setActiveMenuItem("events")}
-                  isActive={activeMenuItem === "events"}
-                >
-                  Evènements
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setActiveMenuItem("users")}
-                  isActive={activeMenuItem === "users"}
-                >
-                  Utilisateurs
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => setActiveMenuItem("analytics")}
-                  isActive={activeMenuItem === "analytics"}
-                >
-                  Analytiques
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarRail />
-        </Sidebar>
+        <SidebarNavigation />
 
         <main className="flex-1 overflow-y-auto p-8">
           <div className="flex justify-end items-center">
@@ -210,6 +160,84 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">
                   +2 from last week
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="flex gap-4 mt-4">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Evenement récents</CardTitle>
+                <CardDescription>
+                  List des {recentEvents.length} derniers événements.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Evènement</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Invités</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentEvents.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell className="font-medium">
+                          {event.name}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(event.date).toLocaleDateString("fr-FR", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {event.attendees.toLocaleString("fr-FR")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>En attente de validation</CardTitle>
+                <CardDescription>
+                  Les évènements ci-dessous sont en attente de validation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Evènement</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentEvents.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell className="font-medium">
+                          {event.name}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(event.date).toLocaleDateString("fr-FR", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          <Button>Ouvrir</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
@@ -295,38 +323,6 @@ export default function Dashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle>Evenement récents</CardTitle>
-                <CardDescription>
-                  List des {recentEvents.length} derniers événements.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Evènement</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Invités</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentEvents.map((event) => (
-                      <TableRow key={event.id}>
-                        <TableCell className="font-medium">
-                          {event.name}
-                        </TableCell>
-                        <TableCell>{event.date}</TableCell>
-                        <TableCell>
-                          {event.attendees.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
               </CardContent>
             </Card>
           </div>

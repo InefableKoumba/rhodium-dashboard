@@ -1,7 +1,13 @@
 "use client";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -17,19 +23,20 @@ export default function UsersChart({
   data,
 }: Readonly<{ data: UserChartInterface[] }>) {
   return (
-    <Card className="col-span-2 md:col-span-1">
+    <Card>
       <CardHeader>
-        <CardTitle>Utilisateurs de l'application</CardTitle>
+        <CardTitle>Utilisateurs de l&apos;application</CardTitle>
+        <CardDescription>Statistiques utilisateurs</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
         <ChartContainer
           config={{
             total: {
-              label: "Utilisateurs de l'application",
+              label: "Utilisateurs de l&apos;application",
               color: "hsl(var(--chart-1))",
             },
           }}
-          className="h-[300px]"
+          className="h-[300px] w-full"
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>

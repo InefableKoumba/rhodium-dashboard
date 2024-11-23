@@ -3,27 +3,30 @@ import React, { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { CalendarDays, ChartNoAxesCombined, House, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SidebarNavigation() {
   const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
+  const router = useRouter();
   return (
     <Sidebar>
-      <SidebarHeader className="px-4 pt-4">
-        <h2 className="text-xl font-bold text-black">RHODIUM</h2>
-      </SidebarHeader>
-      <SidebarContent className="p-4">
+      <SidebarContent className="pt-20 pl-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => setActiveMenuItem("dashboard")}
+              onClick={() => {
+                setActiveMenuItem("dashboard");
+                router.push("/dashboard");
+              }}
               isActive={activeMenuItem === "dashboard"}
             >
+              <House />
               Accueil
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -32,6 +35,7 @@ export default function SidebarNavigation() {
               onClick={() => setActiveMenuItem("events")}
               isActive={activeMenuItem === "events"}
             >
+              <CalendarDays />
               Evènements
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -40,6 +44,7 @@ export default function SidebarNavigation() {
               onClick={() => setActiveMenuItem("users")}
               isActive={activeMenuItem === "users"}
             >
+              <Users />
               Utilisateurs
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -48,6 +53,7 @@ export default function SidebarNavigation() {
               onClick={() => setActiveMenuItem("analytics")}
               isActive={activeMenuItem === "analytics"}
             >
+              <ChartNoAxesCombined />
               Analytiques
             </SidebarMenuButton>
           </SidebarMenuItem>

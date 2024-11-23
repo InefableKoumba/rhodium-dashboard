@@ -33,9 +33,8 @@ export default async function Home() {
                 <div className="relative h-[20rem] md:h-[25rem] lg:h-[28rem] xl:h-[30rem] w-full rounded-2xl">
                   <Image
                     fill
-                    className="rounded-2xl"
+                    className="rounded-2xl object-cover"
                     alt={event.attributes.title}
-                    objectFit="cover"
                     src={
                       event.attributes?.coverImage?.data?.attributes.url
                         ? process.env.STORAGE_BUCKET_URL! +

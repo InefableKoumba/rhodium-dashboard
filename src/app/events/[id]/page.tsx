@@ -24,7 +24,7 @@ export default async function page({
           <Image
             fill
             alt={event.attributes.title}
-            objectFit="cover"
+            className="object-cover"
             src={
               event.attributes?.coverImage?.data?.attributes.url
                 ? process.env.STORAGE_BUCKET_URL! +

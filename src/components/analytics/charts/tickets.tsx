@@ -1,6 +1,12 @@
 "use client";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -18,9 +24,10 @@ export default function TicketsChart({
   data: TicketsChartInterface[];
 }>) {
   return (
-    <Card className="col-span-2 md:col-span-1">
+    <Card>
       <CardHeader>
         <CardTitle>Tickets distribués</CardTitle>
+        <CardDescription>Statistiques tickets distribués</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
         <ChartContainer
@@ -30,7 +37,7 @@ export default function TicketsChart({
               color: "hsl(var(--chart-1))",
             },
           }}
-          className="h-[300px]"
+          className="h-[300px] w-full"
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>

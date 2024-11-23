@@ -20,23 +20,23 @@ export interface EventResponseInterface {
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    hasCoupleOption: any; // Replace with appropriate type if known
-    images: MediaResponse;
-    videos: MediaResponse;
-    creator: {
+    hasCoupleOption?: boolean;
+    images?: MediaResponse;
+    videos?: MediaResponse;
+    creator?: {
       data: {
         id: number;
-        attributes: CreatorAttributes;
+        attributes: UserInterface;
       };
     };
-    event_comments: { data: any[] }; // Replace with appropriate type if known
-    event_categories: { data: any[] }; // Replace with appropriate type if known
-    event_invitations: { data: any[] }; // Replace with appropriate type if known
-    tickets_distribution: { id: number };
-    user_likes: {
+    event_comments?: { data: any[] };
+    event_categories?: { data: any[] };
+    event_invitations?: { data: any[] };
+    tickets_distribution?: { id: number };
+    user_likes?: {
       data: {
         id: number;
-        attributes: CreatorAttributes;
+        attributes: UserInterface;
       }[];
     };
     coverImage?: {
@@ -46,10 +46,10 @@ export interface EventResponseInterface {
         };
       };
     };
-    tickets_generated: {
-      data: TicketResponse[];
+    tickets_generated?: {
+      data: TicketInterface[];
     };
-    ImageEventInvitationCard: { data: any }; // Replace with appropriate type if known
+    ImageEventInvitationCard?: { data: any };
   };
 }
 
@@ -78,7 +78,7 @@ export interface MediaData {
     url: string;
     previewUrl: string | null;
     provider: string;
-    provider_metadata: any | null; // Replace with appropriate type if known
+    provider_metadata: any | null;
     createdAt: string;
     updatedAt: string;
   };
@@ -97,7 +97,7 @@ export interface MediaFormat {
   url: string;
 }
 
-export interface CreatorAttributes {
+export interface UserInterface {
   username: string;
   email: string;
   provider: string;
@@ -110,9 +110,20 @@ export interface CreatorAttributes {
   createdAt: string;
   updatedAt: string;
   referralCode: string;
+  events?: EventResponseInterface[];
+  event_comments?: { data: any[] };
+  event_categories?: { data: any[] };
+  emitted_event_invitations?: InvitationInterface[];
+  received_event_invitations?: InvitationInterface[];
+  eventTickets?: TicketInterface[];
+  referred_users?: UserInterface[];
+  referred_by?: UserInterface;
+  avatar?: {
+    url: string;
+  };
 }
 
-export interface TicketResponse {
+export interface TicketInterface {
   id: number;
   attributes: {
     category: string;
@@ -121,4 +132,14 @@ export interface TicketResponse {
     createdAt: string;
     updatedAt: string;
   };
+}
+
+interface InvitationInterface {
+  id: number;
+  state: "ACCEPTED" | "PENDING" | "REJECTED"; // Add other possible states if applicable
+  is_read_by_user_receiver: boolean;
+  createdAt: string; // Use `Date` if you want to work with Date objects
+  updatedAt: string; // Use `Date` if you want to work with Date objects
+  code: string;
+  isScanned: boolean;
 }

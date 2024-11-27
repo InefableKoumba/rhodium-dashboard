@@ -22,7 +22,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("dashboard");
-                router.push("/rhodium/dashboard");
+                router.push("/dashboard/rhodium");
               }}
               isActive={activeMenuItem === "dashboard"}
             >
@@ -34,7 +34,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("events");
-                router.push("/rhodium/dashboard/events");
+                router.push("/dashboard/rhodium/events");
               }}
               isActive={activeMenuItem === "events"}
             >
@@ -46,7 +46,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/rhodium/dashboard/users");
+                router.push("/dashboard/rhodium/users");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -58,7 +58,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("analytics");
-                router.push("/rhodium/dashboard/analytics");
+                router.push("/dashboard/rhodium/analytics");
               }}
               isActive={activeMenuItem === "analytics"}
             >

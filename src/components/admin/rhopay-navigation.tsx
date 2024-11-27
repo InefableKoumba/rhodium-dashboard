@@ -22,7 +22,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("dashboard");
-                router.push("/rhopay/dashboard");
+                router.push("/dashboard/rhopay/");
               }}
               isActive={activeMenuItem === "dashboard"}
             >
@@ -34,7 +34,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/rhopay/dashboard/transactions");
+                router.push("/dashboard/rhopay/transactions");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -46,7 +46,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/rhopay/dashboard/users");
+                router.push("/dashboard/rhopay/users");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -58,7 +58,7 @@ export default function SidebarNavigation() {
             <SidebarMenuButton
               onClick={() => {
                 setActiveMenuItem("analytics");
-                router.push("/rhopay/dashboard/analytics");
+                router.push("/dashboard/rhopay/analytics");
               }}
               isActive={activeMenuItem === "analytics"}
             >

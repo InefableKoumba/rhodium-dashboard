@@ -7,7 +7,10 @@ export default async function UserAvatar({
 }: Readonly<{ userId: number }>) {
   try {
     const response = await fetch(
-      process.env.API_URL + "/users?filters[id][$eq]=" + userId + "&populate=*"
+      process.env.NEXT_API_URL +
+        "/users?filters[id][$eq]=" +
+        userId +
+        "&populate=*"
     );
 
     const data = await response.json();
@@ -23,7 +26,7 @@ export default async function UserAvatar({
           fill
           className="rounded-full object-cover"
           alt="Event creator image"
-          src={process.env.STORAGE_BUCKET_URL + user.avatar.url}
+          src={process.env.NEXT_STORAGE_BUCKET_URL + user.avatar.url}
         />
       </div>
     );

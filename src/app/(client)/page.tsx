@@ -21,9 +21,11 @@ import Link from "next/link";
 
 export default async function Home() {
   try {
-    const response = await fetch(process.env.API_URL + "/events?populate=*");
+    const response = await fetch(
+      process.env.NEXT_API_URL + "/events?populate=*"
+    );
     // const response = await fetch(
-    //   process.env.API_URL +
+    //   process.env.NEXT_API_URL +
     //     "/events?filters[isValidatedByAdmin][$eq]=VALIDATED&populate=*"
     // );
     const events = (await response.json())["data"] as EventResponseInterface[];
@@ -92,7 +94,7 @@ export default async function Home() {
                       alt={event.attributes.title}
                       src={
                         event.attributes?.coverImage.data.attributes.url
-                          ? process.env.STORAGE_BUCKET_URL! +
+                          ? process.env.NEXT_STORAGE_BUCKET_URL! +
                             event.attributes?.coverImage?.data?.attributes.url
                           : "https://via.placeholder.com/150"
                       }

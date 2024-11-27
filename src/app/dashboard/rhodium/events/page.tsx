@@ -42,7 +42,7 @@ import Link from "next/link";
 import React from "react";
 
 export default async function page() {
-  const response = await fetch(process.env.API_URL + "/events?populate=*");
+  const response = await fetch(process.env.NEXT_API_URL + "/events?populate=*");
   const events = (await response.json())["data"] as EventResponseInterface[];
 
   return (
@@ -112,7 +112,7 @@ export default async function page() {
                           <Image
                             fill
                             src={
-                              process.env.STORAGE_BUCKET_URL +
+                              process.env.NEXT_STORAGE_BUCKET_URL +
                               event.attributes.coverImage.data?.attributes.url
                             }
                             alt={event.attributes.title}

@@ -28,9 +28,9 @@ import { EventResponseInterface } from "@/interfaces/interfaces";
 import { Button } from "@/components/ui/button";
 
 export default async function Page() {
-  const response = await fetch(process.env.API_URL + "/events?populate=*");
+  const response = await fetch(process.env.NEXT_API_URL + "/events?populate=*");
   const events = (await response.json())["data"] as EventResponseInterface[];
-  // const response2 = await fetch(process.env.API_URL + "/users?populate=*");
+  // const response2 = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
   // const users = (await response2.json())["data"] as UserInterface[];
 
   return (

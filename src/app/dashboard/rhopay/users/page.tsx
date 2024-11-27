@@ -43,7 +43,7 @@ import Link from "next/link";
 import React from "react";
 
 export default async function page() {
-  const response = await fetch(process.env.API_URL + "/users?populate=*");
+  const response = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
   const users = (await response.json()) as UserInterface[];
 
   return (
@@ -101,7 +101,8 @@ export default async function page() {
                           className="rounded-full object-cover"
                           alt="Event creator image"
                           src={
-                            process.env.STORAGE_BUCKET_URL + user?.avatar.url
+                            process.env.NEXT_STORAGE_BUCKET_URL +
+                            user?.avatar.url
                           }
                         />
                       </div>

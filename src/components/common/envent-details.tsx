@@ -24,7 +24,7 @@ export default function EnventDetails({
           className="object-cover"
           src={
             event.attributes?.coverImage?.data?.attributes.url
-              ? process.env.STORAGE_BUCKET_URL! +
+              ? process.env.NEXT_STORAGE_BUCKET_URL! +
                 event.attributes?.coverImage?.data?.attributes.url
               : "https://via.placeholder.com/150"
           }
@@ -174,7 +174,7 @@ export default function EnventDetails({
           {event.attributes.videos && event.attributes.videos.data && (
             <VideoPlayerComponent
               url={
-                process.env.STORAGE_BUCKET_URL +
+                process.env.NEXT_STORAGE_BUCKET_URL +
                 event.attributes.videos.data[0].attributes.url
               }
               title={event.attributes.title}
@@ -192,7 +192,9 @@ export default function EnventDetails({
                     fill
                     alt={event.attributes.title}
                     className="object-cover rounded-md transform duration-700 transition-all group-hover:scale-105"
-                    src={process.env.STORAGE_BUCKET_URL + image.attributes.url}
+                    src={
+                      process.env.NEXT_STORAGE_BUCKET_URL + image.attributes.url
+                    }
                   />
                 </div>
               ))}

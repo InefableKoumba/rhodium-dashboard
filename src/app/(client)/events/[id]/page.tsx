@@ -11,7 +11,10 @@ export default async function page({
     const id = (await params).id;
 
     const response = await fetch(
-      process.env.API_URL + "/events?filters[id][$eq]=" + id + "&populate=*"
+      process.env.NEXT_API_URL +
+        "/events?filters[id][$eq]=" +
+        id +
+        "&populate=*"
     );
     const event = (await response.json())["data"][0] as EventResponseInterface;
 

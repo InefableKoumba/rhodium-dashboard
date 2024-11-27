@@ -151,7 +151,7 @@ export default async function page() {
                   <TableCell>
                     <Link
                       className="border flex items-center justify-center gap-2 text-gray-800 py-1 px-2 rounded"
-                      href={"/dashboard/events/" + event.id}
+                      href={"/dashboard/rhodium/events/" + event.id}
                     >
                       <ExternalLink size={14} color="#333" />
                       Ouvrir

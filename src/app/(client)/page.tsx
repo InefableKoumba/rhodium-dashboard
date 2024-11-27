@@ -85,17 +85,24 @@ export default async function Home() {
             {events.map((event) => (
               <Link href={"/events/" + event.id} key={event.id}>
                 <div className="relative group  shadow-sm h-60 w-full rounded overflow-hidden">
-                  <Image
-                    fill
-                    className="rounded object-cover group-hover:scale-105 transform transition-all duration-700"
-                    alt={event.attributes.title}
-                    src={
-                      event.attributes?.coverImage?.data?.attributes.url
-                        ? process.env.STORAGE_BUCKET_URL! +
-                          event.attributes?.coverImage?.data?.attributes.url
-                        : "https://via.placeholder.com/150"
-                    }
-                  />
+                  {event.attributes?.coverImage?.data?.attributes.url ? (
+                    <Image
+                      fill
+                      className="rounded object-cover group-hover:scale-105 transform transition-all duration-700"
+                      alt={event.attributes.title}
+                      src={
+                        event.attributes?.coverImage.data.attributes.url
+                          ? process.env.STORAGE_BUCKET_URL! +
+                            event.attributes?.coverImage?.data?.attributes.url
+                          : "https://via.placeholder.com/150"
+                      }
+                    />
+                  ) : (
+                    <div className="w-full h-60 bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500">Pas &apos;image</span>
+                    </div>
+                  )}
+
                   <div className="absolute bottom-4 left-4">
                     {event.attributes.hasCost ? (
                       <div className="bg-primary rounded-full w-min px-3 py-1">

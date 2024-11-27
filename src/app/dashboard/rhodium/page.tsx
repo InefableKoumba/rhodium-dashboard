@@ -1,4 +1,11 @@
-import { Bell, CalendarDays, DollarSign, Users } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  DollarSign,
+  ExternalLink,
+  MoveRight,
+  Users,
+} from "lucide-react";
 
 import {
   Table,
@@ -95,19 +102,19 @@ export default async function Page() {
                 <TableRow>
                   <TableHead>Evènement</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Invités</TableHead>
+                  <TableHead>Type d&apos;accès</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {events.slice(0, 5).map((event) => (
                   <TableRow key={event.id}>
-                    <TableCell className="font-medium">
-                      <Link href={"/dashboard/events/" + event.id}>
+                    <TableCell className="font-medium w-[50%]">
+                      <Link href={"/dashboard/rhodium/events/" + event.id}>
                         {event.attributes.title}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={"/dashboard/events/" + event.id}>
+                      <Link href={"/dashboard/rhodium/events/" + event.id}>
                         {new Date(
                           event.attributes.date_start
                         ).toLocaleDateString("fr-FR", {
@@ -118,8 +125,14 @@ export default async function Page() {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {event.attributes.event_invitations?.data.length.toLocaleString(
-                        "fr-FR"
+                      {event.attributes.hasCost ? (
+                        <div className="bg-primary text-white rounded-full px-3 py-1 flex items-center justify-center">
+                          Payant
+                        </div>
+                      ) : (
+                        <div className="bg-green-600 text-white rounded-full px-3 py-1 flex items-center justify-center">
+                          Gratuit
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
@@ -127,7 +140,13 @@ export default async function Page() {
               </TableBody>
             </Table>
             <div className="mt-4">
-              <Button className="w-full">Tout afficher</Button>
+              <Link
+                href={"/dashboard/rhodium/events"}
+                className="w-full flex items-center gap-x-2 border justify-center bg-primary py-2 hover:bg-primaryLight text-white rounded"
+              >
+                Tout afficher
+                <MoveRight />
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -166,10 +185,11 @@ export default async function Page() {
                         </TableCell>
                         <TableCell>
                           <Link
-                            className="bg-black text-white py-2 px-3 rounded"
-                            href={"/dashboard/events/" + event.id}
+                            className="border-2 flex justify-center hover:bg-primary hover:text-white transform transition-colors duration-200 items-center gap-2 py-2 px-3 rounded"
+                            href={"/dashboard/rhodium/events/" + event.id}
                           >
                             Ouvrir
+                            <ExternalLink size={14} />
                           </Link>
                         </TableCell>
                       </TableRow>

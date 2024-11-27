@@ -15,16 +15,19 @@ export default function SidebarNavigation() {
   const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
   const router = useRouter();
   return (
-    <Sidebar>
-      <SidebarContent className="pt-20 pl-4">
+    <Sidebar className="bg-white shadow">
+      <SidebarContent className="pt-20 px-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              className={
+                activeMenuItem === "home" ? "bg-primary text-white" : undefined
+              }
               onClick={() => {
-                setActiveMenuItem("dashboard");
+                setActiveMenuItem("home");
                 router.push("/dashboard/rhodium");
               }}
-              isActive={activeMenuItem === "dashboard"}
+              isActive={activeMenuItem === "home"}
             >
               <House />
               Accueil
@@ -32,6 +35,11 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              className={
+                activeMenuItem === "events"
+                  ? "bg-primary text-white"
+                  : undefined
+              }
               onClick={() => {
                 setActiveMenuItem("events");
                 router.push("/dashboard/rhodium/events");
@@ -44,6 +52,9 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              className={
+                activeMenuItem === "users" ? "bg-primary text-white" : undefined
+              }
               onClick={() => {
                 setActiveMenuItem("users");
                 router.push("/dashboard/rhodium/users");
@@ -56,6 +67,11 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              className={
+                activeMenuItem === "analytics"
+                  ? "bg-primary text-white"
+                  : undefined
+              }
               onClick={() => {
                 setActiveMenuItem("analytics");
                 router.push("/dashboard/rhodium/analytics");

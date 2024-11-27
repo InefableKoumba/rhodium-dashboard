@@ -1,6 +1,26 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -10,7 +30,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EventResponseInterface } from "@/interfaces/interfaces";
-import { ArrowDownToLine, CalendarDays, Search } from "lucide-react";
+import {
+  ArrowDownToLine,
+  CalendarDays,
+  CalendarIcon,
+  ExternalLink,
+  Search,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -20,26 +46,52 @@ export default async function page() {
   const events = (await response.json())["data"] as EventResponseInterface[];
 
   return (
-    <div className="p-12">
-      <h2 className="font-bold text-2xl">
-        Liste des évènements — {events.length}
-      </h2>
-      <span>Liste de tous les événements</span>
+    <div className="px-8">
       <Card className="w-full mt-8">
+        <CardHeader>
+          <CardTitle>Liste des évènements — {events.length}</CardTitle>
+          <CardDescription>Liste de tous les événements</CardDescription>
+        </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-end gap-3 my-12">
-            <div className="relative w-1/2">
+          <div className="flex items-center justify-end gap-3 mb-12">
+            <div className="relative w-full">
               <div className="absolute right-4 top-2">
                 <Search color="#333" />
               </div>
               <Input placeholder="Rechercher un utilisateur" />
             </div>
+            <Select>
+              <SelectTrigger className="w-[450px]">
+                <SelectValue placeholder="Toutes les transactions" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">Touts les évènements</SelectItem>
+                  <SelectItem value="free">Gratuits</SelectItem>
+                  <SelectItem value="paid">Payant</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="w-[240px] pl-3 text-left font-normal"
+                >
+                  <span>Choisissez une date</span>
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" />
+              </PopoverContent>
+            </Popover>
             <Button>
               <ArrowDownToLine size={36} />
               Exporter
             </Button>
           </div>
-          <hr className="mb-4" />
           <Table>
             <TableHeader>
               <TableRow>
@@ -53,7 +105,7 @@ export default async function page() {
               {events.map((event) => (
                 <TableRow key={event.id}>
                   <TableCell className="font-medium">
-                    <Link href={"/dashboard/events/" + event.id}>
+                    <Link href={"/dashboard/rhodium/events/" + event.id}>
                       {event.attributes.coverImage &&
                       event.attributes.coverImage.data ? (
                         <div className="relative w-28 h-14 roundeds-sm">
@@ -98,9 +150,10 @@ export default async function page() {
                   </TableCell>
                   <TableCell>
                     <Link
-                      className="bg-black text-white py-2 px-3 rounded"
+                      className="border flex items-center justify-center gap-2 text-gray-800 py-1 px-2 rounded"
                       href={"/dashboard/events/" + event.id}
                     >
+                      <ExternalLink size={14} color="#333" />
                       Ouvrir
                     </Link>
                   </TableCell>

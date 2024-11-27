@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/common/user-avatar";
 import VideoPlayerComponent from "@/components/common/video-player";
 import { EventResponseInterface } from "@/interfaces/interfaces";
-import { CalendarDays, Heart, MapPin, Minus } from "lucide-react";
+import { CalendarDays, Heart, MapPin, Minus, Phone } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
 
 export default function EnventDetails({
   event,
@@ -151,6 +152,17 @@ export default function EnventDetails({
             <span className="text-gray-500">
               {event.attributes.creator?.data.attributes.phone_number}
             </span>
+          </div>
+          <div>
+            <Link
+              href={
+                "tel:" + event.attributes.creator?.data.attributes.phone_number
+              }
+              className="rounded-full flex px-4 py-2 justify-center items-center gap-2 text-white bg-primary"
+            >
+              <Phone size={14} color="#fff" />
+              <span className="text-sm">Appeler</span>
+            </Link>
           </div>
         </div>
         <hr className="my-6" />

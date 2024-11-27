@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full z-10">
         <SidebarNavigation />
         <div className="fixed w-full z-50 bg-white border-b flex justify-between items-center px-6 h-16">
-          <DashboardTypeSelect />
+          <DashboardTypeSelect defaultType="rhopay" />
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>

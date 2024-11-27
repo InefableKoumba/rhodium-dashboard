@@ -9,10 +9,15 @@ import {
 } from "../ui/select";
 import { Calendar, DollarSign } from "lucide-react";
 
-export default function DashboardTypeSelect() {
+export default function DashboardTypeSelect({
+  defaultType = "rhodium",
+}: {
+  defaultType?: "rhodium" | "rhopay";
+}) {
   return (
     <Select
-      onValueChange={(value) => {
+      defaultValue={defaultType}
+      onValueChange={(value: string) => {
         if (value === "rhodium") {
           window.location.href = "/dashboard/rhodium";
         } else {

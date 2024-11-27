@@ -8,23 +8,23 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { CalendarDays, ChartNoAxesCombined, House, Users } from "lucide-react";
+import { CalendarDays, Compass, DollarSign, House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SidebarNavigation() {
   const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
   const router = useRouter();
   return (
-    <Sidebar>
+    <Sidebar className="bg-white">
       <SidebarContent className="pt-20 pl-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
-                setActiveMenuItem("dashboard");
-                router.push("/dashboard");
+                setActiveMenuItem("home");
+                router.push("/");
               }}
-              isActive={activeMenuItem === "dashboard"}
+              isActive={activeMenuItem === "home"}
             >
               <House />
               Accueil
@@ -32,8 +32,23 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => setActiveMenuItem("events")}
+              onClick={() => {
+                setActiveMenuItem("explore");
+                router.push("/explore");
+              }}
               isActive={activeMenuItem === "events"}
+            >
+              <Compass />
+              Explorer
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => {
+                setActiveMenuItem("my-events");
+                router.push("/my-events");
+              }}
+              isActive={activeMenuItem === "my-events"}
             >
               <CalendarDays />
               Evènements
@@ -41,20 +56,14 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => setActiveMenuItem("users")}
-              isActive={activeMenuItem === "users"}
+              onClick={() => {
+                setActiveMenuItem("rhopay");
+                router.push("/rhopay");
+              }}
+              isActive={activeMenuItem === "rhopay"}
             >
-              <Users />
-              Utilisateurs
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => setActiveMenuItem("analytics")}
-              isActive={activeMenuItem === "analytics"}
-            >
-              <ChartNoAxesCombined />
-              Analytiques
+              <DollarSign />
+              Rhopay
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

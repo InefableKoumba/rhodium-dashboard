@@ -26,7 +26,9 @@ export default function UsersChart({
     <Card>
       <CardHeader>
         <CardTitle>Utilisateurs de l&apos;application</CardTitle>
-        <CardDescription>Statistiques utilisateurs</CardDescription>
+        <CardDescription>
+          Utilisateurs ayant créer des évènements cette semaine
+        </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
         <ChartContainer

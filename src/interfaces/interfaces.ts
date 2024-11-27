@@ -54,7 +54,7 @@ export interface EventResponseInterface {
 }
 
 export interface MediaResponse {
-  data: MediaData[];
+  data?: MediaData[];
 }
 
 export interface MediaData {
@@ -98,6 +98,7 @@ export interface MediaFormat {
 }
 
 export interface UserInterface {
+  id: number;
   username: string;
   email: string;
   provider: string;

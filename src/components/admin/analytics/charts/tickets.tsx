@@ -27,7 +27,9 @@ export default function TicketsChart({
     <Card>
       <CardHeader>
         <CardTitle>Tickets distribués</CardTitle>
-        <CardDescription>Statistiques tickets distribués</CardDescription>
+        <CardDescription>
+          Statistiques tickets distribués cette semaine
+        </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
         <ChartContainer

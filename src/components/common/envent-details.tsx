@@ -11,10 +11,10 @@ import Link from "next/link";
 export default function EnventDetails({
   event,
   adminView,
-}: {
+}: Readonly<{
   event: EventResponseInterface;
   adminView?: boolean;
-}) {
+}>) {
   return (
     <div>
       <div className="relative h-[20rem] md:h-[25rem] lg:h-[28rem] xl:h-[30rem] w-full">

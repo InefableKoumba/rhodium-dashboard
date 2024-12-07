@@ -1,5 +1,5 @@
-import DashboardTypeSelect from "@/components/admin/dashboard-type-select";
-import SidebarNavigation from "@/components/admin/rhodium-navigation";
+import DashboardTypeSelect from "@/components/admin/common/dashboard-type-select";
+import SidebarNavigation from "@/components/admin/rhodium/rhodium-navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import React from "react";

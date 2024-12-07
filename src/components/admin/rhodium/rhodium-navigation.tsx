@@ -8,16 +8,11 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  ArrowLeftRight,
-  ChartNoAxesCombined,
-  House,
-  Users,
-} from "lucide-react";
+import { CalendarDays, ChartNoAxesCombined, House, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SidebarNavigation() {
-  const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
+  const [activeMenuItem, setActiveMenuItem] = useState("home");
   const router = useRouter();
   return (
     <Sidebar className="bg-white shadow">
@@ -30,7 +25,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("home");
-                router.push("/dashboard/rhopay");
+                router.push("/dashboard/rhodium");
               }}
               isActive={activeMenuItem === "home"}
             >
@@ -41,18 +36,18 @@ export default function SidebarNavigation() {
           <SidebarMenuItem>
             <SidebarMenuButton
               className={
-                activeMenuItem === "transactions"
+                activeMenuItem === "events"
                   ? "bg-primary text-white"
                   : undefined
               }
               onClick={() => {
-                setActiveMenuItem("transactions");
-                router.push("/dashboard/rhopay/transactions");
+                setActiveMenuItem("events");
+                router.push("/dashboard/rhodium/events");
               }}
-              isActive={activeMenuItem === "transactions"}
+              isActive={activeMenuItem === "events"}
             >
-              <ArrowLeftRight />
-              Transactions
+              <CalendarDays />
+              Evènements
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -62,7 +57,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/dashboard/rhopay/users");
+                router.push("/dashboard/rhodium/users");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -79,7 +74,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("analytics");
-                router.push("/dashboard/rhopay/analytics");
+                router.push("/dashboard/rhodium/analytics");
               }}
               isActive={activeMenuItem === "analytics"}
             >

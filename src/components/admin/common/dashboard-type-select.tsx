@@ -6,14 +6,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
 import { Calendar, DollarSign } from "lucide-react";
 
 export default function DashboardTypeSelect({
   defaultType = "rhodium",
-}: {
+}: Readonly<{
   defaultType?: "rhodium" | "rhopay";
-}) {
+}>) {
   return (
     <Select
       defaultValue={defaultType}

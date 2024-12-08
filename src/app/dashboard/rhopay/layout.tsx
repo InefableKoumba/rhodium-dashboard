@@ -10,11 +10,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full z-10">
         <SidebarNavigation />
         <div className="fixed w-full z-50 bg-white border-b flex justify-between items-center px-6 h-16">
-          <DashboardTypeSelect defaultType="rhopay" />
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <span
+            className="font-bold text-3xl text-primary"
+            style={{ fontFamily: "Audiowide" }}
+          >
+            Rhopay
+          </span>
+          <div className="flex items-center gap-4">
+            <DashboardTypeSelect defaultType="rhopay" />
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
         <div className="w-full mt-16">{children}</div>
       </div>

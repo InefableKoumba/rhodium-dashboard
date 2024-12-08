@@ -126,7 +126,7 @@ export default async function Page() {
                     </TableCell>
                     <TableCell>
                       {event.attributes.hasCost ? (
-                        <div className="bg-primary text-white rounded-full px-3 py-1 flex items-center justify-center">
+                        <div className="bg-primaryLight text-white rounded-full px-3 py-1 flex items-center justify-center">
                           Payant
                         </div>
                       ) : (
@@ -142,7 +142,7 @@ export default async function Page() {
             <div className="mt-4">
               <Link
                 href={"/dashboard/rhodium/events"}
-                className="w-full flex items-center gap-x-2 border justify-center bg-primary py-2 hover:bg-primaryLight text-white rounded"
+                className="w-full bg-primary text-white flex items-center gap-x-2 border justify-center py-2 rounded-lg"
               >
                 Tout afficher
                 <MoveRight />
@@ -185,7 +185,7 @@ export default async function Page() {
                         </TableCell>
                         <TableCell>
                           <Link
-                            className="border-2 flex justify-center hover:bg-primary hover:text-white transform transition-colors duration-200 items-center gap-2 py-2 px-3 rounded"
+                            className="border-2 flex justify-center bg-primary text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-lg"
                             href={"/dashboard/rhodium/events/" + event.id}
                           >
                             Ouvrir

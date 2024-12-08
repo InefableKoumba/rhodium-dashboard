@@ -44,135 +44,55 @@ import {
 
 const transactions: {
   id: number;
-  sender: string;
-  recipient: string;
-  sender_phone: string;
+  client: string;
+  merchant: string;
+  client_phone: string;
   time: string;
-  receiver_phone: string;
+  merchant_id: string;
   amount: number;
   date: Date;
-  fees: number;
+  transaction_type: "deposit" | "withdrawal";
+  commissions: number;
   status: string;
 }[] = [
   {
     id: 1,
-    sender: "John Doe",
-    recipient: "Jane Doe",
-    sender_phone: "+242 05 485 21 20",
+    client: "Inefable KOULBA",
+    merchant: "Jane Doe",
+    client_phone: "+242 06 880 19 86",
     time: "10:30",
-    receiver_phone: "+242 05 512 01 22",
+    transaction_type: "deposit",
+    merchant_id: "857412",
     amount: 1000,
     date: new Date("2024-11-20T10:30:00"),
-    fees: 10,
+    commissions: 10,
     status: "success",
   },
   {
     id: 2,
-    sender: "Alice Smith",
-    time: "12:45",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    recipient: "Bob Brown",
-    amount: 500,
-    date: new Date("2024-11-21T12:45:00"),
-    fees: 5,
-    status: "failed",
+    client: "Inefable KOULBA",
+    merchant: "Jane Doe",
+    client_phone: "+242 06 880 19 86",
+    time: "10:30",
+    transaction_type: "deposit",
+    merchant_id: "857412",
+    amount: 1000,
+    date: new Date("2024-11-20T10:30:00"),
+    commissions: 10,
+    status: "success",
   },
   {
     id: 3,
-    sender: "Michael Johnson",
-    time: "15:20",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    recipient: "Sarah Connor",
-    amount: 750,
-    date: new Date("2024-11-22T15:20:00"),
-    fees: 7.5,
-    status: "success",
-  },
-  {
-    id: 4,
-    sender: "Emily Davis",
-    sender_phone: "+242 05 485 21 20",
-    time: "09:10",
-    receiver_phone: "+242 05 512 01 22",
-    recipient: "Chris Wilson",
-    amount: 200,
-    date: new Date("2024-11-23T09:10:00"),
-    fees: 2,
-    status: "pending",
-  },
-  {
-    id: 5,
-    sender: "David Clark",
-    sender_phone: "+242 05 485 21 20",
-    time: "16:50",
-    receiver_phone: "+242 05 512 01 22",
-    recipient: "Laura Adams",
-    amount: 3000,
-    date: new Date("2024-11-24T16:50:00"),
-    fees: 30,
-    status: "success",
-  },
-  {
-    id: 6,
-    sender: "Sophia Thompson",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    time: "11:00",
-    recipient: "James Evans",
-    amount: 150,
-    date: new Date("2024-11-25T11:00:00"),
-    fees: 1.5,
-    status: "success",
-  },
-  {
-    id: 7,
-    sender: "Benjamin Lee",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    time: "13:15",
-    recipient: "Olivia Martinez",
-    amount: 1200,
-    date: new Date("2024-11-26T13:15:00"),
-    fees: 12,
-    status: "success",
-  },
-  {
-    id: 8,
-    sender: "Charlotte White",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    time: "08:40",
-    recipient: "Liam Harris",
-    amount: 850,
-    date: new Date("2024-11-27T08:40:00"),
-    fees: 8.5,
+    client: "Inefable KOULBA",
+    merchant: "Jane Doe",
+    client_phone: "+242 06 880 19 86",
+    time: "10:30",
+    transaction_type: "withdrawal",
+    merchant_id: "857412",
+    amount: 1000,
+    date: new Date("2024-11-20T10:30:00"),
+    commissions: 10,
     status: "failed",
-  },
-  {
-    id: 9,
-    sender: "Daniel Moore",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    recipient: "Ella Walker",
-    time: "14:25",
-    amount: 450,
-    date: new Date("2024-11-27T14:25:00"),
-    fees: 4.5,
-    status: "success",
-  },
-  {
-    id: 10,
-    sender: "Henry Green",
-    sender_phone: "+242 05 485 21 20",
-    receiver_phone: "+242 05 512 01 22",
-    time: "18:30",
-    recipient: "Amelia Scott",
-    amount: 2500,
-    date: new Date("2024-11-27T18:30:00"),
-    fees: 25,
-    status: "pending",
   },
 ];
 
@@ -191,7 +111,19 @@ export default function Page() {
               <Input placeholder="Rechercher une transaction" />
             </div>
             <Select>
-              <SelectTrigger className="w-[480px]">
+              <SelectTrigger className="w-[280px]">
+                <SelectValue placeholder="Dépôts & retraits" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">Dépôts & retraits</SelectItem>
+                  <SelectItem value="free">Dépôts</SelectItem>
+                  <SelectItem value="paid">Retraits</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger className="w-[280px]">
                 <SelectValue placeholder="Toutes les transactions" />
               </SelectTrigger>
               <SelectContent>
@@ -199,11 +131,10 @@ export default function Page() {
                   <SelectItem value="all">Toutes les transactions</SelectItem>
                   <SelectItem value="free">Effectuées</SelectItem>
                   <SelectItem value="paid">En attente</SelectItem>
-                  <SelectItem value="paid">Echouées</SelectItem>
+                  <SelectItem value="failed">Echouées</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
-
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -225,11 +156,12 @@ export default function Page() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Expéditeur</TableHead>
-                <TableHead>Destinataire</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead>Marchand</TableHead>
                 <TableHead>Montant</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Frais</TableHead>
+                <TableHead>Commissions</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="flex justify-end items-center">
                   Status
                 </TableHead>
@@ -240,17 +172,17 @@ export default function Page() {
                 <TableRow key={transaction.id} className="cursor-pointer">
                   <TableCell className="font-medium flex flex-col gap-1">
                     <div className="flex flex-col gap-1">
-                      <span className="">{transaction.sender}</span>
+                      <span className="">{transaction.client}</span>
                       <span className="text-gray-500">
-                        {transaction.sender_phone}
+                        {transaction.client_phone}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className=" flex flex-col gap-1">
-                      <span className="">{transaction.recipient}</span>
+                      <span className="">{transaction.merchant}</span>
                       <span className="text-gray-500">
-                        {transaction.receiver_phone}
+                        {transaction.merchant_id}
                       </span>
                     </div>
                   </TableCell>
@@ -267,7 +199,24 @@ export default function Page() {
                     à {transaction.time}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {transaction.fees} XAF
+                    {transaction.commissions} XAF
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <span
+                      className={`${
+                        transaction.transaction_type === "deposit"
+                          ? "bg-primary text-white"
+                          : undefined
+                      } ${
+                        transaction.transaction_type === "withdrawal"
+                          ? "bg-blue-700 text-white"
+                          : undefined
+                      }  px-3 py-1 rounded-full`}
+                    >
+                      {transaction.transaction_type === "deposit" && "Dépôt"}
+                      {transaction.transaction_type === "withdrawal" &&
+                        "Retrait"}
+                    </span>
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className="flex justify-end items-center gap-3">

@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
-import { Calendar, DollarSign } from "lucide-react";
+import { Calendar, DollarSign, RefreshCcw } from "lucide-react";
 
 export default function DashboardTypeSelect({
   defaultType = "rhodium",

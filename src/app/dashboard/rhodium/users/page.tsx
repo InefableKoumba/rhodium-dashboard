@@ -107,7 +107,9 @@ export default async function page() {
                         />
                       </div>
                     ) : (
-                      <GeneralAvatar />
+                      <div className="w-14 h-14">
+                        <GeneralAvatar />
+                      </div>
                     )}
                   </TableCell>
                   <TableCell className="font-medium">

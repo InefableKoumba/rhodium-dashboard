@@ -15,7 +15,7 @@ const eventsData = [
   { name: "Fête de la musique", total: 50 },
 ];
 
-const usersData = [
+export const usersData = [
   { name: "Inefable", total: 2 },
   { name: "Murphy", total: 1 },
   { name: "Mario Daty", total: 10 },

@@ -13,6 +13,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserChartInterface {
   name: string;
@@ -25,12 +26,26 @@ export default function UsersChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Utilisateurs de l&apos;application</CardTitle>
-        <CardDescription>
-          Utilisateurs ayant créer des évènements cette semaine
-        </CardDescription>
+        <div className="flex justify-between items-center">
+          <div className="w-full flex flex-col gap-2">
+            <CardTitle>Adhésion des utilisateurs</CardTitle>
+            <CardDescription>
+              Utilisateurs ayant rejoint l'application cette semaine
+            </CardDescription>
+          </div>
+          <Tabs defaultValue="week">
+            <TabsList>
+              <TabsTrigger value="week">Cette semaine</TabsTrigger>
+              <TabsTrigger value="month">Ce mois-ci</TabsTrigger>
+              <TabsTrigger value="year">Cette année</TabsTrigger>
+              <TabsContent value="week"></TabsContent>
+              <TabsContent value="month"></TabsContent>
+              <TabsContent value="year"></TabsContent>
+            </TabsList>
+          </Tabs>
+        </div>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="mt-4">
         <ChartContainer
           config={{
             total: {

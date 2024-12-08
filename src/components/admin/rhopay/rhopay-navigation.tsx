@@ -12,6 +12,7 @@ import {
   ArrowLeftRight,
   ChartNoAxesCombined,
   House,
+  Store,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -58,6 +59,24 @@ export default function SidebarNavigation() {
           <SidebarMenuItem>
             <SidebarMenuButton
               className={
+                activeMenuItem === "deposit-withdrawal"
+                  ? "bg-primary text-white"
+                  : undefined
+              }
+              onClick={() => {
+                setActiveMenuItem("deposit-withdrawal");
+                router.push("/dashboard/rhopay/deposit-withdrawal");
+              }}
+              isActive={activeMenuItem === "deposit-withdrawal"}
+            >
+              <ArrowLeftRight />
+              Dépots & Retraits
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className={
                 activeMenuItem === "users" ? "bg-primary text-white" : undefined
               }
               onClick={() => {
@@ -68,6 +87,36 @@ export default function SidebarNavigation() {
             >
               <Users />
               Utilisateurs
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className={
+                activeMenuItem === "users" ? "bg-primary text-white" : undefined
+              }
+              onClick={() => {
+                setActiveMenuItem("users");
+                router.push("/dashboard/rhopay/users");
+              }}
+              isActive={activeMenuItem === "users"}
+            >
+              <Store />
+              Marchands
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className={
+                activeMenuItem === "users" ? "bg-primary text-white" : undefined
+              }
+              onClick={() => {
+                setActiveMenuItem("users");
+                router.push("/dashboard/rhopay/users");
+              }}
+              isActive={activeMenuItem === "users"}
+            >
+              <Store />
+              Agence
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

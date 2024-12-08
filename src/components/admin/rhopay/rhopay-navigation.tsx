@@ -92,13 +92,15 @@ export default function SidebarNavigation() {
           <SidebarMenuItem>
             <SidebarMenuButton
               className={
-                activeMenuItem === "users" ? "bg-primary text-white" : undefined
+                activeMenuItem === "marchants"
+                  ? "bg-primary text-white"
+                  : undefined
               }
               onClick={() => {
-                setActiveMenuItem("users");
-                router.push("/dashboard/rhopay/users");
+                setActiveMenuItem("marchants");
+                router.push("/dashboard/rhopay/marchants");
               }}
-              isActive={activeMenuItem === "users"}
+              isActive={activeMenuItem === "marchants"}
             >
               <Store />
               Marchands
@@ -107,33 +109,16 @@ export default function SidebarNavigation() {
           <SidebarMenuItem>
             <SidebarMenuButton
               className={
-                activeMenuItem === "users" ? "bg-primary text-white" : undefined
+                activeMenuItem === "shops" ? "bg-primary text-white" : undefined
               }
               onClick={() => {
-                setActiveMenuItem("users");
-                router.push("/dashboard/rhopay/users");
+                setActiveMenuItem("shops");
+                router.push("/dashboard/rhopay/shops");
               }}
-              isActive={activeMenuItem === "users"}
+              isActive={activeMenuItem === "shops"}
             >
               <Store />
               Agence
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className={
-                activeMenuItem === "analytics"
-                  ? "bg-primary text-white"
-                  : undefined
-              }
-              onClick={() => {
-                setActiveMenuItem("analytics");
-                router.push("/dashboard/rhopay/analytics");
-              }}
-              isActive={activeMenuItem === "analytics"}
-            >
-              <ChartNoAxesCombined />
-              Analytiques
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -19,8 +19,8 @@ export default function Page() {
       <div className="w-1/2 flex flex-col i gap-3">
         <span className="font-bold text-4xl">Bienvenue</span>
         <span>
-          Connectez-vous pour accèder à l'espace admin des platformes Rhopay &
-          Rhodium
+          Connectez-vous pour accèder à l&apos;espace admin des platformes
+          Rhopay & Rhodium
         </span>
         <div className="mt-12 flex flex-col gap-2">
           <span>Adresse e-mail</span>
@@ -39,8 +39,8 @@ export default function Page() {
           </Button>
           <div className="mt-4">
             <span className="text-sm">
-              Vous n'avez pas de compte? Demandez à votre administrateur de vous
-              en créer un.
+              Vous n&apos;avez pas de compte? Demandez à votre administrateur de
+              vous en créer un.
             </span>
           </div>
         </div>

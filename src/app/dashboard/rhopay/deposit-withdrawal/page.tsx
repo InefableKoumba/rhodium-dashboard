@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Link from "next/link";
 
 const transactions: {
   id: number;
@@ -70,28 +71,119 @@ const transactions: {
   },
   {
     id: 2,
-    client: "Inefable KOULBA",
-    merchant: "Jane Doe",
-    client_phone: "+242 06 880 19 86",
-    time: "10:30",
-    transaction_type: "deposit",
-    merchant_id: "857412",
-    amount: 1000,
-    date: new Date("2024-11-20T10:30:00"),
-    commissions: 10,
+    client: "Marcel BOKO",
+    merchant: "John Smith",
+    client_phone: "+242 05 123 45 67",
+    time: "15:45",
+    transaction_type: "withdrawal",
+    merchant_id: "763954",
+    amount: 200,
+    date: new Date("2024-11-19T15:45:00"),
+    commissions: 5,
     status: "success",
   },
   {
     id: 3,
-    client: "Inefable KOULBA",
-    merchant: "Jane Doe",
-    client_phone: "+242 06 880 19 86",
-    time: "10:30",
+    client: "Josiane TSHIBANGU",
+    merchant: "Rose YAO",
+    client_phone: "+242 07 998 34 56",
+    time: "09:20",
+    transaction_type: "deposit",
+    merchant_id: "432159",
+    amount: 1500,
+    date: new Date("2024-11-21T09:20:00"),
+    commissions: 15,
+    status: "pending",
+  },
+  {
+    id: 4,
+    client: "Christian KIMBA",
+    merchant: "Alex DUBE",
+    client_phone: "+242 06 777 88 99",
+    time: "13:50",
     transaction_type: "withdrawal",
-    merchant_id: "857412",
-    amount: 1000,
-    date: new Date("2024-11-20T10:30:00"),
+    merchant_id: "214365",
+    amount: 500,
+    date: new Date("2024-11-18T13:50:00"),
+    commissions: 8,
+    status: "failed",
+  },
+  {
+    id: 5,
+    client: "Thérèse NGOLO",
+    merchant: "Marie DUBOIS",
+    client_phone: "+242 05 444 55 66",
+    time: "11:15",
+    transaction_type: "deposit",
+    merchant_id: "987654",
+    amount: 1200,
+    date: new Date("2024-11-19T11:15:00"),
+    commissions: 12,
+    status: "success",
+  },
+  {
+    id: 6,
+    client: "Alphonse MABIKA",
+    merchant: "Daniel GREEN",
+    client_phone: "+242 07 333 22 11",
+    time: "16:05",
+    transaction_type: "withdrawal",
+    merchant_id: "654321",
+    amount: 800,
+    date: new Date("2024-11-17T16:05:00"),
     commissions: 10,
+    status: "success",
+  },
+  {
+    id: 7,
+    client: "Sylvia NGOMA",
+    merchant: "Chloe BROWN",
+    client_phone: "+242 05 999 88 77",
+    time: "08:50",
+    transaction_type: "deposit",
+    merchant_id: "321456",
+    amount: 3000,
+    date: new Date("2024-11-22T08:50:00"),
+    commissions: 25,
+    status: "success",
+  },
+  {
+    id: 8,
+    client: "Jean-Paul OKOMBO",
+    merchant: "Edward WILSON",
+    client_phone: "+242 06 111 22 33",
+    time: "14:30",
+    transaction_type: "withdrawal",
+    merchant_id: "789012",
+    amount: 100,
+    date: new Date("2024-11-20T14:30:00"),
+    commissions: 2,
+    status: "pending",
+  },
+  {
+    id: 9,
+    client: "Claudine MBEMBA",
+    merchant: "Charlotte EVANS",
+    client_phone: "+242 07 567 89 01",
+    time: "12:00",
+    transaction_type: "deposit",
+    merchant_id: "852963",
+    amount: 2500,
+    date: new Date("2024-11-18T12:00:00"),
+    commissions: 20,
+    status: "success",
+  },
+  {
+    id: 10,
+    client: "Thierry DIKA",
+    merchant: "Paul ADAMS",
+    client_phone: "+242 06 333 44 55",
+    time: "18:40",
+    transaction_type: "withdrawal",
+    merchant_id: "159753",
+    amount: 600,
+    date: new Date("2024-11-16T18:40:00"),
+    commissions: 7,
     status: "failed",
   },
 ];
@@ -101,7 +193,7 @@ export default function Page() {
     <div className="p-8">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Transactions récentes</CardTitle>
+          <CardTitle>Dépôts et retraits récents</CardTitle>
           <CardDescription>Liste des dernières transactions.</CardDescription>
           <div className="flex items-center justify-end gap-4 w-full pt-12">
             <div className="relative w-full">
@@ -171,12 +263,15 @@ export default function Page() {
               {transactions.map((transaction) => (
                 <TableRow key={transaction.id} className="cursor-pointer">
                   <TableCell className="font-medium flex flex-col gap-1">
-                    <div className="flex flex-col gap-1">
+                    <Link
+                      href={"/dashboard/rhopay/users/1"}
+                      className="flex flex-col gap-1"
+                    >
                       <span className="">{transaction.client}</span>
                       <span className="text-gray-500">
                         {transaction.client_phone}
                       </span>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className=" flex flex-col gap-1">
@@ -209,7 +304,7 @@ export default function Page() {
                           : undefined
                       } ${
                         transaction.transaction_type === "withdrawal"
-                          ? "bg-blue-700 text-white"
+                          ? "bg-gray-200 text-primary"
                           : undefined
                       }  px-3 py-1 rounded-full`}
                     >
@@ -231,8 +326,8 @@ export default function Page() {
                                 Transaction échouée
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                La transaction a échouée en raison d'un solde
-                                insuffisant de l'expéditeur
+                                La transaction a échouée en raison d&apos;un
+                                solde insuffisant du marchand
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

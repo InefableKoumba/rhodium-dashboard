@@ -282,8 +282,8 @@ export default function Page() {
                                 Transaction échouée
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                La transaction a échouée en raison d'un solde
-                                insuffisant de l'expéditeur
+                                La transaction a échouée en raison d&apos;un
+                                solde insuffisant de l&apos;expéditeur
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

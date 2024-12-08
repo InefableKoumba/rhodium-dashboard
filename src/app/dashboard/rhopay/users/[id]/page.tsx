@@ -363,8 +363,8 @@ export default async function Page({
                                     Transaction échouée
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    La transaction a échouée en raison d'un
-                                    solde insuffisant de l'expéditeur
+                                    La transaction a échouée en raison d&apos;un
+                                    solde insuffisant de l&apos;expéditeur
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -434,7 +434,7 @@ export default async function Page({
               <AlertDialogTrigger asChild>
                 <Button className="bg-red-700 hover:bg-red-600">
                   <Trash />
-                  Supprimer l'utilisateur
+                  Supprimer l&apos;utilisateur
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -443,8 +443,8 @@ export default async function Page({
                     Etes-vous sûr de supprimer cet utilisateur?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    La suppression d'un utilisateur est irréversible. Toutes ses
-                    transactions et données seront supprimées.
+                    La suppression d&apos;un utilisateur est irréversible.
+                    Toutes ses transactions et données seront supprimées.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

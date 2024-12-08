@@ -30,7 +30,7 @@ export default function UsersChart({
           <div className="w-full flex flex-col gap-2">
             <CardTitle>Adhésion des utilisateurs</CardTitle>
             <CardDescription>
-              Utilisateurs ayant rejoint l'application cette semaine
+              Utilisateurs ayant rejoint l&apos;application cette semaine
             </CardDescription>
           </div>
           <Tabs defaultValue="week">

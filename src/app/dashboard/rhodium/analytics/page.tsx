@@ -29,13 +29,5 @@ const usersData = [
 ];
 
 export default function page() {
-  return (
-    <div className="p-12">
-      <h2 className="text-2xl font-bold">Analytiques</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
-        <TicketsChart data={eventsData} />
-        <UsersChart data={usersData} />
-      </div>
-    </div>
-  );
+  return <div className="p-12"></div>;
 }

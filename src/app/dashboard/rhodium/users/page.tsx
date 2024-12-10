@@ -1,3 +1,4 @@
+import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -75,10 +76,20 @@ export default async function page() {
                 <Calendar mode="single" />
               </PopoverContent>
             </Popover>
-            <Button>
-              <ArrowDownToLine size={36} />
-              Exporter
-            </Button>
+            <ExportToExcel 
+              data={users.map((user) => ({
+                ...user,
+                avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
+                  user.avatar?.url as string
+                ),
+              }))} 
+              fileName="users"
+            >
+              <Button>
+                <ArrowDownToLine size={36} />
+                Exporter
+              </Button>
+            </ExportToExcel>
           </div>
           <Table>
             <TableHeader>

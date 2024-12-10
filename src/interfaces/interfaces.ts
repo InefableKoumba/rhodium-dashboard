@@ -53,6 +53,63 @@ export interface EventResponseInterface {
   };
 }
 
+export interface Event {
+  id: number;
+  title: string;
+  description: string;
+  date_start: string;
+  date_end: string;
+  isPrivate: boolean;
+  likes: number;
+  time_start: string;
+  time_end: string;
+  contact_phone_number: string;
+  location_street: string;
+  location_city: string;
+  country: string;
+  hasCost: boolean;
+  isBoosted: boolean;
+  isValidatedByAdmin: "VALIDATED" | "PENDING" | "REJECTED";
+  scannerCode: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  hasCoupleOption?: boolean;
+  images?: string[];
+  videos?: string[];
+  creatorName?: string;
+  creator?: {
+    data: {
+      id: number;
+      attributes: UserInterface;
+    };
+  };
+  event_comments?: { data: any[] };
+  event_categories?: { data: any[] };
+  event_invitations?: { data: any[] };
+  tickets_distribution?: { id: number };
+  user_likes?: {
+    data: {
+      id: number;
+      attributes: UserInterface;
+    }[];
+  };
+  coverImage?: string,
+  tickets_generated?: {
+    data: TicketInterface[];
+  };
+  ImageEventInvitationCard?: { data: any };
+}
+
+export interface ReponseMeta {
+  pagination: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+  };
+}
+
 export interface MediaResponse {
   data?: MediaData[];
 }

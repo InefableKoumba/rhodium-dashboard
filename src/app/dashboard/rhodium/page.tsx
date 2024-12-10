@@ -34,7 +34,7 @@ export default async function Page() {
   // const users = (await response2.json())["data"] as UserInterface[];
 
   return (
-    <main className="flex-1 overflow-y-auto p-8">
+    <div className="flex-1 overflow-y-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Tableau de bord Rhodium</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -202,6 +202,6 @@ export default async function Page() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

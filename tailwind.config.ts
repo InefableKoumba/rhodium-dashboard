@@ -10,7 +10,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#0F1F3C",
+        primary: "#FFB409",
+        dark: "#0F1F3C",
+        darkLight: "#1C2D4B",
         primaryLight: "#FFC409",
       },
       borderRadius: {

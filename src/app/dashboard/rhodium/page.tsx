@@ -35,7 +35,9 @@ export default async function Page() {
 
   return (
     <div className="flex-1 overflow-y-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Tableau de bord Rhodium</h1>
+      <h1 className="text-3xl font-extrabold mb-6 text-dark">
+        Tableau de bord Rhodium
+      </h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -84,7 +86,9 @@ export default async function Page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">+2 from last week</p>
+            <p className="text-xs text-muted-foreground">
+              +2% par rapport au mois passé
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -107,7 +111,7 @@ export default async function Page() {
               </TableHeader>
               <TableBody>
                 {events.slice(0, 5).map((event) => (
-                  <TableRow key={event.id}>
+                  <TableRow key={event.id} className="cursor-pointer">
                     <TableCell className="font-medium w-[50%]">
                       <Link href={"/dashboard/rhodium/events/" + event.id}>
                         {event.attributes.title}
@@ -126,11 +130,11 @@ export default async function Page() {
                     </TableCell>
                     <TableCell>
                       {event.attributes.hasCost ? (
-                        <div className="bg-primaryLight text-white rounded-full px-3 py-1 flex items-center justify-center">
+                        <div className="bg-darkLight text-white rounded-full px-3 py-1 flex items-center justify-center">
                           Payant
                         </div>
                       ) : (
-                        <div className="bg-green-600 text-white rounded-full px-3 py-1 flex items-center justify-center">
+                        <div className="border rounded-full px-3 py-1 flex items-center justify-center">
                           Gratuit
                         </div>
                       )}
@@ -142,10 +146,9 @@ export default async function Page() {
             <div className="mt-4">
               <Link
                 href={"/dashboard/rhodium/events"}
-                className="w-full bg-primary text-white flex items-center gap-x-2 border justify-center py-2 rounded-lg"
+                className="w-full bg-dark hover:bg-darkLight text-white flex items-center gap-x-2 border justify-center py-2 rounded-lg"
               >
                 Tout afficher
-                <MoveRight />
               </Link>
             </div>
           </CardContent>
@@ -185,7 +188,7 @@ export default async function Page() {
                         </TableCell>
                         <TableCell>
                           <Link
-                            className="border-2 flex justify-center bg-primary text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-lg"
+                            className="border-2 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-md"
                             href={"/dashboard/rhodium/events/" + event.id}
                           >
                             Ouvrir

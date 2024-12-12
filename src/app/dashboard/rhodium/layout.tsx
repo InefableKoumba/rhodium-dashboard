@@ -1,5 +1,5 @@
-import DashboardTypeSelect from "@/components/admin/common/dashboard-type-select";
 import SidebarNavigation from "@/components/admin/rhodium/rhodium-navigation";
+import TriggerSidebarButton from "@/components/common/trigger-sidebar-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import React from "react";
@@ -9,24 +9,19 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full z-10">
+      <div className="w-full flex h-screen overflow-hidden">
         <SidebarNavigation />
-        <div className="fixed w-full z-50 bg-white border-b flex justify-between items-center px-6 h-16">
-          <span
-            className="font-bold text-3xl text-primary"
-            style={{ fontFamily: "Audiowide" }}
-          >
-            Rhodium
-          </span>
-          <div className="flex items-center gap-4">
-            <DashboardTypeSelect />
+        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          <div className="sticky top-0 z-50 bg-white border-b flex justify-between items-center px-4 md:px-6 2xl:px-10 py-4 h-16">
+            <TriggerSidebarButton />
+            {/* <DashboardTypeSelect /> old Dashboard Type Selector */}
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </div>
+          <main className="w-full">{children}</main>
         </div>
-        <div className="w-full mt-16">{children}</div>
       </div>
     </SidebarProvider>
   );

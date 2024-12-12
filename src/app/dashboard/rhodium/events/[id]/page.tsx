@@ -5,6 +5,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function page({
   params,
@@ -48,16 +57,82 @@ export default async function page({
           <Tabs defaultValue="details" className="w-full mt-12">
             <TabsList>
               <TabsTrigger value="details">Informations</TabsTrigger>
-              <TabsTrigger value="guests">Invités</TabsTrigger>
+              <TabsTrigger value="tickets">Tickets achetés</TabsTrigger>
+              <TabsTrigger value="tickets_distrubition">
+                Distribution tickets
+              </TabsTrigger>
+              <TabsTrigger value="invitations">Invitations</TabsTrigger>
               <TabsTrigger value="tables">Tables</TabsTrigger>
               <TabsTrigger value="settings">Paramètres</TabsTrigger>
             </TabsList>
             <hr className="my-4" />
-            <div>
-              <TabsContent value="details">
-                <EnventDetails event={event} adminView />
-              </TabsContent>
-            </div>
+            <TabsContent value="details">
+              <EnventDetails event={event} adminView />
+            </TabsContent>
+            <TabsContent value="tickets">
+              <Table className="mb-24">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Categorie</TableHead>
+                    <TableHead>Date d'achat</TableHead>
+                    <TableHead>Scanné</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {event.attributes.tickets_generated?.data.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-medium">
+                        {ticket.attributes.category}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(ticket.attributes.createdAt).toLocaleString(
+                          "fr-FR",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                          }
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {ticket.attributes.isScanned ? "Déjà" : "Pas encore"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+            <TabsContent value="guests">
+              <Table className="mb-24">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Personne invitée</TableHead>
+                    <TableHead>Code</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Tickets</TableHead>
+                    <TableHead>Scannée</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Inefable KOUMBA
+                    </TableCell>
+                    <TableCell>45210</TableCell>
+                    <TableCell>Acceptée</TableCell>
+                    <TableCell>
+                      <ol>
+                        <li>Normal</li>
+                        <li>VIP</li>
+                      </ol>
+                    </TableCell>
+                    <TableCell>Déjà</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TabsContent>
           </Tabs>
         </div>
       </div>

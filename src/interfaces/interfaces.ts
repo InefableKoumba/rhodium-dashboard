@@ -31,7 +31,19 @@ export interface EventResponseInterface {
     };
     event_comments?: { data: any[] };
     event_categories?: { data: any[] };
-    event_invitations?: { data: any[] };
+    event_invitations?: {
+      data: {
+        id: number;
+        attributes: {
+          state: "ACCEPTED" | "PENDING" | "DECLINED";
+          is_read_by_user_receiver: boolean;
+          createdAt: Date;
+          updatedAt: Date;
+          code?: string;
+          isScanned: boolean;
+        };
+      }[];
+    };
     tickets_distribution?: { id: number };
     user_likes?: {
       data: {
@@ -50,6 +62,30 @@ export interface EventResponseInterface {
       data: TicketInterface[];
     };
     ImageEventInvitationCard?: { data: any };
+  };
+}
+
+export interface EventInvitation {
+  id: number;
+  attributes: {
+    state: "ACCEPTED" | "PENDING" | "DECLINED";
+    is_read_by_user_receiver: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    code?: string;
+    isScanned: boolean;
+    user_emitter?: {
+      data: UserInterface;
+    };
+    user_receiver?: {
+      data: UserInterface;
+    };
+    event?: {
+      data: EventResponseInterface;
+    };
+    tickets?: {
+      data: TicketInterface[];
+    };
   };
 }
 
@@ -94,7 +130,7 @@ export interface Event {
       attributes: UserInterface;
     }[];
   };
-  coverImage?: string,
+  coverImage?: string;
   tickets_generated?: {
     data: TicketInterface[];
   };

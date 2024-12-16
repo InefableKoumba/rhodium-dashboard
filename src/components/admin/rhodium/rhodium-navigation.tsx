@@ -74,10 +74,10 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link
-              href="/rhodium/analytics"
+              href="/rhodium/sponsorships"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/rhodium/analytics" ||
-                pathname.startsWith("/rhodium/analytics")
+                pathname === "/rhodium/sponsorships" ||
+                pathname.startsWith("/rhodium/sponsorships")
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -86,7 +86,7 @@ export default function SidebarNavigation() {
               <span>Parrainages</span>
             </Link>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          {/* <SidebarMenuItem>
             <Link
               href="/rhodium/analytics"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
@@ -99,7 +99,7 @@ export default function SidebarNavigation() {
               <ChartArea size={20} />
               <span>Analytiques</span>
             </Link>
-          </SidebarMenuItem>
+          </SidebarMenuItem> */}
         </SidebarMenu>
 
         <SidebarMenu className="border-t pt-4 hidden">

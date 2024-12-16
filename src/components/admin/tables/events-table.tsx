@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -55,24 +55,19 @@ import { Event } from "@/interfaces/interfaces";
 
 export const columns: ColumnDef<Event>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => <span>{row.getValue("id")}</span>,
-  },
-  {
     accessorKey: "head",
     accessorFn: (row) => ({
       title: row.title,
       cover: row.coverImage,
     }),
-    header: "Evenement",
+    header: "Couverture",
     cell: ({ row }) => {
       const { title, cover }: { title: string; cover: string } =
         row.getValue("head");
       return (
         <Link
           className="flex items-center gap-2 group"
-          href={"/rhodium/events/" + row.getValue("id")}
+          href={"/rhodium/events/" + row.id}
         >
           {cover ? (
             <div className="relative w-24 h-16 rounded overflow-hidden">
@@ -89,10 +84,14 @@ export const columns: ColumnDef<Event>[] = [
               <CalendarDays color="#888" />
             </div>
           )}
-          <span className="flex-1">{title}</span>
         </Link>
       );
     },
+  },
+  {
+    accessorKey: "title",
+    header: "Titre",
+    cell: ({ row }) => <div className="w-[240px]">{row.getValue("title")}</div>,
   },
   {
     accessorKey: "creator",
@@ -216,9 +215,9 @@ export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
               value={
                 (table.getColumn("title")?.getFilterValue() as string) ?? ""
               }
-              onChange={(event) =>
-                table.getColumn("title")?.setFilterValue(event.target.value)
-              }
+              onChange={(event) => {
+                table.getColumn("title")?.setFilterValue(event.target.value);
+              }}
               placeholder="Rechercher un évènement"
             />
           </div>

@@ -16,7 +16,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { UserInterface } from "@/interfaces/interfaces";
+import {
+  Event,
+  EventResponseInterface,
+  UserInterface,
+} from "@/interfaces/interfaces";
 import Image from "next/image";
 import {
   AlertDialog,
@@ -32,6 +36,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UsersList from "@/components/admin/rhopay/users-list";
 import UserInfoFormInput from "@/components/admin/rhopay/user-info-form-input";
+import EventsTable from "@/components/admin/tables/events-table";
 
 export default async function Page({
   params,
@@ -43,6 +48,11 @@ export default async function Page({
     process.env.NEXT_API_URL + "/users/" + id + "?populate=*"
   );
   const user = (await response.json()) as UserInterface;
+
+  const response2 = await fetch(
+    process.env.NEXT_API_URL + "/events?populate=*"
+  );
+  const events = (await response2.json())["data"] as EventResponseInterface[];
 
   return (
     <div className="p-8">
@@ -64,6 +74,7 @@ export default async function Page({
       <Tabs defaultValue="profile" className="w-full mt-12">
         <TabsList>
           <TabsTrigger value="profile">Informations personnelles</TabsTrigger>
+          <TabsTrigger value="events">Evènements</TabsTrigger>
           <TabsTrigger value="sponsorship">Parrainages</TabsTrigger>
           <TabsTrigger value="settings">paramètres</TabsTrigger>
         </TabsList>
@@ -128,6 +139,29 @@ export default async function Page({
               type="email"
             />
           </div>
+        </TabsContent>
+        <TabsContent value="events" className="mt-10">
+          <EventsTable
+            events={events.map((event) => ({
+              id: event.id,
+              ...event.attributes,
+              coverImage: event.attributes?.coverImage?.data
+                ? process.env.NEXT_STORAGE_BUCKET_URL!.concat(
+                    event.attributes?.coverImage?.data?.attributes.url
+                  )
+                : undefined,
+              images: event.attributes?.images?.data?.map((image) =>
+                process.env.NEXT_STORAGE_BUCKET_URL!.concat(
+                  image?.attributes?.url
+                )
+              ),
+              videos: event.attributes?.videos?.data?.map((video) =>
+                process.env.NEXT_STORAGE_BUCKET_URL!.concat(
+                  video?.attributes?.url
+                )
+              ),
+            }))}
+          />
         </TabsContent>
         <TabsContent value="sponsorship">
           <UsersList isSponsorshipList />

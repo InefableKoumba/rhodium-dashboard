@@ -56,7 +56,7 @@ export default async function page() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-end gap-3 mb-12">
-            <div className="relative w-1/2">
+            <div className="relative w-full">
               <div className="absolute right-4 top-2">
                 <Search color="#333" />
               </div>

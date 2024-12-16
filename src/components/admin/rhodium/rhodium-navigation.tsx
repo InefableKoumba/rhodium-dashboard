@@ -101,7 +101,6 @@ export default function SidebarNavigation() {
             </Link>
           </SidebarMenuItem> */}
         </SidebarMenu>
-
         <SidebarMenu className="border-t pt-4 hidden">
           <SidebarMenuItem>
             <SidebarMenuButton

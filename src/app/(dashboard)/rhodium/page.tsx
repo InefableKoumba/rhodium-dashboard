@@ -188,7 +188,7 @@ export default async function Page() {
                         </TableCell>
                         <TableCell>
                           <Link
-                            className="border-2 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-md"
+                            className="border-2 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-full"
                             href={"/rhodium/events/" + event.id}
                           >
                             Ouvrir

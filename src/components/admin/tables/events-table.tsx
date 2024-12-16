@@ -64,10 +64,11 @@ export const columns: ColumnDef<Event>[] = [
     cell: ({ row }) => {
       const { title, cover }: { title: string; cover: string } =
         row.getValue("head");
+      const id = parseInt(row.id) + 1;
       return (
         <Link
           className="flex items-center gap-2 group"
-          href={"/rhodium/events/" + row.id}
+          href={"/rhodium/events/" + id}
         >
           {cover ? (
             <div className="relative w-24 h-16 rounded overflow-hidden">

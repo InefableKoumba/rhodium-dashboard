@@ -264,7 +264,7 @@ export default function Page() {
                 <TableRow key={transaction.id} className="cursor-pointer">
                   <TableCell className="font-medium flex flex-col gap-1">
                     <Link
-                      href={"/dashboard/rhopay/users/1"}
+                      href={"/rhopay/users/1"}
                       className="flex flex-col gap-1"
                     >
                       <span className="">{transaction.client}</span>

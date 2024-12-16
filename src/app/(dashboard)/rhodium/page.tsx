@@ -113,12 +113,12 @@ export default async function Page() {
                 {events.slice(0, 5).map((event) => (
                   <TableRow key={event.id} className="cursor-pointer">
                     <TableCell className="font-medium w-[50%]">
-                      <Link href={"/dashboard/rhodium/events/" + event.id}>
+                      <Link href={"/rhodium/events/" + event.id}>
                         {event.attributes.title}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={"/dashboard/rhodium/events/" + event.id}>
+                      <Link href={"/rhodium/events/" + event.id}>
                         {new Date(
                           event.attributes.date_start
                         ).toLocaleDateString("fr-FR", {
@@ -145,7 +145,7 @@ export default async function Page() {
             </Table>
             <div className="mt-4">
               <Link
-                href={"/dashboard/rhodium/events"}
+                href={"/rhodium/events"}
                 className="w-full bg-dark hover:bg-darkLight text-white flex items-center gap-x-2 border justify-center py-2 rounded-lg"
               >
                 Tout afficher
@@ -189,7 +189,7 @@ export default async function Page() {
                         <TableCell>
                           <Link
                             className="border-2 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-md"
-                            href={"/dashboard/rhodium/events/" + event.id}
+                            href={"/rhodium/events/" + event.id}
                           >
                             Ouvrir
                             <ExternalLink size={14} />

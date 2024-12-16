@@ -33,9 +33,9 @@ export default function SidebarNavigation() {
         <SidebarMenu className="border-t pt-4 space-y-2">
           <SidebarMenuItem>
             <Link
-              href="/dashboard/rhodium"
+              href="/rhodium"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium"
+                pathname === "/rhodium"
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -46,10 +46,10 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link
-              href="/dashboard/rhodium/events"
+              href="/rhodium/events"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium/events" ||
-                pathname.startsWith("/dashboard/rhodium/events")
+                pathname === "/rhodium/events" ||
+                pathname.startsWith("/rhodium/events")
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -60,24 +60,10 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link
-              href="/dashboard/rhodium/tickets"
+              href="/rhodium/users"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium/tickets" ||
-                pathname.startsWith("/dashboard/rhodium/tickets")
-                  ? "bg-darkLight text-white"
-                  : "hover:bg-darkLight/50"
-              }`}
-            >
-              <Tickets size={20} />
-              <span>Gestion de tickets</span>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link
-              href="/dashboard/rhodium/users"
-              className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium/users" ||
-                pathname.startsWith("/dashboard/rhodium/users")
+                pathname === "/rhodium/users" ||
+                pathname.startsWith("/rhodium/users")
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -88,10 +74,10 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link
-              href="/dashboard/rhodium/analytics"
+              href="/rhodium/analytics"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium/analytics" ||
-                pathname.startsWith("/dashboard/rhodium/analytics")
+                pathname === "/rhodium/analytics" ||
+                pathname.startsWith("/rhodium/analytics")
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -102,10 +88,10 @@ export default function SidebarNavigation() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link
-              href="/dashboard/rhodium/analytics"
+              href="/rhodium/analytics"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
-                pathname === "/dashboard/rhodium/analytics" ||
-                pathname.startsWith("/dashboard/rhodium/analytics")
+                pathname === "/rhodium/analytics" ||
+                pathname.startsWith("/rhodium/analytics")
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -124,7 +110,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("home");
-                router.push("/dashboard/rhodium");
+                router.push("/rhodium");
               }}
               isActive={activeMenuItem === "home"}
             >
@@ -141,7 +127,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("events");
-                router.push("/dashboard/rhodium/events");
+                router.push("/rhodium/events");
               }}
               isActive={activeMenuItem === "events"}
             >
@@ -156,7 +142,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/dashboard/rhodium/users");
+                router.push("/rhodium/users");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -173,7 +159,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("analytics");
-                router.push("/dashboard/rhodium/analytics");
+                router.push("/rhodium/analytics");
               }}
               isActive={activeMenuItem === "analytics"}
             >

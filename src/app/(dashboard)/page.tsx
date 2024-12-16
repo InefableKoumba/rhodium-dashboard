@@ -30,7 +30,7 @@ export default function Page() {
         </div>
         <div>
           <Button
-            onClick={() => redirect("/dashboard/rhodium")}
+            onClick={() => redirect("/rhodium")}
             className="w-full bg-dark"
           >
             Se connecter

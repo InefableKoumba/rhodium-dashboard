@@ -31,7 +31,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("home");
-                router.push("/dashboard/rhopay");
+                router.push("/rhopay");
               }}
               isActive={activeMenuItem === "home"}
             >
@@ -48,7 +48,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("transactions");
-                router.push("/dashboard/rhopay/transactions");
+                router.push("/rhopay/transactions");
               }}
               isActive={activeMenuItem === "transactions"}
             >
@@ -65,7 +65,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("deposit-withdrawal");
-                router.push("/dashboard/rhopay/deposit-withdrawal");
+                router.push("/rhopay/deposit-withdrawal");
               }}
               isActive={activeMenuItem === "deposit-withdrawal"}
             >
@@ -81,7 +81,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("users");
-                router.push("/dashboard/rhopay/users");
+                router.push("/rhopay/users");
               }}
               isActive={activeMenuItem === "users"}
             >
@@ -98,7 +98,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("marchants");
-                router.push("/dashboard/rhopay/marchants");
+                router.push("/rhopay/marchants");
               }}
               isActive={activeMenuItem === "marchants"}
             >
@@ -113,7 +113,7 @@ export default function SidebarNavigation() {
               }
               onClick={() => {
                 setActiveMenuItem("shops");
-                router.push("/dashboard/rhopay/shops");
+                router.push("/rhopay/shops");
               }}
               isActive={activeMenuItem === "shops"}
             >

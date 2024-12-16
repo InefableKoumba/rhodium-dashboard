@@ -76,13 +76,13 @@ export default async function page() {
                 <Calendar mode="single" />
               </PopoverContent>
             </Popover>
-            <ExportToExcel 
+            <ExportToExcel
               data={users.map((user) => ({
                 ...user,
                 avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
                   user.avatar?.url as string
                 ),
-              }))} 
+              }))}
               fileName="users"
             >
               <Button>
@@ -124,48 +124,26 @@ export default async function page() {
                     )}
                   </TableCell>
                   <TableCell className="font-medium">
-                    <Link href={"/dashboard/users/" + user.id}>
+                    <Link href={"/rhodium/users/" + user.id}>
                       {user.firstname} {user.lastname}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Link href={"/dashboard/users/" + user.id}>
-                      {user.email}
-                    </Link>
+                    <Link href={"/rhodium/users/" + user.id}>{user.email}</Link>
                   </TableCell>
                   <TableCell>
-                    <Link href={"/dashboard/users/" + user.id}>
+                    <Link href={"/rhodium/users/" + user.id}>
                       {user.phone_number}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Link href={"/dashboard/users/" + user.id}>
+                    <Link href={"/rhodium/users/" + user.id}>
                       {new Date(user.createdAt).toLocaleDateString("fr-FR", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
                     </Link>
-                  </TableCell>
-
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <EllipsisVertical />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>
-                          <ExternalLink /> Ouvrir
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Ban /> Bloquer
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Trash />
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}

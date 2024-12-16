@@ -170,13 +170,11 @@ export default async function Page({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/rhopay">Accueil</BreadcrumbLink>
+            <BreadcrumbLink href="/rhopay">Accueil</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/rhopay/users">
-              Utilisateurs
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/rhopay/users">Utilisateurs</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

@@ -128,7 +128,7 @@ export default async function UsersList({
                 <TableCell className="font-medium">
                   {user.avatar ? (
                     <Link
-                      href={"/dashboard/rhopay/users/" + user.id}
+                      href={"/rhopay/users/" + user.id}
                       className="block w-14 h-14 rounded-full relative"
                     >
                       <Image
@@ -147,22 +147,20 @@ export default async function UsersList({
                   )}
                 </TableCell>
                 <TableCell className="font-medium">
-                  <Link href={"/dashboard/rhopay/users/" + user.id}>
+                  <Link href={"/rhopay/users/" + user.id}>
                     {user.firstname} {user.lastname}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link href={"/dashboard/rhopay/users/" + user.id}>
-                    {user.email}
-                  </Link>
+                  <Link href={"/rhopay/users/" + user.id}>{user.email}</Link>
                 </TableCell>
                 <TableCell>
-                  <Link href={"/dashboard/rhopay/users/" + user.id}>
+                  <Link href={"/rhopay/users/" + user.id}>
                     {user.phone_number}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link href={"/dashboard/rhopay/users/" + user.id}>
+                  <Link href={"/rhopay/users/" + user.id}>
                     {new Date(user.createdAt).toLocaleDateString("fr-FR", {
                       month: "short",
                       day: "numeric",

@@ -38,10 +38,10 @@ export default function DashboardSelect() {
       {isOpen && (
         <div className="absolute w-full left-0 p-2 bg-white z-40 space-y-1 rounded-lg border-gray-900">
           <Link
-            href="/dashboard/rhodium"
+            href="/rhodium"
             className={
               "w-full h-full flex items-center space-x-2 hover:bg-dark px-3 py-2 rounded-md " +
-              (pathname.startsWith("/dashboard/rhodium") ? "bg-darkLight" : "")
+              (pathname.startsWith("/rhodium") ? "bg-darkLight" : "")
             }
             onClick={() => setIsOpen(false)}
           >
@@ -49,18 +49,16 @@ export default function DashboardSelect() {
               color="#FFF"
               size={20}
               className={
-                pathname.startsWith("/dashboard/rhodium")
-                  ? "opacity-100"
-                  : "opacity-0"
+                pathname.startsWith("/rhodium") ? "opacity-100" : "opacity-0"
               }
             />
             <p className="text-white">Rhodium</p>
           </Link>
           <Link
-            href="/dashboard/rhopay"
+            href="/rhopay"
             className={
               "w-full h-full flex items-center space-x-2 hover:bg-gray-900/50 px-3 py-2 rounded-md " +
-              (pathname.startsWith("/dashboard/rhopay") ? "bg-gray-900/50" : "")
+              (pathname.startsWith("/rhopay") ? "bg-gray-900/50" : "")
             }
             onClick={() => setIsOpen(false)}
           >
@@ -68,9 +66,7 @@ export default function DashboardSelect() {
               color="#FFF"
               size={20}
               className={
-                pathname.startsWith("/dashboard/rhopay")
-                  ? "opacity-100"
-                  : "opacity-0"
+                pathname.startsWith("/rhopay") ? "opacity-100" : "opacity-0"
               }
             />
             <p className="text-dark">Rhopay</p>

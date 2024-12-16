@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -57,7 +57,7 @@ export const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => <>{row.getValue("id")}</>,
+    cell: ({ row }) => <span>{row.getValue("id")}</span>,
   },
   {
     accessorKey: "head",
@@ -72,7 +72,7 @@ export const columns: ColumnDef<Event>[] = [
       return (
         <Link
           className="flex items-center gap-2 group"
-          href={"/dashboard/rhodium/events/" + row.getValue("id")}
+          href={"/rhodium/events/" + row.getValue("id")}
         >
           {cover ? (
             <div className="relative w-24 h-16 rounded overflow-hidden">

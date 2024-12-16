@@ -19,9 +19,9 @@ export default function DashboardTypeSelect({
       defaultValue={defaultType}
       onValueChange={(value: string) => {
         if (value === "rhodium") {
-          window.location.href = "/dashboard/rhodium";
+          window.location.href = "/rhodium";
         } else {
-          window.location.href = "/dashboard/rhopay";
+          window.location.href = "/rhopay";
         }
       }}
     >

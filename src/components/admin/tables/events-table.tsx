@@ -234,13 +234,35 @@ export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
             }}
           >
             <SelectTrigger className="w-[450px]">
-              <SelectValue placeholder="Tous les évènements" />
+              <SelectValue placeholder="Privés et Publics" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">Privé et Public</SelectItem>
+                <SelectItem value="free">Publics</SelectItem>
+                <SelectItem value="paid">Privés</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            onValueChange={(value) => {
+              if (value === "all") {
+                table.getColumn("hasCost")?.setFilterValue(undefined);
+              } else if (value === "free") {
+                table.getColumn("hasCost")?.setFilterValue(true);
+              } else if (value === "paid") {
+                table.getColumn("hasCost")?.setFilterValue(false);
+              }
+            }}
+          >
+            <SelectTrigger className="w-[450px]">
+              <SelectValue placeholder="Gratuits et payants" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="all">Tous les évènements</SelectItem>
-                <SelectItem value="free">Gratuit</SelectItem>
-                <SelectItem value="paid">Payant</SelectItem>
+                <SelectItem value="free">Gratuits</SelectItem>
+                <SelectItem value="paid">Payants</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

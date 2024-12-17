@@ -192,17 +192,19 @@ export default async function page({
                   de tickets pour cet évènement
                 </span>
               </div>
-              <Table className="mb-24">
+              <Table className="mb-24 border">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Categorie ticket</TableHead>
+                    <TableHead>#</TableHead>
+                    <TableHead>Catégorie ticket</TableHead>
                     <TableHead>Quantité de tickets</TableHead>
                     <TableHead>Prix du ticket</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tickets.map((ticket) => (
+                  {tickets.map((ticket, i) => (
                     <TableRow key={ticket.category}>
+                      <TableCell className="font-medium">{i + 1}</TableCell>
                       <TableCell className="font-medium">Standard</TableCell>
                       <TableCell className="font-medium">120</TableCell>
                       <TableCell className="font-medium">5 000 XAF</TableCell>
@@ -226,6 +228,12 @@ export default async function page({
                               <Input placeholder="Quantité" type="number" />
                               <Input placeholder="Prix" type="number" />
                             </div>
+                            <div className="flex gap-2 my-4 items-center">
+                              <Checkbox />
+                              <span className="text-sm">
+                                Je confirme vouloir modifier ce ticket
+                              </span>
+                            </div>
                             <Button>Modifier</Button>
                           </DialogContent>
                         </Dialog>
@@ -245,9 +253,13 @@ export default async function page({
                                 Cette action est irréversible.
                               </DialogDescription>
                             </DialogHeader>
-                            <div className="mt-4">
-                              <Button className="w-full">Supprimer</Button>
+                            <div className="flex gap-2 my-4 items-center">
+                              <Checkbox />
+                              <span className="text-sm">
+                                Je confirme vouloir supprimer ce ticket
+                              </span>
                             </div>
+                            <Button>Supprimer</Button>
                           </DialogContent>
                         </Dialog>
                       </TableCell>
@@ -257,28 +269,127 @@ export default async function page({
               </Table>
             </TabsContent>
             <TabsContent value="sold_tickets">
-              <div className="flex flex-col gap-2 mb-10">
-                <span className="text-2xl font-bold">
-                  Tickets vendus pour cet évènement
-                </span>
-                <span>
-                  Ici vous pouvez voir la liste des tickets vendus pour cet
-                  évènement
-                </span>
+              <div className="flex gap-4">
+                <div className="w-1/2 border text-sm p-8 rounded flex flex-col bg-gray-50 shadow-sm justify-between gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span>Montant généré</span>
+                      </div>
+                      <span className="font-bold text-2xl text-green-700">
+                        8 500 XAF
+                      </span>
+                    </div>
+                    <hr className="mt-4" />
+                    <div className="flex items-center justify-between">
+                      <span>12 Tickets GOLDEN vendus</span>
+                      <span> 6000 XAF</span>
+                    </div>
+                    <hr />
+                    <div className="flex items-center justify-between">
+                      <span>02 Tickets STANDARD vendus</span>
+                      <span>1000 XAF</span>
+                    </div>
+                    <hr />
+                    <div className="flex items-center justify-between">
+                      <span>02 Tickets VIP vendus</span>
+                      <span>1000 XAF</span>
+                    </div>
+                    <hr />
+                    <div className="flex items-center justify-between">
+                      <span>01 Tickets VVIP vendus</span>
+                      <span>500 XAF</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Tickets scannés : 0</span>
+                    <span>Absents : 0</span>
+                  </div>
+                </div>
+                <div className="w-1/2 border text-sm p-8 rounded flex flex-col bg-gray-50 shadow-sm gap-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span>Montant déjà payé</span>
+                    </div>
+                    <span className="font-bold text-2xl text-red-600">
+                      5 000 XAF
+                    </span>
+                  </div>
+                  <hr className="mt-4" />
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span>Montant restant</span>
+                    </div>
+                    <span className="font-bold text-2xl text-blue-800">
+                      3 500 XAF
+                    </span>
+                  </div>
+                  <hr className="mt-4" />
+                  <div className="flex flex-col gap-2 mb-4">
+                    <span className="font-semibold">Procéder au paiement</span>
+                    <span className="text-sm">
+                      Le virement sera éffectué sur le portefeuille electronique
+                      de l&apos;organisateur de l&apos;évènement
+                    </span>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="w-full">Payer maintenant</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>
+                          Payer l&apos;organisateur d&apos;évènement
+                        </DialogTitle>
+                        <DialogDescription>
+                          Vous êtes sur le point de payer cet organisateur
+                          d&apos;évènement
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex flex-col gap-2 mt-4">
+                        <Input
+                          placeholder="Montant à payer"
+                          type="number"
+                          max={3500}
+                        />
+                        <Select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Opérateur" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="accepted">Airtel</SelectItem>
+                            <SelectItem value="pending">MTN</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex gap-2 my-4 items-center">
+                        <Checkbox />
+                        <span className="text-sm">
+                          Je confirme vouloir payer l&apos;organisateur de cet
+                          évènement
+                        </span>
+                      </div>
+                      <Button>Payer maintenant</Button>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
-              <Table className="mb-24">
+
+              <Table className="mb-24 mt-10 border rounded">
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="py-4">#</TableHead>
                     <TableHead>Acheteur</TableHead>
-                    <TableHead>Categorie</TableHead>
+                    <TableHead>Catégorie</TableHead>
                     <TableHead>Prix</TableHead>
                     <TableHead>Date de vente</TableHead>
                     <TableHead>Scanné</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {event.attributes.tickets_generated?.data.map((ticket) => (
+                  {event.attributes.tickets_generated?.data.map((ticket, i) => (
                     <TableRow key={ticket.id}>
+                      <TableCell className="font-medium">{i + 1}</TableCell>
                       <TableCell className="font-medium">
                         Nom de l&apos;acheteur
                       </TableCell>

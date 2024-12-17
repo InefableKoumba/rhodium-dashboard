@@ -3,7 +3,6 @@ import {
   CalendarDays,
   DollarSign,
   ExternalLink,
-  MoveRight,
   Users,
 } from "lucide-react";
 

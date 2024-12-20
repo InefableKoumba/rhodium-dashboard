@@ -9,12 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -30,15 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserInterface } from "@/interfaces/interfaces";
-import {
-  ArrowDownToLine,
-  Ban,
-  CalendarIcon,
-  EllipsisVertical,
-  ExternalLink,
-  Search,
-  Trash,
-} from "lucide-react";
+import { ArrowDownToLine, CalendarIcon, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";

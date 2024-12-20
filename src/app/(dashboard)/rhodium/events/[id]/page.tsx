@@ -276,8 +276,14 @@ export default async function page({
                       <div>
                         <span>Montant généré</span>
                       </div>
+                      <span className="font-bold text-2xl">8 500 XAF</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span>Montant à payer (-10% commissions)</span>
+                      </div>
                       <span className="font-bold text-2xl text-green-700">
-                        8 500 XAF
+                        7 650 XAF
                       </span>
                     </div>
                     <hr className="mt-4" />
@@ -321,7 +327,7 @@ export default async function page({
                       <span>Montant restant</span>
                     </div>
                     <span className="font-bold text-2xl text-blue-800">
-                      3 500 XAF
+                      2 650 XAF
                     </span>
                   </div>
                   <hr className="mt-4" />
@@ -350,7 +356,7 @@ export default async function page({
                         <Input
                           placeholder="Montant à payer"
                           type="number"
-                          max={3500}
+                          max={2650}
                         />
                         <Select>
                           <SelectTrigger className="w-full">

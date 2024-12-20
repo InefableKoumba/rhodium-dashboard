@@ -13,8 +13,12 @@ import {
   CalendarDays,
   ChartArea,
   ChartNoAxesCombined,
+  DollarSign,
+  History,
   House,
+  Info,
   LayoutDashboard,
+  Settings,
   Tickets,
   Users,
 } from "lucide-react";
@@ -84,6 +88,62 @@ export default function SidebarNavigation() {
             >
               <Users size={20} />
               <span>Parrainages</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/ads"
+              className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/ads" ||
+                pathname.startsWith("/rhodium/ads")
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <Info size={20} />
+              <span>Publicités</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/agents"
+              className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/agents" ||
+                pathname.startsWith("/rhodium/agents")
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <Users size={20} />
+              <span>Agents</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/earnings"
+              className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/earnings" ||
+                pathname.startsWith("/rhodium/earnings")
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <DollarSign size={20} />
+              <span>Bénéfices</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/settings"
+              className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/settings" ||
+                pathname.startsWith("/rhodium/settings")
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <Settings size={20} />
+              <span>Paramètres</span>
             </Link>
           </SidebarMenuItem>
           {/* <SidebarMenuItem>

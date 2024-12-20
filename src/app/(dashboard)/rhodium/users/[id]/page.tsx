@@ -16,11 +16,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Event,
-  EventResponseInterface,
-  UserInterface,
-} from "@/interfaces/interfaces";
+import { EventResponseInterface, UserInterface } from "@/interfaces/interfaces";
 import Image from "next/image";
 import {
   AlertDialog,

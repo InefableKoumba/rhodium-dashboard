@@ -2,13 +2,7 @@ import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -18,18 +12,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -42,15 +37,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserInterface } from "@/interfaces/interfaces";
 import {
   ArrowDownToLine,
-  Ban,
   CalendarIcon,
   CheckCheck,
   CircleX,
-  EllipsisVertical,
-  ExternalLink,
   Info,
   Search,
-  Trash,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -266,7 +257,7 @@ export default async function page() {
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className="w-[400px] pl-3 text-left font-normal"
+                      className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de parrainage</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -280,7 +271,7 @@ export default async function page() {
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className="w-[400px] pl-3 text-left font-normal"
+                      className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de paiement</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -290,6 +281,17 @@ export default async function page() {
                     <Calendar mode="single" />
                   </PopoverContent>
                 </Popover>
+                <Select>
+                  <SelectTrigger className="w-[480px]">
+                    <SelectValue placeholder="Tous les agents" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agent_1">Agent 1</SelectItem>
+                    <SelectItem value="agent_2">Agent 2</SelectItem>
+                    <SelectItem value="agent_2">Agent 3</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <ExportToExcel
                   data={users.map((user) => ({
                     ...user,
@@ -312,6 +314,8 @@ export default async function page() {
                     <TableHead>Filleul</TableHead>
                     <TableHead>Date de parrainage</TableHead>
                     <TableHead>Date de paiement</TableHead>
+                    <TableHead>Montant</TableHead>
+                    <TableHead>Agent</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -386,29 +390,21 @@ export default async function page() {
                         </TableCell>
                       </TableCell>
                       <TableCell>
-                        <Link href={"/rhodium/users/" + user.id}>
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </Link>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </TableCell>
                       <TableCell>
-                        <Link href={"/rhodium/users/" + user.id}>
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </Link>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </TableCell>
+                      <TableCell>100 XAF</TableCell>
+                      <TableCell>Nom de l&apos;agent</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -435,7 +431,7 @@ export default async function page() {
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className="w-[400px] pl-3 text-left font-normal"
+                      className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de parrainage</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -449,7 +445,7 @@ export default async function page() {
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className="w-[400px] pl-3 text-left font-normal"
+                      className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de rejet</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -459,6 +455,16 @@ export default async function page() {
                     <Calendar mode="single" />
                   </PopoverContent>
                 </Popover>
+                <Select>
+                  <SelectTrigger className="w-[480px]">
+                    <SelectValue placeholder="Tous les agents" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agent_1">Agent 1</SelectItem>
+                    <SelectItem value="agent_2">Agent 2</SelectItem>
+                    <SelectItem value="agent_2">Agent 3</SelectItem>
+                  </SelectContent>
+                </Select>
                 <ExportToExcel
                   data={users.map((user) => ({
                     ...user,
@@ -481,13 +487,14 @@ export default async function page() {
                     <TableHead>Filleul</TableHead>
                     <TableHead>Date de parrainage</TableHead>
                     <TableHead>Date de rejet</TableHead>
+                    <TableHead>Agent</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        <TableCell className="flex gap-2 items-center">
+                        <div className="flex gap-2 items-center">
                           {user.avatar ? (
                             <div className="w-14 h-14 rounded-full relative">
                               <Image
@@ -518,10 +525,10 @@ export default async function page() {
                               {user.phone_number}
                             </Link>
                           </div>
-                        </TableCell>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <TableCell className="flex gap-2 items-center">
+                        <div className="flex gap-2 items-center">
                           {user.avatar ? (
                             <div className="w-14 h-14 rounded-full relative">
                               <Image
@@ -552,32 +559,23 @@ export default async function page() {
                               {user.phone_number}
                             </Link>
                           </div>
-                        </TableCell>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <Link href={"/rhodium/users/" + user.id}>
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </Link>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </TableCell>
                       <TableCell>
-                        <Link href={"/rhodium/users/" + user.id}>
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </Link>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </TableCell>
+                      <TableCell>Agent 2</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

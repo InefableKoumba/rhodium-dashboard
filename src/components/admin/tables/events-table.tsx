@@ -53,7 +53,7 @@ import {
 } from "@tanstack/react-table";
 import { Event } from "@/interfaces/interfaces";
 
-export const columns: ColumnDef<Event>[] = [
+const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "head",
     accessorFn: (row) => ({
@@ -92,7 +92,7 @@ export const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "title",
     header: "Titre",
-    cell: ({ row }) => <div className="w-[240px]">{row.getValue("title")}</div>,
+    cell: ({ row }) => <div className="w-[200px]">{row.getValue("title")}</div>,
   },
   {
     accessorKey: "creator",
@@ -135,7 +135,17 @@ export const columns: ColumnDef<Event>[] = [
     header: "Accès",
     cell: ({ row }) => {
       const hasCost = row.getValue("hasCost");
-      return <>{hasCost ? "Gratuit" : "Payant"}</>;
+      if (!hasCost)
+        return (
+          <div className="bg-orange-600 whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center">
+            Payant
+          </div>
+        );
+      return (
+        <div className="border whitespace-nowrap rounded-full text-sm px-3 py-1 flex items-center justify-center">
+          Gratuit
+        </div>
+      );
     },
   },
   {
@@ -181,7 +191,15 @@ export const columns: ColumnDef<Event>[] = [
   },
 ];
 
-export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
+export default function EventsTable({
+  events,
+  showAgentFilter,
+  showValidatedFilter,
+}: Readonly<{
+  events: Event[];
+  showAgentFilter?: boolean;
+  showValidatedFilter?: boolean;
+}>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -222,6 +240,34 @@ export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
               placeholder="Rechercher un évènement"
             />
           </div>
+          {showValidatedFilter && (
+            <Select>
+              <SelectTrigger className="w-[450px]">
+                <SelectValue placeholder="Validés et En attente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">Validés et En attente</SelectItem>
+                  <SelectItem value="free">Validés</SelectItem>
+                  <SelectItem value="paid">En attente</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+          {showAgentFilter && (
+            <Select>
+              <SelectTrigger className="w-[450px]">
+                <SelectValue placeholder="Tous les agents" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">Tous les agents</SelectItem>
+                  <SelectItem value="free">Inefable KOUMBA</SelectItem>
+                  <SelectItem value="paid">Franz OSSETE</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
           <Select
             onValueChange={(value) => {
               if (value === "all") {
@@ -305,9 +351,21 @@ export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
         </div>
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map((headerGroup, i) => (
               <TableRow key={headerGroup.id}>
+                <TableHead key={i + 1} className="whitespace-nowrap">
+                  #
+                </TableHead>
                 {headerGroup.headers.map((header) => {
+                  if (
+                    !showValidatedFilter &&
+                    header.column.id === "isValidatedByAdmin"
+                  )
+                    return (
+                      <TableHead key={header.id} className="whitespace-nowrap">
+                        Rejeté par
+                      </TableHead>
+                    );
                   return (
                     <TableHead key={header.id} className="whitespace-nowrap">
                       {header.isPlaceholder
@@ -324,19 +382,31 @@ export default function EventsTable({ events }: Readonly<{ events: Event[] }>) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, i) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  <TableCell key={i + 1}>{i + 1}</TableCell>
+                  {row.getVisibleCells().map((cell) => {
+                    if (
+                      cell.column.id === "isValidatedByAdmin" &&
+                      !showValidatedFilter
+                    )
+                      return (
+                        <TableCell key={cell.id}>
+                          Nom de l&apos;agent ayant rejeté
+                        </TableCell>
+                      );
+                    return (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

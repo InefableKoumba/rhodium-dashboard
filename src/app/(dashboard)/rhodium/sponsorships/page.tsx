@@ -37,11 +37,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserInterface } from "@/interfaces/interfaces";
 import {
   ArrowDownToLine,
+  Bell,
   CalendarIcon,
   CheckCheck,
   CircleX,
+  DollarSign,
   Info,
   Search,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,7 +56,49 @@ export default async function page() {
 
   return (
     <div className="p-8">
-      <Tabs defaultValue="unpaid" className="w-full mt-12">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total parrainages
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">4830</div>
+            <p className="text-xs text-muted-foreground">
+              Nombre total de parrainages
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Montant déjà payé
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">534 200 XAF</div>
+            <p className="text-xs text-muted-foreground">
+              Dépenses éffectuées pour les parrainages
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Reste à payer</CardTitle>
+            <Bell className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">2800 XAF</div>
+            <p className="text-xs text-muted-foreground">
+              Montant restant à payer pour les parrainages
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <Tabs defaultValue="unpaid" className="w-full mt-8">
         <TabsList>
           <TabsTrigger value="unpaid" className="gap-2 px-6">
             <Info color="#333" size={20} />
@@ -228,6 +273,37 @@ export default async function page() {
                               </span>
                             </div>
                             <Button>Confirmer le paiement</Button>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              className="rounded-full"
+                              variant={"destructive"}
+                            >
+                              Rejeter
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>
+                                Voulez-vous vraiment rejeter ce parrainage ?
+                              </DialogTitle>
+                              <DialogDescription>
+                                Vous êtes sur le point de rejeter ce parrainage.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="flex gap-2 my-4 items-center">
+                              <Checkbox />
+                              <span className="text-sm">
+                                Je confirme vouloir rejeter ce parrainage
+                              </span>
+                            </div>
+                            <Button variant={"destructive"}>
+                              Confirmer le rejet
+                            </Button>
                           </DialogContent>
                         </Dialog>
                       </TableCell>
@@ -485,6 +561,7 @@ export default async function page() {
                   <TableRow>
                     <TableHead>Parrain</TableHead>
                     <TableHead>Filleul</TableHead>
+                    <TableHead>Montant</TableHead>
                     <TableHead>Date de parrainage</TableHead>
                     <TableHead>Date de rejet</TableHead>
                     <TableHead>Agent</TableHead>
@@ -561,6 +638,7 @@ export default async function page() {
                           </div>
                         </div>
                       </TableCell>
+                      <TableCell>100 XAF</TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString("fr-FR", {
                           month: "short",

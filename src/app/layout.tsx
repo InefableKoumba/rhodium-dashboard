@@ -10,7 +10,7 @@ export default function Layout({
       <body className="antialiased bg-gray-50 dark:bg-[#111]">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

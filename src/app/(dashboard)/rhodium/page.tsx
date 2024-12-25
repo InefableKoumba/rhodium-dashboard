@@ -23,10 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import {
-  EventResponseInterface,
-  TicketInterface,
-} from "@/interfaces/interfaces";
+import { EventResponseInterface } from "@/interfaces/interfaces";
 import { strapiSdk } from "@/strapi";
 
 export default async function Page() {

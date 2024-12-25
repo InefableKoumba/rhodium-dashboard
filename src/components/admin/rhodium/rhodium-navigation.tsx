@@ -17,6 +17,7 @@ import {
   History,
   House,
   Info,
+  Landmark,
   LayoutDashboard,
   Settings,
   Tickets,
@@ -130,6 +131,20 @@ export default function SidebarNavigation() {
             >
               <DollarSign size={20} />
               <span>Bénéfices</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/mobile-money"
+              className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/mobile-money" ||
+                (pathname && pathname.startsWith("/rhodium/mobile-money"))
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <Landmark size={20} />
+              <span>Mobile Money</span>
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>

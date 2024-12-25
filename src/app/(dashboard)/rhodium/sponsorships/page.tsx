@@ -74,10 +74,6 @@ export default async function page() {
         },
       }
     );
-
-    console.log("Response status");
-    console.log(response.status);
-
     if (response.ok) {
       const token = (await response.json())["access_token"];
 

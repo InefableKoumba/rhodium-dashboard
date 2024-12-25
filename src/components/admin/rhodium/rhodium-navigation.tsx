@@ -53,7 +53,7 @@ export default function SidebarNavigation() {
               href="/rhodium/events"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/events" ||
-                pathname.startsWith("/rhodium/events")
+                (pathname && pathname.startsWith("/rhodium/events"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -67,7 +67,7 @@ export default function SidebarNavigation() {
               href="/rhodium/users"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/users" ||
-                pathname.startsWith("/rhodium/users")
+                (pathname && pathname.startsWith("/rhodium/users"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -81,7 +81,7 @@ export default function SidebarNavigation() {
               href="/rhodium/sponsorships"
               className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/sponsorships" ||
-                pathname.startsWith("/rhodium/sponsorships")
+                (pathname && pathname.startsWith("/rhodium/sponsorships"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -95,7 +95,7 @@ export default function SidebarNavigation() {
               href="/rhodium/ads"
               className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/ads" ||
-                pathname.startsWith("/rhodium/ads")
+                (pathname && pathname.startsWith("/rhodium/ads"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -109,7 +109,7 @@ export default function SidebarNavigation() {
               href="/rhodium/agents"
               className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/agents" ||
-                pathname.startsWith("/rhodium/agents")
+                (pathname && pathname.startsWith("/rhodium/agents"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -123,7 +123,7 @@ export default function SidebarNavigation() {
               href="/rhodium/earnings"
               className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/earnings" ||
-                pathname.startsWith("/rhodium/earnings")
+                (pathname && pathname.startsWith("/rhodium/earnings"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}
@@ -137,7 +137,7 @@ export default function SidebarNavigation() {
               href="/rhodium/settings"
               className={`text-gray-400 relative flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
                 pathname === "/rhodium/settings" ||
-                pathname.startsWith("/rhodium/settings")
+                (pathname && pathname.startsWith("/rhodium/settings"))
                   ? "bg-darkLight text-white"
                   : "hover:bg-darkLight/50"
               }`}

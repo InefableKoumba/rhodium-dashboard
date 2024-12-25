@@ -98,6 +98,10 @@ export default async function Page() {
               <X color="#333" size={20} />
               Evènements rejetés
             </TabsTrigger>
+            <TabsTrigger value="trashed_events" className="gap-2 px-6">
+              <X color="#333" size={20} />
+              Evènements dans la corbeille
+            </TabsTrigger>
           </TabsList>
           <div className="my-8" />
           <TabsContent value="current_events">

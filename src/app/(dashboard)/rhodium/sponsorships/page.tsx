@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,65 @@ import React from "react";
 export default async function page() {
   const response = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
   const users = (await response.json()) as UserInterface[];
+
+  const handlePayNow = async () => {
+    "use server";
+    const response = await fetch(
+      "https://proxy.momoapi.mtn.com/disbursement/token/",
+      {
+        method: "POST",
+        headers: {
+          "Ocp-Apim-Subscription-Key":
+            process.env.DISBURSEMENT_SUBSCRIPTION_PRIMARY_KEY!,
+          Authorization:
+            "Basic " +
+            btoa(
+              process.env.DISBURSEMENT_API_USER +
+                ":" +
+                process.env.DISBURSEMENT_API_KEY
+            ),
+        },
+      }
+    );
+
+    console.log("Response status");
+    console.log(response.status);
+
+    if (response.ok) {
+      const token = (await response.json())["access_token"];
+
+      const res = await fetch(
+        "https://proxy.momoapi.mtn.com/disbursement/v1_0/deposit",
+        {
+          method: "POST",
+          headers: {
+            "Ocp-Apim-Subscription-Key":
+              process.env.DISBURSEMENT_SUBSCRIPTION_PRIMARY_KEY!,
+            Authorization: "Bearer " + token,
+            "X-Target-Environment": "mtncongo",
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "X-Reference-Id": process.env.DISBURSEMENT_API_USER!,
+          },
+          body: JSON.stringify({
+            amount: "10",
+            currency: "XAF",
+            externalId: "1234",
+            payee: {
+              partyIdType: "MSISDN",
+              partyId: "242068801986",
+            },
+            payerMessage: "Paiement parrainage",
+            payeeNote: "Paiement parrainage",
+          }),
+        }
+      );
+
+      console.log(res.status);
+
+      console.log(await res.json());
+    }
+  };
 
   return (
     <div className="p-8">
@@ -251,9 +311,11 @@ export default async function page() {
                       <TableCell>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button className="rounded-full">
-                              Payer 100 XAF
-                            </Button>
+                            <form action={handlePayNow}>
+                              <Button type="submit" className="rounded-full">
+                                Payer 100 XAF
+                              </Button>
+                            </form>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>

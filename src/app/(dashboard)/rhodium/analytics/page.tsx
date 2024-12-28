@@ -1,5 +1,3 @@
-import TicketsChart from "@/components/admin/analytics/charts/tickets";
-import UsersChart from "@/components/admin/analytics/charts/users";
 import React from "react";
 
 const eventsData = [

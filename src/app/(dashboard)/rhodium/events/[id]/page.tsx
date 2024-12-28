@@ -15,6 +15,7 @@ import {
   TicketCheck,
   Trash,
   Users,
+  X,
 } from "lucide-react";
 import {
   Table,
@@ -41,6 +42,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+
+export const dynamic = "force-dynamic";
 
 const tickets = [
   {
@@ -120,12 +124,42 @@ export default async function page({
             }
           />
           <div className="absolute left-0 w-full h-full bg-gradient-to-b from-transparent to-[#000000bb]"></div>
-          <div className="absolute right-12 bottom-6">
+          <div className="absolute right-12 bottom-6 flex gap-2">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="bg-darkLight text-white hover:bg-darkLight/90">
+                <Button variant={"destructive"} className=" text-white ">
+                  <X />
+                  Réjeter
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Voulez-vous vraiment rejeter cet évènement?
+                  </DialogTitle>
+                  <DialogDescription>
+                    Vous êtes sur le point de rejeter cet évènement. Les
+                    utilisateurs pourront voir et acheter des tickets pour cet
+                    évènement.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="my-4 flex flex-col gap-4">
+                  <Textarea placeholder="Motif du rejet" rows={6}></Textarea>
+                  <div className="flex gap-2 items-center">
+                    <Checkbox />
+                    <span className="text-sm">
+                      Je confirme vouloir rejeter cet évènement
+                    </span>
+                  </div>
+                </div>
+                <Button variant={"destructive"}>Rejeter</Button>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="text-white hover:bg-dark/90">
                   <Check />
-                  Valider l&apos;évènement
+                  Valider
                 </Button>
               </DialogTrigger>
               <DialogContent>

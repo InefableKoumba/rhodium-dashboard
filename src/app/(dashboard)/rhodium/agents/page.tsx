@@ -1,3 +1,4 @@
+import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -56,6 +57,8 @@ const agents = [
   },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default async function page() {
   return (
     <div className="p-8">
@@ -110,7 +113,7 @@ export default async function page() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" />
+                <CalendarRange />
               </PopoverContent>
             </Popover>
             <ExportToExcel

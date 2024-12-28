@@ -1,6 +1,6 @@
+import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -38,6 +38,8 @@ import {
   Ticket,
 } from "lucide-react";
 import React from "react";
+
+export const dynamic = "force-dynamic";
 
 const events = [
   {
@@ -265,7 +267,7 @@ export default async function page() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" />
+                <CalendarRange />
               </PopoverContent>
             </Popover>
             <ExportToExcel

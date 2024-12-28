@@ -14,6 +14,7 @@ import {
   ChartArea,
   ChartNoAxesCombined,
   DollarSign,
+  HandCoins,
   History,
   House,
   Info,
@@ -89,6 +90,20 @@ export default function SidebarNavigation() {
             >
               <Users size={20} />
               <span>Parrainages</span>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/rhodium/commissions"
+              className={`text-gray-400 flex space-x-2 items-center p-2 py-3 rounded-r-full transition-colors duration-500 ${
+                pathname === "/rhodium/commissions" ||
+                (pathname && pathname.startsWith("/rhodium/commissions"))
+                  ? "bg-darkLight text-white"
+                  : "hover:bg-darkLight/50"
+              }`}
+            >
+              <HandCoins size={20} />
+              <span>Commissions</span>
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>

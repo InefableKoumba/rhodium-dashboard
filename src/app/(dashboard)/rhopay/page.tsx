@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import CalendarRange from "@/components/common/calendarRange";
 
 const transactions = [
   {
@@ -256,7 +257,7 @@ export default async function Page() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" />
+                  <CalendarRange />
                 </PopoverContent>
               </Popover>
               <Button>Exporter</Button>

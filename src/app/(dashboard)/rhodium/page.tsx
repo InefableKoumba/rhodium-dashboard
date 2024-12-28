@@ -30,6 +30,7 @@ export default async function Page() {
   const eventsCollection = strapiSdk.collection("events");
   const allEvents = await eventsCollection.find({
     populate: "*",
+    sort: "createdAt:desc",
   });
   const events: EventResponseInterface[] = allEvents.data as any;
 

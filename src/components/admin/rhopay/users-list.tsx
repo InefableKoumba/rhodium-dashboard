@@ -50,6 +50,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserInterface } from "@/interfaces/interfaces";
+import CalendarRange from "@/components/common/calendarRange";
 
 export default async function UsersList({
   isSponsorshipList = false,
@@ -104,7 +105,7 @@ export default async function UsersList({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" />
+              <CalendarRange />
             </PopoverContent>
           </Popover>
           <Button>

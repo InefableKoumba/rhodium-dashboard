@@ -1,3 +1,4 @@
+import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function page() {
   const response = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
   const users = (await response.json()) as UserInterface[];
@@ -59,7 +62,7 @@ export default async function page() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" />
+                <CalendarRange />
               </PopoverContent>
             </Popover>
             <ExportToExcel

@@ -67,6 +67,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UsersList from "@/components/admin/rhopay/users-list";
 import UserInfoFormInput from "@/components/admin/rhopay/user-info-form-input";
+import CalendarRange from "@/components/common/calendarRange";
 
 const transactions: {
   id: number;
@@ -292,7 +293,7 @@ export default async function Page({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" />
+                    <CalendarRange />
                   </PopoverContent>
                 </Popover>
                 <Button>Exporter</Button>

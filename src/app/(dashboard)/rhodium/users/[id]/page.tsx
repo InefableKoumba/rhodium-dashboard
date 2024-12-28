@@ -34,6 +34,8 @@ import UsersList from "@/components/admin/rhopay/users-list";
 import UserInfoFormInput from "@/components/admin/rhopay/user-info-form-input";
 import EventsTable from "@/components/admin/tables/events-table";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page({
   params,
 }: Readonly<{

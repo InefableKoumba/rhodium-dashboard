@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import CalendarRange from "@/components/common/calendarRange";
 
 const transactions: {
   id: number;
@@ -215,7 +216,7 @@ export default function Page() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" />
+                <CalendarRange />
               </PopoverContent>
             </Popover>
             <Button>Exporter</Button>

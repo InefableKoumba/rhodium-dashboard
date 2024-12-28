@@ -2,20 +2,19 @@ import EventsTable from "@/components/admin/tables/events-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EventResponseInterface } from "@/interfaces/interfaces";
 import { Calendar, Calendar1, Clock, DollarSign, Info, X } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import { strapiSdk } from "@/strapi";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const response = await fetch(process.env.NEXT_API_URL + "/events?populate=*");
-  const { data: events } = (await response.json()) as {
-    data: EventResponseInterface[];
-  };
+  const eventsCollection = strapiSdk.collection("events");
+  const allEvents = await eventsCollection.find({
+    populate: "*",
+    sort: "createdAt:desc",
+  });
+  const events: EventResponseInterface[] = allEvents.data as any;
 
   if (events) {
     return (

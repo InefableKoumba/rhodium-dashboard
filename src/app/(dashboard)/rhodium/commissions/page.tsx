@@ -115,14 +115,14 @@ export default async function page() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total parrainages
+              Total commissions
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">4830</div>
             <p className="text-xs text-muted-foreground">
-              Nombre total de parrainages
+              Nombre total de commissions
             </p>
           </CardContent>
         </Card>
@@ -136,7 +136,7 @@ export default async function page() {
           <CardContent>
             <div className="text-2xl font-bold">534 200 XAF</div>
             <p className="text-xs text-muted-foreground">
-              Dépenses éffectuées pour les parrainages
+              Dépenses éffectuées pour les commissions
             </p>
           </CardContent>
         </Card>
@@ -148,7 +148,7 @@ export default async function page() {
           <CardContent>
             <div className="text-2xl font-bold">2800 XAF</div>
             <p className="text-xs text-muted-foreground">
-              Montant restant à payer pour les parrainages
+              Montant restant à payer pour les commissions
             </p>
           </CardContent>
         </Card>
@@ -157,22 +157,22 @@ export default async function page() {
         <TabsList>
           <TabsTrigger value="unpaid" className="gap-2 px-6">
             <Info color="#333" size={20} />
-            Non payés
+            Non payées
           </TabsTrigger>
           <TabsTrigger value="paid" className="gap-2 px-6">
             <CheckCheck color="#333" size={20} />
-            Déjà payés
+            Déjà payées
           </TabsTrigger>
           <TabsTrigger value="rejected" className="gap-2 px-6">
             <CircleX color="#333" size={20} />
-            Rejetés
+            Rejetées
           </TabsTrigger>
         </TabsList>
         <TabsContent value="unpaid">
           <Card className="w-full mt-8">
             <CardHeader>
               <CardTitle>
-                Liste des parrainages non payés — {users.length}
+                Liste des commissions non payées — {users.length}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -181,7 +181,7 @@ export default async function page() {
                   <div className="absolute right-4 top-2">
                     <Search color="#333" />
                   </div>
-                  <Input placeholder="Rechercher un parrainage" />
+                  <Input placeholder="Rechercher une commission" />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -189,7 +189,7 @@ export default async function page() {
                       variant={"outline"}
                       className="w-[400px] pl-3 text-left font-normal"
                     >
-                      <span>Date de parrainage</span>
+                      <span>Date de l&apos;achat du ticket</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -216,9 +216,10 @@ export default async function page() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>#</TableHead>
-                    <TableHead>Parrain</TableHead>
-                    <TableHead>Filleul</TableHead>
-                    <TableHead>Date de parrainage</TableHead>
+                    <TableHead>Parrain (Bénéficiaire)</TableHead>
+                    <TableHead>Filleul (Acheteur)</TableHead>
+                    <TableHead>Date de l&apos;achat</TableHead>
+                    <TableHead>Prix de l&apos;achat</TableHead>
                     <TableHead>Payer</TableHead>
                     <TableHead>Rejeter</TableHead>
                     <TableHead>
@@ -230,7 +231,7 @@ export default async function page() {
                   {users.map((user, i) => (
                     <TableRow key={user.id}>
                       <TableCell>{i + 1}</TableCell>
-                      <TableCell className="flex gap-2 items-center">
+                      <TableCell>
                         {user.avatar ? (
                           <div className="w-14 h-14 rounded-full relative">
                             <Image
@@ -263,57 +264,51 @@ export default async function page() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <TableCell className="flex gap-2 items-center">
-                          {user.avatar ? (
-                            <div className="w-14 h-14 rounded-full relative">
-                              <Image
-                                fill
-                                className="rounded-full object-cover"
-                                alt="Event creator image"
-                                src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-14 h-14">
-                              <GeneralAvatar />
-                            </div>
-                          )}
-                          <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
-                              <span className="font-bold">
-                                {user.firstname} {user.lastname}
-                              </span>
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
-                            </Link>
+                        {user.avatar ? (
+                          <div className="w-14 h-14 rounded-full relative">
+                            <Image
+                              fill
+                              className="rounded-full object-cover"
+                              alt="Event creator image"
+                              src={
+                                process.env.NEXT_STORAGE_BUCKET_URL +
+                                user?.avatar.url
+                              }
+                            />
                           </div>
-                        </TableCell>
+                        ) : (
+                          <div className="w-14 h-14">
+                            <GeneralAvatar />
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <Link href={"/rhodium/users/" + user.id}>
+                            <span className="font-bold">
+                              {user.firstname} {user.lastname}
+                            </span>
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.email}
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.phone_number}
+                          </Link>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <Link href={"/rhodium/users/" + user.id}>
-                          {new Date(user.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </Link>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </TableCell>
+                      <TableCell>5 000 XAF</TableCell>
                       <TableCell>
                         <Dialog>
                           <DialogTrigger asChild>
                             <form action={handlePayNow}>
                               <Button type="submit" className="rounded-full">
-                                Payer 100 XAF
+                                Payer 500 XAF
                               </Button>
                             </form>
                           </DialogTrigger>
@@ -323,7 +318,7 @@ export default async function page() {
                                 Voulez-vous vraiment effectuer ce paiement ?
                               </DialogTitle>
                               <DialogDescription>
-                                Vous êtes sur le point de payer 100 XAF pour ce
+                                Vous êtes sur le point de payer 500 XAF pour ce
                                 parrainage en faveur des utilisateurs :{" "}
                                 {user.lastname} {user.firstname}
                               </DialogDescription>
@@ -383,7 +378,7 @@ export default async function page() {
           <Card className="w-full mt-8">
             <CardHeader>
               <CardTitle>
-                Liste des parrainages déjà payés — {users.length}
+                Liste des commissions déjà payées — {users.length}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -392,7 +387,7 @@ export default async function page() {
                   <div className="absolute right-4 top-2">
                     <Search color="#333" />
                   </div>
-                  <Input placeholder="Rechercher un parrainage" />
+                  <Input placeholder="Rechercher une commission" />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -400,12 +395,186 @@ export default async function page() {
                       variant={"outline"}
                       className="w-[480px] pl-3 text-left font-normal"
                     >
-                      <span>Date de parrainage</span>
+                      <span>Date de l&apos;achat</span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <CalendarRange />
+                  </PopoverContent>
+                </Popover>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className="w-[480px] pl-3 text-left font-normal"
+                    >
+                      <span>Date du paiement</span>
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarRange />
+                  </PopoverContent>
+                </Popover>
+                <Select>
+                  <SelectTrigger className="w-[480px]">
+                    <SelectValue placeholder="Tous les agents" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agent_1">Agent 1</SelectItem>
+                    <SelectItem value="agent_2">Agent 2</SelectItem>
+                    <SelectItem value="agent_2">Agent 3</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <ExportToExcel
+                  data={users.map((user) => ({
+                    ...user,
+                    avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
+                      user.avatar?.url as string
+                    ),
+                  }))}
+                  fileName="users"
+                >
+                  <Button>
+                    <ArrowDownToLine size={36} />
+                    Exporter
+                  </Button>
+                </ExportToExcel>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>#</TableHead>
+                    <TableHead>Parrain (Bénéficiaire)</TableHead>
+                    <TableHead>Filleul (Acheteur)</TableHead>
+                    <TableHead>Date de l&apos;achat</TableHead>
+                    <TableHead>Montant</TableHead>
+                    <TableHead>Date du paiement</TableHead>
+                    <TableHead>Commission</TableHead>
+                    <TableHead>Agent</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user, i) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{i + 1}</TableCell>
+                      <TableCell>
+                        {user.avatar ? (
+                          <div className="w-14 h-14 rounded-full relative">
+                            <Image
+                              fill
+                              className="rounded-full object-cover"
+                              alt="Event creator image"
+                              src={
+                                process.env.NEXT_STORAGE_BUCKET_URL +
+                                user?.avatar.url
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14">
+                            <GeneralAvatar />
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <Link href={"/rhodium/users/" + user.id}>
+                            <span className="font-bold">
+                              {user.firstname} {user.lastname}
+                            </span>
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.email}
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.phone_number}
+                          </Link>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {user.avatar ? (
+                          <div className="w-14 h-14 rounded-full relative">
+                            <Image
+                              fill
+                              className="rounded-full object-cover"
+                              alt="Event creator image"
+                              src={
+                                process.env.NEXT_STORAGE_BUCKET_URL +
+                                user?.avatar.url
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14">
+                            <GeneralAvatar />
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <Link href={"/rhodium/users/" + user.id}>
+                            <span className="font-bold">
+                              {user.firstname} {user.lastname}
+                            </span>
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.email}
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.phone_number}
+                          </Link>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell>5000 XAF</TableCell>
+                      <TableCell>
+                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell>500 XAF</TableCell>
+                      <TableCell>Nom de l&apos;agent</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="rejected">
+          <Card className="w-full mt-8">
+            <CardHeader>
+              <CardTitle>
+                Liste des commissions rejetées — {users.length}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-end gap-3 mb-12">
+                <div className="relative w-full">
+                  <div className="absolute right-4 top-2">
+                    <Search color="#333" />
+                  </div>
+                  <Input placeholder="Rechercher une commission" />
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className="w-[480px] pl-3 text-left font-normal"
+                    >
+                      <span>Date de l&apos;achat</span>
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="range" />
                   </PopoverContent>
                 </Popover>
                 <Popover>
@@ -452,11 +621,12 @@ export default async function page() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>#</TableHead>
-                    <TableHead>Parrain</TableHead>
-                    <TableHead>Filleul</TableHead>
-                    <TableHead>Date de parrainage</TableHead>
-                    <TableHead>Date de paiement</TableHead>
+                    <TableHead>Parrain (Bénéficiaire)</TableHead>
+                    <TableHead>Filleul (Acheteur)</TableHead>
+                    <TableHead>Date de l&apos;achat</TableHead>
                     <TableHead>Montant</TableHead>
+                    <TableHead>Date du paiement</TableHead>
+                    <TableHead>Commission</TableHead>
                     <TableHead>Agent</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -464,7 +634,7 @@ export default async function page() {
                   {users.map((user, i) => (
                     <TableRow key={user.id}>
                       <TableCell>{i + 1}</TableCell>
-                      <TableCell className="flex gap-2 items-center">
+                      <TableCell>
                         {user.avatar ? (
                           <div className="w-14 h-14 rounded-full relative">
                             <Image
@@ -497,38 +667,36 @@ export default async function page() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <TableCell className="flex gap-2 items-center">
-                          {user.avatar ? (
-                            <div className="w-14 h-14 rounded-full relative">
-                              <Image
-                                fill
-                                className="rounded-full object-cover"
-                                alt="Event creator image"
-                                src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-14 h-14">
-                              <GeneralAvatar />
-                            </div>
-                          )}
-                          <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
-                              <span className="font-bold">
-                                {user.firstname} {user.lastname}
-                              </span>
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
-                            </Link>
+                        {user.avatar ? (
+                          <div className="w-14 h-14 rounded-full relative">
+                            <Image
+                              fill
+                              className="rounded-full object-cover"
+                              alt="Event creator image"
+                              src={
+                                process.env.NEXT_STORAGE_BUCKET_URL +
+                                user?.avatar.url
+                              }
+                            />
                           </div>
-                        </TableCell>
+                        ) : (
+                          <div className="w-14 h-14">
+                            <GeneralAvatar />
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <Link href={"/rhodium/users/" + user.id}>
+                            <span className="font-bold">
+                              {user.firstname} {user.lastname}
+                            </span>
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.email}
+                          </Link>
+                          <Link href={"/rhodium/users/" + user.id}>
+                            {user.phone_number}
+                          </Link>
+                        </div>
                       </TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString("fr-FR", {
@@ -537,6 +705,7 @@ export default async function page() {
                           year: "numeric",
                         })}
                       </TableCell>
+                      <TableCell>5000 XAF</TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString("fr-FR", {
                           month: "short",
@@ -544,183 +713,8 @@ export default async function page() {
                           year: "numeric",
                         })}
                       </TableCell>
-                      <TableCell>100 XAF</TableCell>
+                      <TableCell>500 XAF</TableCell>
                       <TableCell>Nom de l&apos;agent</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="rejected">
-          <Card className="w-full mt-8">
-            <CardHeader>
-              <CardTitle>
-                Liste des parrainages rejetés — {users.length}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-end gap-3 mb-12">
-                <div className="relative w-full">
-                  <div className="absolute right-4 top-2">
-                    <Search color="#333" />
-                  </div>
-                  <Input placeholder="Rechercher un parrainage" />
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-[480px] pl-3 text-left font-normal"
-                    >
-                      <span>Date de parrainage</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarRange />
-                  </PopoverContent>
-                </Popover>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-[480px] pl-3 text-left font-normal"
-                    >
-                      <span>Date de rejet</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarRange />
-                  </PopoverContent>
-                </Popover>
-                <Select>
-                  <SelectTrigger className="w-[480px]">
-                    <SelectValue placeholder="Tous les agents" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="agent_1">Agent 1</SelectItem>
-                    <SelectItem value="agent_2">Agent 2</SelectItem>
-                    <SelectItem value="agent_2">Agent 3</SelectItem>
-                  </SelectContent>
-                </Select>
-                <ExportToExcel
-                  data={users.map((user) => ({
-                    ...user,
-                    avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
-                      user.avatar?.url as string
-                    ),
-                  }))}
-                  fileName="users"
-                >
-                  <Button>
-                    <ArrowDownToLine size={36} />
-                    Exporter
-                  </Button>
-                </ExportToExcel>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>Parrain</TableHead>
-                    <TableHead>Filleul</TableHead>
-                    <TableHead>Montant</TableHead>
-                    <TableHead>Date de parrainage</TableHead>
-                    <TableHead>Date de rejet</TableHead>
-                    <TableHead>Agent</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user, i) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{i + 1}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 items-center">
-                          {user.avatar ? (
-                            <div className="w-14 h-14 rounded-full relative">
-                              <Image
-                                fill
-                                className="rounded-full object-cover"
-                                alt="Event creator image"
-                                src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-14 h-14">
-                              <GeneralAvatar />
-                            </div>
-                          )}
-                          <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
-                              <span className="font-bold">
-                                {user.firstname} {user.lastname}
-                              </span>
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
-                            </Link>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 items-center">
-                          {user.avatar ? (
-                            <div className="w-14 h-14 rounded-full relative">
-                              <Image
-                                fill
-                                className="rounded-full object-cover"
-                                alt="Event creator image"
-                                src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-14 h-14">
-                              <GeneralAvatar />
-                            </div>
-                          )}
-                          <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
-                              <span className="font-bold">
-                                {user.firstname} {user.lastname}
-                              </span>
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
-                            </Link>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>100 XAF</TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell>Agent 2</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -67,7 +67,7 @@ export default async function page() {
   return (
     <div className="p-8">
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Chiffre d&apos;affaire
@@ -82,7 +82,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bénéfice</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -104,7 +104,7 @@ export default async function page() {
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-4 mt-4">
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total évènements publics
@@ -118,7 +118,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total tickets vendus
@@ -132,7 +132,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Chiffre d&apos;affaire
@@ -146,7 +146,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bénéfice</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -160,7 +160,7 @@ export default async function page() {
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-4 mt-4">
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total évènements privés
@@ -174,7 +174,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total invitations vendues
@@ -188,7 +188,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Chiffre d&apos;affaire
@@ -202,7 +202,7 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bénéfice</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -215,7 +215,7 @@ export default async function page() {
           </CardContent>
         </Card>
       </div>
-      <Card className="w-full mt-8">
+      <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
         <CardHeader>
           <CardTitle>Détails</CardTitle>
           <CardDescription>
@@ -282,7 +282,7 @@ export default async function page() {
           </div>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
                 <TableHead>#</TableHead>
                 <TableHead>Nom de l&apos;évènement</TableHead>
                 <TableHead>Accès</TableHead>
@@ -295,7 +295,7 @@ export default async function page() {
             </TableHeader>
             <TableBody>
               {events.map((event, i) => (
-                <TableRow key={event.id}>
+                <TableRow key={event.id} className="dark:hover:bg-gray-800 dark:border-gray-800">
                   <TableCell>{i + 1}</TableCell>
                   <TableCell>{event.name}</TableCell>
                   <TableCell>

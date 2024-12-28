@@ -5,7 +5,6 @@ import { Calendar, Calendar1, Clock, DollarSign, Info, X } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -20,13 +19,13 @@ export default async function Page() {
   if (events) {
     return (
       <div className="p-8">
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-10">
               <CardTitle className="text-sm font-medium">
                 Evènements privés
               </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-6 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">14</div>
@@ -35,12 +34,12 @@ export default async function Page() {
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-10">
               <CardTitle className="text-sm font-medium">
                 Evènements publics
               </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-6 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -51,12 +50,12 @@ export default async function Page() {
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-10">
               <CardTitle className="text-sm font-medium">
                 Evènements gratuits
               </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-6 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -67,12 +66,12 @@ export default async function Page() {
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-10">
               <CardTitle className="text-sm font-medium">
                 Evènements payants
               </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-6 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -84,26 +83,35 @@ export default async function Page() {
             </CardContent>
           </Card>
         </div>
-        <Tabs defaultValue="current_events" className="w-full mt-12">
-          <TabsList>
-            <TabsTrigger value="current_events" className="gap-2 px-6">
-              <Calendar color="#333" size={20} />
+        <Tabs defaultValue="incoming_events" className="w-full mt-8">
+          <TabsList className="dark:bg-gray-900 dark:border-gray-800 shadow">
+            <TabsTrigger 
+              value="incoming_events" 
+              className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white"
+            >
+              <Calendar size={20} />
               Evènements à venir
             </TabsTrigger>
-            <TabsTrigger value="passed_events" className="gap-2 px-6">
-              <Clock color="#333" size={20} />
+            <TabsTrigger 
+              value="passed_events" 
+              className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white"
+            >
+              <Clock size={20} />
               Evènements passés
             </TabsTrigger>
-            <TabsTrigger value="rejected_events" className="gap-2 px-6">
-              <X color="#333" size={20} />
+            <TabsTrigger 
+              value="rejected_events" 
+              className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white"
+            >
+              <X size={20} />
               Evènements rejetés
             </TabsTrigger>
           </TabsList>
           <div className="my-8" />
-          <TabsContent value="current_events">
+          <TabsContent value="incoming_events">
             <EventsTable
               showValidatedFilter
-              events={events.map((event) => ({
+              events={events.filter((event) => new Date(event.attributes.date_start) > new Date()).map((event) => ({
                 id: event.id,
                 ...event.attributes,
                 coverImage: event.attributes?.coverImage?.data
@@ -127,7 +135,7 @@ export default async function Page() {
           <TabsContent value="passed_events">
             <EventsTable
               showValidatedFilter
-              events={events.map((event) => ({
+              events={events.filter((event) => new Date(event.attributes.date_start) <= new Date()).map((event) => ({
                 id: event.id,
                 ...event.attributes,
                 coverImage: event.attributes?.coverImage?.data
@@ -151,7 +159,7 @@ export default async function Page() {
           <TabsContent value="rejected_events">
             <EventsTable
               showAgentFilter
-              events={events.map((event) => ({
+              events={events.filter((event) => event.attributes.isValidatedByAdmin === "REJECTED").map((event) => ({
                 id: event.id,
                 ...event.attributes,
                 coverImage: event.attributes?.coverImage?.data

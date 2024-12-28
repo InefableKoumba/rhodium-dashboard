@@ -215,6 +215,7 @@ export interface UserInterface {
   avatar?: {
     url: string;
   };
+  avatarUrl?: string;
 }
 
 export interface TicketInterface {

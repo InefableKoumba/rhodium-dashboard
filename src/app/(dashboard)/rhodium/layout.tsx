@@ -32,13 +32,13 @@ export default function Layout({
       <div className="w-full flex h-screen overflow-hidden">
         <SidebarNavigation />
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          <div className="sticky top-0 z-50 bg-white border-b flex justify-between items-center px-4 md:px-6 2xl:px-10 py-4 h-16">
+          <div className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b dark:border-gray-800 flex justify-between items-center px-4 md:px-6 2xl:px-10 py-4 h-16">
             <TriggerSidebarButton />
             <div className="flex items-center gap-8">
               <ThemeModeToggle />
               <Dialog>
                 <DialogTrigger>
-                  <div className="border hover:bg-dark hover:text-white w-10 h-10 flex justify-center items-center rounded-full">
+                  <div className="border dark:border-gray-800 hover:bg-dark hover:text-white w-10 h-10 flex justify-center items-center rounded-full">
                     <Bell />
                   </div>
                 </DialogTrigger>
@@ -113,7 +113,7 @@ export default function Layout({
               </Dialog>
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <div className="w-12 hover:bg-dark hover:text-white h-12 rounded-full border flex justify-center items-center">
+                  <div className="w-12 hover:bg-dark hover:text-white h-12 rounded-full border dark:border-gray-800 flex justify-center items-center">
                     <User />
                   </div>
                 </DropdownMenuTrigger>

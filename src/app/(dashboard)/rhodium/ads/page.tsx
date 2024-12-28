@@ -78,7 +78,7 @@ export default function page() {
       </div>
       <Table className="mt-12">
         <TableHeader>
-          <TableRow>
+          <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
             <TableHead>#</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>Désignation</TableHead>
@@ -88,7 +88,7 @@ export default function page() {
         </TableHeader>
         <TableBody>
           {ads.map((ad, i) => (
-            <TableRow key={ad.id} className="cursor-pointer">
+            <TableRow key={ad.id} className="cursor-pointer dark:hover:bg-gray-800 dark:border-gray-800">
               <TableCell className="font-medium">{i + 1}</TableCell>
               <TableCell className="font-medium">
                 <div className="relative w-24 h-24 rounded">

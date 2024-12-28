@@ -31,10 +31,10 @@ export default function SidebarNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <Sidebar className="bg-dark shadow">
+    <Sidebar className="bg-dark dark:bg-gray-900 dark:border-gray-800 shadow">
       <SidebarContent className="p-4 divide-y divide-gray-800">
         <DashboardSelect />
-        <SidebarMenu className="border-t pt-4 space-y-2">
+        <SidebarMenu className="border-t dark:border-gray-800 pt-4 space-y-2">
           <SidebarMenuItem>
             <Link
               href="/rhodium"
@@ -161,7 +161,7 @@ export default function SidebarNavigation() {
             </Link>
           </SidebarMenuItem> */}
         </SidebarMenu>
-        <SidebarMenu className="border-t pt-4 hidden">
+        <SidebarMenu className="border-t dark:border-gray-800 pt-4 hidden">
           <SidebarMenuItem>
             <SidebarMenuButton
               className={

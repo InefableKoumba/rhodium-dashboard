@@ -8,7 +8,7 @@ export default function TriggerSidebarButton() {
     return (
         <button 
             onClick={toggleSidebar}
-            className="rounded hover:bg-gray-300 py-1 px-1.5 transition-colors duration-300 ease-in-out"
+            className="rounded hover:bg-gray-300 dark:hover:bg-gray-600 py-1 px-1.5 transition-colors duration-300 ease-in-out"
         >
             <Menu />
         </button>

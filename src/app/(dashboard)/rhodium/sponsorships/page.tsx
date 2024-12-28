@@ -109,15 +109,31 @@ export default async function page() {
     }
   };
 
+  const sponsorships = users.reduce((acc, user) => {
+    const referredUsers =
+      user.referred_users?.map((referred) => ({
+        id: referred.id,
+        referred_by: user,
+        referred_user: referred,
+        createdAt: referred.createdAt,
+        paidAt: new Date().toISOString(),
+        amount: 100,
+        agent: "Agent 1",
+      })) ?? [];
+    return acc.concat(referredUsers as any);
+  }, []);
+
+  console.log("sponsorships", sponsorships);
+
   return (
     <div className="p-8">
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
               Total parrainages
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">4830</div>
@@ -126,12 +142,12 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
               Montant déjà payé
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">534 200 XAF</div>
@@ -140,10 +156,10 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">Reste à payer</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <Bell className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2800 XAF</div>
@@ -153,8 +169,8 @@ export default async function page() {
           </CardContent>
         </Card>
       </div>
-      <Tabs defaultValue="unpaid" className="w-full mt-8">
-        <TabsList>
+      <Tabs defaultValue="unpaid" className="w-full mt-8 ">
+        <TabsList className="dark:bg-gray-900 dark:border-gray-800 shadow">
           <TabsTrigger value="unpaid" className="gap-2 px-6">
             <Info color="#333" size={20} />
             Non payés
@@ -380,7 +396,7 @@ export default async function page() {
           </Card>
         </TabsContent>
         <TabsContent value="paid">
-          <Card className="w-full mt-8">
+          <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
             <CardHeader>
               <CardTitle>
                 Liste des parrainages déjà payés — {users.length}
@@ -401,7 +417,7 @@ export default async function page() {
                       className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de parrainage</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      <CalendarIcon className="ml-auto size-6 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -415,7 +431,7 @@ export default async function page() {
                       className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de paiement</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      <CalendarIcon className="ml-auto size-6 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -554,7 +570,7 @@ export default async function page() {
           </Card>
         </TabsContent>
         <TabsContent value="rejected">
-          <Card className="w-full mt-8">
+          <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
             <CardHeader>
               <CardTitle>
                 Liste des parrainages rejetés — {users.length}
@@ -575,7 +591,7 @@ export default async function page() {
                       className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de parrainage</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      <CalendarIcon className="ml-auto size-6 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -589,7 +605,7 @@ export default async function page() {
                       className="w-[480px] pl-3 text-left font-normal"
                     >
                       <span>Date de rejet</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      <CalendarIcon className="ml-auto size-6 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">

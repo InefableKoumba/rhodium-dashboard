@@ -89,7 +89,7 @@ export default async function page() {
           </DialogContent>
         </Dialog>
       </div>
-      <Card className="w-full mt-8">
+      <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
         <CardHeader>
           <CardTitle>Liste des agents — {agents.length}</CardTitle>
           <CardDescription>Liste de tous les agents</CardDescription>
@@ -130,7 +130,7 @@ export default async function page() {
           </div>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
                 <TableHead>Nom de l&apos;agent</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Téléphone</TableHead>
@@ -140,7 +140,7 @@ export default async function page() {
             </TableHeader>
             <TableBody>
               {agents.map((agent) => (
-                <TableRow key={agent.id}>
+                <TableRow key={agent.id} className="dark:hover:bg-gray-800 dark:border-gray-800">
                   <TableCell className="font-medium">{agent.name}</TableCell>
                   <TableCell>{agent.email}</TableCell>
                   <TableCell>{agent.phone}</TableCell>

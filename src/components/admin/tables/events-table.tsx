@@ -52,6 +52,9 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { Event } from "@/interfaces/interfaces";
+import { cn } from "@/lib/utils";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 const columns: ColumnDef<Event>[] = [
   {
@@ -188,6 +191,12 @@ const columns: ColumnDef<Event>[] = [
         })}
       </div>
     ),
+    filterFn: (row, id, value) => {
+      return (
+        new Date(row.getValue("date_start")) >= new Date(value[0]) &&
+        new Date(row.getValue("date_start")) <= new Date(value[1])
+      )
+    },
   },
 ];
 
@@ -218,8 +227,31 @@ export default function EventsTable({
       columnFilters,
     },
   });
+
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined)
+
+  const handleFilterDate = (range: DateRange | undefined) => {
+    if (!range?.from || !range?.to) return;
+  
+    const { from, to } = range;
+  
+    // Format the dates to ISO string with added 1 day offset
+    const formattedFrom = new Date(from.getTime() + 1000 * 60 * 60 * 24)
+      .toISOString()
+      .split("T")[0];
+  
+    const formattedTo = new Date(to.getTime() + 1000 * 60 * 60 * 24)
+      .toISOString()
+      .split("T")[0];
+  
+    console.log("Applying filter for date range:", { from: formattedFrom, to: formattedTo });
+  
+    // Set the filter value for the column
+    table.getColumn("date_start")?.setFilterValue([formattedFrom, formattedTo]);
+  };
+  
   return (
-    <Card className="w-full">
+    <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
       <CardHeader>
         <CardTitle>Evènements — {events.length}</CardTitle>
         <CardDescription>Liste de tous les événements</CardDescription>
@@ -228,7 +260,7 @@ export default function EventsTable({
         <div className="flex items-center justify-end gap-3 mb-12">
           <div className="relative w-full">
             <div className="absolute right-4 top-2">
-              <Search color="#333" />
+              <Search className="text-muted-foreground" />
             </div>
             <Input
               value={
@@ -237,30 +269,40 @@ export default function EventsTable({
               onChange={(event) => {
                 table.getColumn("title")?.setFilterValue(event.target.value);
               }}
+              className="dark:bg-gray-800 dark:border-gray-800"
               placeholder="Rechercher un évènement"
             />
           </div>
           {showValidatedFilter && (
-            <Select>
-              <SelectTrigger className="w-[450px]">
+            <Select
+              onValueChange={(value) => {
+                if (value === "all") {
+                  table.getColumn("isValidatedByAdmin")?.setFilterValue(undefined);
+                } else {
+                  table.getColumn("isValidatedByAdmin")?.setFilterValue(value);
+                }
+              }}
+            >
+              <SelectTrigger className="w-[450px] dark:bg-gray-800 dark:border-gray-800">
                 <SelectValue placeholder="Validés et En attente" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
                   <SelectItem value="all">Validés et En attente</SelectItem>
-                  <SelectItem value="free">Validés</SelectItem>
-                  <SelectItem value="paid">En attente</SelectItem>
+                  <SelectItem value="VALIDATED">Validés</SelectItem>
+                  <SelectItem value="PENDING">En attente</SelectItem>
+                  <SelectItem value="REJECTED">Rejétés</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           )}
           {showAgentFilter && (
             <Select>
-              <SelectTrigger className="w-[450px]">
+              <SelectTrigger className="w-[450px] dark:bg-gray-800 dark:border-gray-800">
                 <SelectValue placeholder="Tous les agents" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
                   <SelectItem value="all">Tous les agents</SelectItem>
                   <SelectItem value="free">Inefable KOUMBA</SelectItem>
                   <SelectItem value="paid">Franz OSSETE</SelectItem>
@@ -279,11 +321,11 @@ export default function EventsTable({
               }
             }}
           >
-            <SelectTrigger className="w-[450px]">
+            <SelectTrigger className="w-[450px] dark:bg-gray-800 dark:border-gray-800">
               <SelectValue placeholder="Privés et Publics" />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
+              <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
                 <SelectItem value="all">Privé et Public</SelectItem>
                 <SelectItem value="free">Publics</SelectItem>
                 <SelectItem value="paid">Privés</SelectItem>
@@ -301,11 +343,11 @@ export default function EventsTable({
               }
             }}
           >
-            <SelectTrigger className="w-[450px]">
+            <SelectTrigger className="w-[450px] dark:bg-gray-800 dark:border-gray-800">
               <SelectValue placeholder="Gratuits et payants" />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
+              <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
                 <SelectItem value="all">Tous les évènements</SelectItem>
                 <SelectItem value="free">Gratuits</SelectItem>
                 <SelectItem value="paid">Payants</SelectItem>
@@ -316,29 +358,39 @@ export default function EventsTable({
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                id="date"
                 variant={"outline"}
-                className="w-[245px] pl-3 text-left font-normal"
+                className={cn(
+                  "w-[300px] justify-start text-left font-normal dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-900",
+                  !date && "text-muted-foreground"
+                )}
               >
-                <span>
-                  {(table
-                    .getColumn("date_start")
-                    ?.getFilterValue() as string) ?? "Choisissez une date"}
-                </span>
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                <CalendarIcon />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Selectionnez une date</span>
+                )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 dark:bg-gray-800 dark:border-gray-800" align="start">
               <Calendar
-                onDayClick={(e) =>
-                  table
-                    .getColumn("date_start")
-                    ?.setFilterValue(
-                      new Date(e.getTime() + 1000 * 60 * 60 * 24)
-                        .toISOString()
-                        .split("T")[0]
-                    )
-                }
-                mode="single"
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={(range) => {
+                  setDate(range);
+                  handleFilterDate(range)
+                }}
+                numberOfMonths={2}
               />
             </PopoverContent>
           </Popover>
@@ -352,7 +404,7 @@ export default function EventsTable({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup, i) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="dark:hover:bg-gray-800 dark:border-gray-800">
                 <TableHead key={i + 1} className="whitespace-nowrap">
                   #
                 </TableHead>
@@ -386,6 +438,7 @@ export default function EventsTable({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="dark:hover:bg-gray-800 dark:border-gray-800"
                 >
                   <TableCell key={i + 1}>{i + 1}</TableCell>
                   {row.getVisibleCells().map((cell) => {

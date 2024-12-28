@@ -215,6 +215,17 @@ export interface UserInterface {
   avatar?: {
     url: string;
   };
+  avatarUrl?: string;
+  invitation_credit?: 0 | 1;
+}
+
+export interface SponsorshipInterface {
+  referred_user: UserInterface;
+  referred_by: UserInterface;
+  createdAt: string;
+  referralCode: string;
+  confirmed: boolean;
+  provider: string;
 }
 
 export interface TicketInterface {

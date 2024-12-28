@@ -54,7 +54,7 @@ export default async function page() {
       </div>
       <Table className="mt-12">
         <TableHeader>
-          <TableRow>
+          <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
             <TableHead>#</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>Désignation</TableHead>

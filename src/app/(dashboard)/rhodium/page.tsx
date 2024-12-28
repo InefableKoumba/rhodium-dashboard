@@ -60,16 +60,16 @@ export default async function Page() {
 
   return (
     <div className="flex-1 overflow-y-auto p-8">
-      <h1 className="text-3xl font-extrabold mb-6 text-dark">
+      <h1 className="text-4xl font-medium mb-6 text-dark dark:text-gray-200">
         Tableau de bord Rhodium
       </h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
+            <CardTitle className="text-sm font-medium dark:text-gray-200">
               Total évènements
             </CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <CalendarDays className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{events.length}</div>
@@ -78,26 +78,28 @@ export default async function Page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Invités</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
+            <CardTitle className="text-sm font-medium dark:text-gray-200">
+              Total Invités
+            </CardTitle>
+            <Users className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {allEventsInvitations.data.length}
             </div>
             <p className="text-xs text-muted-foreground">
-              +18% par rapport au mois passé
+              +18% par rapport au mois passe
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
+            <CardTitle className="text-sm font-medium dark:text-gray-200">
               Total tickets vendus
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{soldTicketsNum}</div>
@@ -106,39 +108,43 @@ export default async function Page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Publicités</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
+            <CardTitle className="text-sm font-medium dark:text-gray-200">
+              Publicités
+            </CardTitle>
+            <Bell className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-muted-foreground">
-              +2% par rapport au mois passé
+              +2% par rapport au mois passe
             </p>
           </CardContent>
         </Card>
       </div>
-      <div className="flex flex-col xl:flex-row gap-4 mt-4">
-        <Card className="w-full">
+      <div className="flex flex-col xl:flex-row gap-4 mt-6">
+        <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
           <CardHeader>
-            <CardTitle>Evenement récents</CardTitle>
+            <CardTitle className="dark:text-gray-200">
+              Evenement récents
+            </CardTitle>
             <CardDescription>
               Liste des {events.length} derniers événements.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table className="">
               <TableHeader>
-                <TableRow>
-                  <TableHead>Evènement</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Type d&apos;accès</TableHead>
+                <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
+                  <TableHead className="dark:text-gray-200">Evènement</TableHead>
+                  <TableHead className="dark:text-gray-200">Date</TableHead>
+                  <TableHead className="dark:text-gray-200">Type d&apos;accès</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {events.slice(0, 5).map((event) => (
-                  <TableRow key={event.id} className="cursor-pointer">
+                  <TableRow key={event.id} className="cursor-pointer dark:hover:bg-gray-800/50 dark:border-gray-800">
                     <TableCell className="font-medium w-[50%]">
                       <Link href={"/rhodium/events/" + event.id}>
                         {event.attributes.title}
@@ -161,7 +167,7 @@ export default async function Page() {
                           Payant
                         </div>
                       ) : (
-                        <div className="border rounded-full px-3 py-1 flex items-center justify-center">
+                        <div className="border dark:border-gray-800 rounded-full px-3 py-1 flex items-center justify-center">
                           Gratuit
                         </div>
                       )}
@@ -173,14 +179,14 @@ export default async function Page() {
             <div className="mt-4">
               <Link
                 href={"/rhodium/events"}
-                className="w-full bg-dark hover:bg-darkLight text-white flex items-center gap-x-2 border justify-center py-2 rounded-lg"
+                className="w-full bg-dark hover:bg-darkLight text-white flex items-center gap-x-2 border dark:border-gray-800 justify-center py-2 rounded-lg"
               >
                 Tout afficher
               </Link>
             </div>
           </CardContent>
         </Card>
-        <Card className="w-full">
+        <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
           <CardHeader>
             <CardTitle>En attente de validation</CardTitle>
             <CardDescription>
@@ -190,17 +196,17 @@ export default async function Page() {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Evènement</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead></TableHead>
+                <TableRow className="dark:hover:bg-gray-800/50 dark:border-gray-800">
+                  <TableHead className="dark:text-gray-200">Evènement</TableHead>
+                  <TableHead className="dark:text-gray-200">Date</TableHead>
+                  <TableHead className="dark:text-gray-200"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {events.map((event) => {
                   if (event.attributes.isValidatedByAdmin === "PENDING") {
                     return (
-                      <TableRow key={event.id}>
+                      <TableRow key={event.id} className="cursor-pointer dark:hover:bg-gray-800/50 dark:border-gray-800">
                         <TableCell className="font-medium">
                           {event.attributes.title}
                         </TableCell>
@@ -215,7 +221,7 @@ export default async function Page() {
                         </TableCell>
                         <TableCell>
                           <Link
-                            className="border-2 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-full"
+                            className="border-2 dark:border-gray-800 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-full"
                             href={"/rhodium/events/" + event.id}
                           >
                             Ouvrir

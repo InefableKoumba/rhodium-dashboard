@@ -2,7 +2,6 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "../../../auth";
-import { isRedirectError } from "next/dist/client/components/redirect";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -11,9 +10,6 @@ export async function authenticate(
   try {
     await signIn("credentials", formData);
   } catch (error) {
-    if (isRedirectError(error)) {
-      throw error;
-    }
     if (error instanceof Error) {
       const { type, cause } = error as AuthError;
       console.log(error);

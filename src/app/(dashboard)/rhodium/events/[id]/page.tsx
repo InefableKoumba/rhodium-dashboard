@@ -165,6 +165,10 @@ export default async function page({
                 <TicketCheck color="#333" size={20} />
                 Tickets vendus
               </TabsTrigger>
+              <TabsTrigger value="sold_invitations_pack" className="gap-2 px-6">
+                <TicketCheck color="#333" size={20} />
+                Lot d&apos;invitations vendus
+              </TabsTrigger>
               <TabsTrigger value="invitations" className="gap-2 px-6">
                 <Users color="#333" size={20} />
                 Invitations

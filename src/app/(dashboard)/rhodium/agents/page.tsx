@@ -23,6 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -131,6 +132,7 @@ export default async function page() {
                 <TableHead>Email</TableHead>
                 <TableHead>Téléphone</TableHead>
                 <TableHead>Date de creation</TableHead>
+                <TableHead>Actif</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -145,6 +147,9 @@ export default async function page() {
                       day: "numeric",
                       year: "numeric",
                     })}
+                  </TableCell>
+                  <TableCell>
+                    <Switch />
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className="flex gap-3 items-center">

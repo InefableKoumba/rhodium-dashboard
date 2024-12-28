@@ -24,13 +24,38 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { EventResponseInterface } from "@/interfaces/interfaces";
-import { Button } from "@/components/ui/button";
+import { strapiSdk } from "@/strapi";
 
 export default async function Page() {
-  const response = await fetch(process.env.NEXT_API_URL + "/events?populate=*");
-  const events = (await response.json())["data"] as EventResponseInterface[];
-  // const response2 = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
-  // const users = (await response2.json())["data"] as UserInterface[];
+  const eventsCollection = strapiSdk.collection("events");
+  const allEvents = await eventsCollection.find({
+    populate: "*",
+  });
+  const events: EventResponseInterface[] = allEvents.data as any;
+
+  const eventsInvitationsCollection = strapiSdk.collection("event-invitations");
+  const allEventsInvitations = await eventsInvitationsCollection.find({
+    populate: "*",
+  });
+
+  // const ticketsCollection = strapiSdk.collection("tickets");
+  // const allTickets = await ticketsCollection.find({
+  //   populate: "*",
+  // });
+  // const tickets: TicketInterface[] = allTickets.data as any;
+
+  const transactionsCollection = strapiSdk.collection("transactions");
+  const allTransactions = await transactionsCollection.find({
+    populate: "*",
+    filters: {
+      status: "SUCCESSFUL",
+    },
+  });
+  const transactions = allTransactions.data as any;
+  let soldTicketsNum = 0;
+  for (const t of transactions) {
+    soldTicketsNum += t.attributes.tickets.data.length;
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-8">
@@ -46,7 +71,7 @@ export default async function Page() {
             <CalendarDays className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-gray-200">254</div>
+            <div className="text-2xl font-bold">{events.length}</div>
             <p className="text-xs text-muted-foreground">
               +12% par rapport au mois passé
             </p>
@@ -60,7 +85,9 @@ export default async function Page() {
             <Users className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-gray-200">10 483</div>
+            <div className="text-2xl font-bold">
+              {allEventsInvitations.data.length}
+            </div>
             <p className="text-xs text-muted-foreground">
               +18% par rapport au mois passe
             </p>
@@ -74,7 +101,7 @@ export default async function Page() {
             <DollarSign className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-gray-200">534 200 XAF</div>
+            <div className="text-2xl font-bold">{soldTicketsNum}</div>
             <p className="text-xs text-muted-foreground">
               +5% par rapport au mois passé
             </p>
@@ -88,7 +115,7 @@ export default async function Page() {
             <Bell className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-gray-200">24</div>
+            <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-muted-foreground">
               +2% par rapport au mois passe
             </p>

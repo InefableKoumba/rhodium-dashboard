@@ -84,6 +84,7 @@ export default async function page() {
       <h1 className="text-3xl font-extrabold mb-6 text-dark dark:text-gray-100">
         Etat de caisses
       </h1>
+      <div className="text-xl font-bold py-4">MTN CG</div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-10">
@@ -92,7 +93,7 @@ export default async function page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {disbursementAvailableBalance} XAF
+              {Number(disbursementAvailableBalance).toLocaleString("fr-FR")} XAF
             </div>
             <p className="text-xs text-muted-foreground">
               Montant dans le compte payeur
@@ -108,10 +109,27 @@ export default async function page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {collectAvailableBalance} XAF
+              {Number(collectAvailableBalance).toLocaleString("fr-FR")} XAF
             </div>
             <p className="text-xs text-muted-foreground">
               Montant dans le compte collecte
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="text-xl font-bold py-4">Airtel CG</div>
+      <div className="grid gap-4 md:grid-cols-1">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Compte payeur/collecte
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0 XAF</div>
+            <p className="text-xs text-muted-foreground">
+              Montant dans le compte payeur/collecte
             </p>
           </CardContent>
         </Card>

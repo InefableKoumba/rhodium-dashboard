@@ -13,9 +13,9 @@ export default function Page() {
   return (
     <form
       action={formAction}
-      className="flex items-center justify-center h-screen bg-gray-100"
+      className="flex flex-col lg:flex-row items-center justify-center h-screen bg-gray-100"
     >
-      <div className="w-1/2 h-full bg-gray-900 flex flex-col p-12 gap-2 justify-center">
+      <div className="lg:w-1/2 h-full bg-gray-900 flex flex-col p-12 gap-2 justify-center">
         <span className="text-5xl font-extrabold text-white">
           Tableau de bord
         </span>
@@ -23,7 +23,7 @@ export default function Page() {
           Rhodium - Rhopay
         </span>
       </div>
-      <div className="w-1/2 flex flex-col gap-3 p-12">
+      <div className="lg:w-1/2 flex flex-col gap-3 p-12">
         <span className="font-bold text-4xl">Bienvenue</span>
         <span>
           Connectez-vous pour accèder à l&apos;espace admin des platformes

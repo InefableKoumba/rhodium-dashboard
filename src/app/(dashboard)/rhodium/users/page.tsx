@@ -1,3 +1,4 @@
+import UsersTable from "@/components/admin/tables/users-table";
 import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
@@ -38,108 +39,7 @@ export default async function page() {
 
   return (
     <div className="p-8">
-      <Card className="w-full mt-8">
-        <CardHeader>
-          <CardTitle>Liste des utilisateurs — {users.length}</CardTitle>
-          <CardDescription>Liste de tous les utilisateurs</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-end gap-3 mb-12">
-            <div className="relative w-full">
-              <div className="absolute right-4 top-2">
-                <Search color="#333" />
-              </div>
-              <Input placeholder="Rechercher un utilisateur" />
-            </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className="w-[240px] pl-3 text-left font-normal"
-                >
-                  <span>Date d&apos;adhésion</span>
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <CalendarRange />
-              </PopoverContent>
-            </Popover>
-            <ExportToExcel
-              data={users.map((user) => ({
-                ...user,
-                avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
-                  user.avatar?.url as string
-                ),
-              }))}
-              fileName="users"
-            >
-              <Button>
-                <ArrowDownToLine size={36} />
-                Exporter
-              </Button>
-            </ExportToExcel>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Profil</TableHead>
-                <TableHead>Nom & prénom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Téléphone</TableHead>
-                <TableHead>Date d&apos;adhésion</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    {user.avatar ? (
-                      <div className="w-14 h-14 rounded-full relative">
-                        <Image
-                          fill
-                          className="rounded-full object-cover"
-                          alt="Event creator image"
-                          src={
-                            process.env.NEXT_STORAGE_BUCKET_URL +
-                            user?.avatar.url
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-14 h-14">
-                        <GeneralAvatar />
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    <Link href={"/rhodium/users/" + user.id}>
-                      {user.firstname} {user.lastname}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={"/rhodium/users/" + user.id}>{user.email}</Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={"/rhodium/users/" + user.id}>
-                      {user.phone_number}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={"/rhodium/users/" + user.id}>
-                      {new Date(user.createdAt).toLocaleDateString("fr-FR", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <UsersTable users={users} />
     </div>
   );
 }

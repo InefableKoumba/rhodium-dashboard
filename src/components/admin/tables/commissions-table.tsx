@@ -51,35 +51,44 @@ import {
   SortingState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { UserInterface } from "@/interfaces/interfaces";
+import { SponsorshipInterface, UserInterface } from "@/interfaces/interfaces";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { cn } from "@/lib/utils";
 
-const columns: ColumnDef<UserInterface>[] = [
-    {
+const columns: ColumnDef<SponsorshipInterface>[] = [
+  {
     accessorKey: "id",
     header: "#",
-    cell: ({ row }) => <div className="w-[10px]">{row.getValue("id")}</div>,
-    },
+    cell: ({ row }) => <div className="w-[10px]">{row.index + 1}</div>,
+  },
   {
-    accessorKey: "profil",
-    header: "Profile",
+    accessorKey: "referrer",
+    header: "Parrain",
     accessorFn: (row) => ({
-        id: row.id,
-        avatar: row?.avatarUrl ?? "",
-        name: !row.firstname && row.lastname ? row.firstname + " " + row.lastname : row.username,
+        id: row.referred_by.id,
+        avatar: row?.referred_by.avatarUrl ?? "",
+        name: !row.referred_by.firstname && row.referred_by.lastname ? row.referred_by.firstname + " " + row.referred_by.lastname : row.referred_by.username,
+        email: row.referred_by.email,
+        phone_number: row.referred_by.phone_number,
     }),
+    filterFn: (row, id, value) => {
+      const { name, email }: { name: string, email: string } = row.getValue("referrer"); 
+      return (
+        name.toLowerCase().includes(value.toLowerCase()) ||
+        email.toLowerCase().includes(value.toLowerCase())
+      );
+    },
     cell: ({ row }) => {
-      const { avatar, name, id }: { avatar: string, name: string, id: number } = row.getValue("profil");
+      const { avatar, name, id, email, phone_number }: { avatar: string, name: string, id: number, email: string, phone_number: string } = row.getValue("referrer");
       return (
         <Link
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-4 group"
           href={"/rhodium/users/" + id}
         >
           {typeof avatar === "string" && avatar !== "" ? (
-            <div className="w-14 h-14 rounded-full relative">
+            <div className="size-16 rounded-full relative">
                 <Image
                     fill
                     className="rounded-full object-cover"
@@ -88,47 +97,71 @@ const columns: ColumnDef<UserInterface>[] = [
                 />
             </div>
           ) : (
-            <div className="w-14 h-14">
+            <div className="size-16">
                 <GeneralAvatar />
             </div>
           )}
+          <div className="flex-1">
+            <div className="font-semibold text-lg">{name}</div>
+            <div className="text-muted-foreground text-sm">{email}</div>
+            <div className="text-muted-foreground text-sm">{phone_number}</div>
+          </div>
         </Link>
       );
     },
   },
   {
-    accessorKey: "name",
-    header: "Nom & prénom",
+    accessorKey: "referred_user",
+    header: "Filleul",
     accessorFn: (row) => ({
-      firstname: row.firstname,
-      lastname: row.lastname,
+        id: row.referred_user.id,
+        avatar: row?.referred_user.avatarUrl ?? "",
+        name: !row.referred_user.firstname && row.referred_user.lastname ? row.referred_user.firstname + " " + row.referred_user.lastname : row.referred_user.username,
+        email: row.referred_user.email,
+        phone_number: row.referred_user.phone_number,
     }),
     filterFn: (row, id, value) => {
-        const { firstname, lastname }: { firstname: string, lastname: string } = row.getValue("name");
-        return (firstname + " " + lastname).toLowerCase().includes(value.toLowerCase())
+      const { name, email }: { name: string, email: string } = row.getValue("referred_user"); 
+      return (
+        name.toLowerCase().includes(value.toLowerCase()) ||
+        email.toLowerCase().includes(value.toLowerCase())
+      );
     },
     cell: ({ row }) => {
-        const { firstname, lastname }: { firstname: string, lastname: string } = row.getValue("name");
-        return (
-            <div className="w-[200px]">{firstname + " " + lastname}</div>
-        )
+      const { avatar, name, id, email, phone_number }: { avatar: string, name: string, id: number, email: string, phone_number: string } = row.getValue("referred_user");
+      return (
+        <Link
+          className="flex items-center gap-4 group"
+          href={"/rhodium/users/" + id}
+        >
+          {typeof avatar === "string" && avatar !== "" ? (
+            <div className="size-16 rounded-full relative">
+                <Image
+                    fill
+                    className="rounded-full object-cover"
+                    alt={name + " avatar"}
+                    src={avatar}
+                />
+            </div>
+          ) : (
+            <div className="size-16">
+                <GeneralAvatar />
+            </div>
+          )}
+          <div className="flex-1">
+            <div className="font-semibold text-lg">{name}</div>
+            <div className="text-muted-foreground text-sm">{email}</div>
+            <div className="text-muted-foreground text-sm">{phone_number}</div>
+          </div>
+        </Link>
+      );
     },
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <div className="w-[200px]">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "phone_number",
-    header: "Téléphone",
-    cell: ({ row }) => <div className="w-[200px]">{row.getValue("phone_number")}</div>,
   },
   {
     accessorKey: "createdAt",
-    header: "Date d'adhésion",
+    header: "Date de parrainage",
     cell: ({ row }) => (
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap w-[100px]">
           {new Date(row.getValue("createdAt")).toLocaleDateString("fr-FR", {
             month: "short",
             day: "numeric",
@@ -142,13 +175,42 @@ const columns: ColumnDef<UserInterface>[] = [
           new Date(row.getValue("createdAt")) <= new Date(value[1])
         )
     },
+  },
+  {
+    accessorKey: "paidAt",
+    header: "Date de parrainage",
+    cell: ({ row }) => (
+        <div className="whitespace-nowrap w-[100px]">
+          {new Date(row.getValue("paidAt")).toLocaleDateString("fr-FR", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </div>
+    ),
+    filterFn: (row, id, value) => {
+        return (
+          new Date(row.getValue("paidAt")) >= new Date(value[0]) &&
+          new Date(row.getValue("paidAt")) <= new Date(value[1])
+        )
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: "Montant",
+    cell: ({ row }) => <div className="w-auto">{row.getValue("amount")}</div>,
+  },
+  {
+    accessorKey: "agent",
+    header: "Agent",
+    cell: ({ row }) => <div className="w-auto whitespace-nowrap">{row.getValue("agent")}</div>,
   }
 ];
 
-export default function UsersTable({
-  users
+export default function CommissionsTable({
+  commissions
 }: Readonly<{
-  users: UserInterface[];
+  commissions: any[];
 }>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -156,7 +218,7 @@ export default function UsersTable({
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
-    data: users,
+    data: commissions,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -192,10 +254,9 @@ export default function UsersTable({
   };
   
   return (
-    <Card className="w-full py-4 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+    <Card className="w-full py-4 mt-8 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
         <CardHeader>
-          <CardTitle>Liste des utilisateurs — {users.length}</CardTitle>
-          <CardDescription>Liste de tous les utilisateurs</CardDescription>
+          <CardTitle>Liste des commissions — {commissions.length}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-end gap-3 mb-12">
@@ -205,10 +266,10 @@ export default function UsersTable({
               </div>
               <Input 
                 value={
-                    (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                    (table.getColumn("referrer")?.getFilterValue() as string) ?? ""
                 }
                 onChange={(event) => {
-                    table.getColumn("name")?.setFilterValue(event.target.value);
+                    table.getColumn("referrer")?.setFilterValue(event.target.value);
                 }}
                 placeholder="Rechercher un utilisateur" 
                 className="dark:bg-gray-800 dark:border-gray-800"
@@ -235,7 +296,7 @@ export default function UsersTable({
                         format(date.from, "LLL dd, y")
                         )
                     ) : (
-                        <span>Selectionnez plage de date</span>
+                        <span>Selectionnez une plage de date</span>
                     )}
                 </Button>
               </PopoverTrigger>
@@ -254,10 +315,10 @@ export default function UsersTable({
               </PopoverContent>
             </Popover>
             <ExportToExcel
-              data={users.map((user) => ({
-                ...user,
+              data={commissions.map((commission) => ({
+                ...commission,
               }))}
-              fileName="users"
+              fileName="commissions"
             >
               <Button>
                 <ArrowDownToLine size={36} />

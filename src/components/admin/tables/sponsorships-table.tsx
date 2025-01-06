@@ -58,11 +58,11 @@ import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { cn } from "@/lib/utils";
 
 const columns: ColumnDef<SponsorshipInterface>[] = [
-    {
+  {
     accessorKey: "id",
     header: "#",
-    cell: ({ row }) => <div className="w-[10px]">{row.getValue("id")}</div>,
-    },
+    cell: ({ row }) => <div className="w-[10px]">{row.index + 1}</div>,
+  },
   {
     accessorKey: "referrer",
     header: "Parrain",
@@ -73,6 +73,13 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
         email: row.referred_by.email,
         phone_number: row.referred_by.phone_number,
     }),
+    filterFn: (row, id, value) => {
+      const { name, email }: { name: string, email: string } = row.getValue("referrer"); 
+      return (
+        name.toLowerCase().includes(value.toLowerCase()) ||
+        email.toLowerCase().includes(value.toLowerCase())
+      );
+    },
     cell: ({ row }) => {
       const { avatar, name, id, email, phone_number }: { avatar: string, name: string, id: number, email: string, phone_number: string } = row.getValue("referrer");
       return (
@@ -113,6 +120,13 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
         email: row.referred_user.email,
         phone_number: row.referred_user.phone_number,
     }),
+    filterFn: (row, id, value) => {
+      const { name, email }: { name: string, email: string } = row.getValue("referred_user"); 
+      return (
+        name.toLowerCase().includes(value.toLowerCase()) ||
+        email.toLowerCase().includes(value.toLowerCase())
+      );
+    },
     cell: ({ row }) => {
       const { avatar, name, id, email, phone_number }: { avatar: string, name: string, id: number, email: string, phone_number: string } = row.getValue("referred_user");
       return (
@@ -147,7 +161,7 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
     accessorKey: "createdAt",
     header: "Date de parrainage",
     cell: ({ row }) => (
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap w-[100px]">
           {new Date(row.getValue("createdAt")).toLocaleDateString("fr-FR", {
             month: "short",
             day: "numeric",
@@ -166,7 +180,7 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
     accessorKey: "paidAt",
     header: "Date de parrainage",
     cell: ({ row }) => (
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap w-[100px]">
           {new Date(row.getValue("paidAt")).toLocaleDateString("fr-FR", {
             month: "short",
             day: "numeric",
@@ -191,34 +205,6 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
     header: "Agent",
     cell: ({ row }) => <div className="w-auto whitespace-nowrap">{row.getValue("agent")}</div>,
   }
-//   {
-//     accessorKey: "name",
-//     header: "Nom & prénom",
-//     accessorFn: (row) => ({
-//       firstname: row.firstname,
-//       lastname: row.lastname,
-//     }),
-//     filterFn: (row, id, value) => {
-//         const { firstname, lastname }: { firstname: string, lastname: string } = row.getValue("name");
-//         return (firstname + " " + lastname).toLowerCase().includes(value.toLowerCase())
-//     },
-//     cell: ({ row }) => {
-//         const { firstname, lastname }: { firstname: string, lastname: string } = row.getValue("name");
-//         return (
-//             <div className="w-[200px]">{firstname + " " + lastname}</div>
-//         )
-//     },
-//   },
-//   {
-//     accessorKey: "email",
-//     header: "Email",
-//     cell: ({ row }) => <div className="w-[200px]">{row.getValue("email")}</div>,
-//   },
-//   {
-//     accessorKey: "phone_number",
-//     header: "Téléphone",
-//     cell: ({ row }) => <div className="w-[200px]">{row.getValue("phone_number")}</div>,
-//   },
 ];
 
 export default function SponsorshipsTable({
@@ -280,10 +266,10 @@ export default function SponsorshipsTable({
               </div>
               <Input 
                 value={
-                    (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                    (table.getColumn("referrer")?.getFilterValue() as string) ?? ""
                 }
                 onChange={(event) => {
-                    table.getColumn("name")?.setFilterValue(event.target.value);
+                    table.getColumn("referrer")?.setFilterValue(event.target.value)
                 }}
                 placeholder="Rechercher un utilisateur" 
                 className="dark:bg-gray-800 dark:border-gray-800"
@@ -310,7 +296,7 @@ export default function SponsorshipsTable({
                         format(date.from, "LLL dd, y")
                         )
                     ) : (
-                        <span>Selectionnez une date</span>
+                        <span>Selectionnez une plage de date</span>
                     )}
                 </Button>
               </PopoverTrigger>

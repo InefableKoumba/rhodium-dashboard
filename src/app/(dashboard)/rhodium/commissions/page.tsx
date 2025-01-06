@@ -1,3 +1,4 @@
+import CommissionsTable from "@/components/admin/tables/commissions-table";
 import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
@@ -109,15 +110,29 @@ export default async function page() {
     }
   };
 
+  const commissions = users.reduce((acc, user) => {
+    const referredUsers =
+      user.referred_users?.map((referred) => ({
+        id: referred.id,
+        referred_by: user,
+        referred_user: referred,
+        createdAt: referred.createdAt,
+        paidAt: new Date().toISOString(),
+        amount: 100,
+        agent: "Agent 1",
+      })) ?? [];
+    return acc.concat(referredUsers as any);
+  }, []);
+
   return (
     <div className="p-8">
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
               Total commissions
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">4830</div>
@@ -126,12 +141,12 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
               Montant déjà payé
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">534 200 XAF</div>
@@ -140,10 +155,10 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">Reste à payer</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <Bell className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2800 XAF</div>
@@ -154,225 +169,22 @@ export default async function page() {
         </Card>
       </div>
       <Tabs defaultValue="unpaid" className="w-full mt-8">
-        <TabsList>
-          <TabsTrigger value="unpaid" className="gap-2 px-6">
-            <Info color="#333" size={20} />
+        <TabsList className="dark:bg-gray-900 dark:border-gray-800 shadow">
+          <TabsTrigger value="unpaid" className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white">
+            <Info size={20} />
             Non payées
           </TabsTrigger>
-          <TabsTrigger value="paid" className="gap-2 px-6">
-            <CheckCheck color="#333" size={20} />
+          <TabsTrigger value="paid" className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white">
+            <CheckCheck size={20} />
             Déjà payées
           </TabsTrigger>
-          <TabsTrigger value="rejected" className="gap-2 px-6">
-            <CircleX color="#333" size={20} />
+          <TabsTrigger value="rejected" className="gap-2 px-6 data-[state=active]:dark:bg-gray-800 data-[state=active]:dark:text-white">
+            <CircleX size={20} />
             Rejetées
           </TabsTrigger>
         </TabsList>
         <TabsContent value="unpaid">
-          <Card className="w-full mt-8">
-            <CardHeader>
-              <CardTitle>
-                Liste des commissions non payées — {users.length}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-end gap-3 mb-12">
-                <div className="relative w-full">
-                  <div className="absolute right-4 top-2">
-                    <Search color="#333" />
-                  </div>
-                  <Input placeholder="Rechercher une commission" />
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-[400px] pl-3 text-left font-normal"
-                    >
-                      <span>Date de l&apos;achat du ticket</span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarRange />
-                  </PopoverContent>
-                </Popover>
-                <ExportToExcel
-                  data={users.map((user) => ({
-                    ...user,
-                    avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
-                      user.avatar?.url as string
-                    ),
-                  }))}
-                  fileName="users"
-                >
-                  <Button>
-                    <ArrowDownToLine size={36} />
-                    Exporter
-                  </Button>
-                </ExportToExcel>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>Parrain (Bénéficiaire)</TableHead>
-                    <TableHead>Filleul (Acheteur)</TableHead>
-                    <TableHead>Date de l&apos;achat</TableHead>
-                    <TableHead>Prix de l&apos;achat</TableHead>
-                    <TableHead>Payer</TableHead>
-                    <TableHead>Rejeter</TableHead>
-                    <TableHead>
-                      <Checkbox />
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user, i) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{i + 1}</TableCell>
-                      <TableCell>
-                        {user.avatar ? (
-                          <div className="w-14 h-14 rounded-full relative">
-                            <Image
-                              fill
-                              className="rounded-full object-cover"
-                              alt="Event creator image"
-                              src={
-                                process.env.NEXT_STORAGE_BUCKET_URL +
-                                user?.avatar.url
-                              }
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-14 h-14">
-                            <GeneralAvatar />
-                          </div>
-                        )}
-                        <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
-                            <span className="font-bold">
-                              {user.firstname} {user.lastname}
-                            </span>
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.phone_number}
-                          </Link>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {user.avatar ? (
-                          <div className="w-14 h-14 rounded-full relative">
-                            <Image
-                              fill
-                              className="rounded-full object-cover"
-                              alt="Event creator image"
-                              src={
-                                process.env.NEXT_STORAGE_BUCKET_URL +
-                                user?.avatar.url
-                              }
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-14 h-14">
-                            <GeneralAvatar />
-                          </div>
-                        )}
-                        <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
-                            <span className="font-bold">
-                              {user.firstname} {user.lastname}
-                            </span>
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.phone_number}
-                          </Link>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString("fr-FR", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell>5 000 XAF</TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <form action={handlePayNow}>
-                              <Button type="submit" className="rounded-full">
-                                Payer 500 XAF
-                              </Button>
-                            </form>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Voulez-vous vraiment effectuer ce paiement ?
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de payer 500 XAF pour ce
-                                parrainage en faveur des utilisateurs :{" "}
-                                {user.lastname} {user.firstname}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir effectuer ce paiement
-                              </span>
-                            </div>
-                            <Button>Confirmer le paiement</Button>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              className="rounded-full"
-                              variant={"destructive"}
-                            >
-                              Rejeter
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Voulez-vous vraiment rejeter ce parrainage ?
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de rejeter ce parrainage.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir rejeter ce parrainage
-                              </span>
-                            </div>
-                            <Button variant={"destructive"}>
-                              Confirmer le rejet
-                            </Button>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <CommissionsTable commissions={commissions} />
         </TabsContent>
         <TabsContent value="paid">
           <Card className="w-full mt-8">

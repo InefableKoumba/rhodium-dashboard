@@ -81,12 +81,12 @@ export default async function page() {
 
   return (
     <div className="p-4 md:p-12">
-      <h1 className="text-3xl font-extrabold mb-6 text-dark">
+      <h1 className="text-3xl font-extrabold mb-6 text-dark dark:text-gray-100">
         Etat de caisses
       </h1>
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">Compte payeur</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -99,8 +99,8 @@ export default async function page() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
               Compte collecte
             </CardTitle>

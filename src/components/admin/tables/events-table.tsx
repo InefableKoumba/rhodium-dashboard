@@ -376,7 +376,7 @@ export default function EventsTable({
                     format(date.from, "LLL dd, y")
                   )
                 ) : (
-                  <span>Selectionnez une date</span>
+                  <span>Selectionnez une plage de date</span>
                 )}
               </Button>
             </PopoverTrigger>

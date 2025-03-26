@@ -1,4 +1,4 @@
-name: Deploy rhodim Admin to VPS
+name: Deploy rhodium Admin to VPS
 
 on:
   push:

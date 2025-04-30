@@ -1,23 +1,22 @@
-import React from "react";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/components/AuthProvider";
 
-export default function Layout({
+const inter = Inter({ subsets: ["latin"] });
+
+export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="fr">
-      <body className="antialiased bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={inter.className}>
+        <AuthProvider>
           {children}
           <Toaster />
-        </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

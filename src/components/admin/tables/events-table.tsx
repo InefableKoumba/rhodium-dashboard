@@ -51,7 +51,7 @@ import {
   SortingState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { Event } from "@/interfaces/interfaces";
+import { Event } from "@/types/types";
 import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -195,7 +195,7 @@ const columns: ColumnDef<Event>[] = [
       return (
         new Date(row.getValue("date_start")) >= new Date(value[0]) &&
         new Date(row.getValue("date_start")) <= new Date(value[1])
-      )
+      );
     },
   },
 ];
@@ -228,28 +228,31 @@ export default function EventsTable({
     },
   });
 
-  const [date, setDate] = React.useState<DateRange | undefined>(undefined)
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
   const handleFilterDate = (range: DateRange | undefined) => {
     if (!range?.from || !range?.to) return;
-  
+
     const { from, to } = range;
-  
+
     // Format the dates to ISO string with added 1 day offset
     const formattedFrom = new Date(from.getTime() + 1000 * 60 * 60 * 24)
       .toISOString()
       .split("T")[0];
-  
+
     const formattedTo = new Date(to.getTime() + 1000 * 60 * 60 * 24)
       .toISOString()
       .split("T")[0];
-  
-    console.log("Applying filter for date range:", { from: formattedFrom, to: formattedTo });
-  
+
+    console.log("Applying filter for date range:", {
+      from: formattedFrom,
+      to: formattedTo,
+    });
+
     // Set the filter value for the column
     table.getColumn("date_start")?.setFilterValue([formattedFrom, formattedTo]);
   };
-  
+
   return (
     <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
       <CardHeader>
@@ -277,7 +280,9 @@ export default function EventsTable({
             <Select
               onValueChange={(value) => {
                 if (value === "all") {
-                  table.getColumn("isValidatedByAdmin")?.setFilterValue(undefined);
+                  table
+                    .getColumn("isValidatedByAdmin")
+                    ?.setFilterValue(undefined);
                 } else {
                   table.getColumn("isValidatedByAdmin")?.setFilterValue(value);
                 }
@@ -380,7 +385,10 @@ export default function EventsTable({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 dark:bg-gray-800 dark:border-gray-800" align="start">
+            <PopoverContent
+              className="w-auto p-0 dark:bg-gray-800 dark:border-gray-800"
+              align="start"
+            >
               <Calendar
                 initialFocus
                 mode="range"
@@ -388,7 +396,7 @@ export default function EventsTable({
                 selected={date}
                 onSelect={(range) => {
                   setDate(range);
-                  handleFilterDate(range)
+                  handleFilterDate(range);
                 }}
                 numberOfMonths={2}
               />
@@ -404,7 +412,10 @@ export default function EventsTable({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup, i) => (
-              <TableRow key={headerGroup.id} className="dark:hover:bg-gray-800 dark:border-gray-800">
+              <TableRow
+                key={headerGroup.id}
+                className="dark:hover:bg-gray-800 dark:border-gray-800"
+              >
                 <TableHead key={i + 1} className="whitespace-nowrap">
                   #
                 </TableHead>

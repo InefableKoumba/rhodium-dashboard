@@ -1,4 +1,4 @@
-import { UserInterface } from "@/interfaces/interfaces";
+import { UserInterface } from "@/types/types";
 import { GeneralAvatar } from "./general-user-avatar";
 import Image from "next/image";
 

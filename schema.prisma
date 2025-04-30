@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  password        String
+  lastname        String
+  firstname       String
+  googleId        String?
+  avatar          String?
+  sponsorCode     String           @unique @default(uuid())
+  sponsorId       String?
+  sponsor         User?            @relation("UserSponsorship", fields: [sponsorId], references: [id])
+  sponsored       User[]           @relation("UserSponsorship")
+  credits         Int              @default(0)
+  phoneNumber     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  events          Event[]          @relation("EventOrganizer")
+  tickets         Ticket[]
+  Invitation      Invitation[]
+  likedEvents     Event[]          @relation("EventLikes")
+  creditPurchases CreditPurchase[]
+}
+
+model Admin {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  lastname       String
+  firstname      String
+  role           String   @default("ADMIN") // ADMIN, SUPER_ADMIN
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  approvedEvents Event[]  @relation("EventApproval")
+}
+
+model Event {
+  id              String       @id @default(uuid())
+  title           String
+  description     String
+  startsAt        DateTime
+  endsAt          DateTime
+  location        String
+  isPrivate       Boolean      @default(false)
+  isFree          Boolean      @default(false)
+  price           Float?
+  capacity        Int?
+  imageIds        String[]     @default([])
+  videoId         String?
+  status          EventStatus  @default(PENDING)
+  rejectionReason String?
+  approvedBy      Admin?       @relation("EventApproval", fields: [approvedById], references: [id])
+  approvedById    String?
+  approvedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  organizer       User         @relation("EventOrganizer", fields: [organizerId], references: [id])
+  organizerId     String
+  tickets         Ticket[]
+  categories      Category[]
+  invitations     Invitation[]
+  likedBy         User[]       @relation("EventLikes")
+  likesCount      Int          @default(0)
+  ticketTypes     TicketType[]
+}
+
+enum EventStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TicketStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum EventCategory {
+  CONFERENCE
+  WORKSHOP
+  SEMINAR
+  CONCERT
+  EXHIBITION
+  FESTIVAL
+  SPORTS
+  NETWORKING
+  OTHER
+}
+
+model TicketType {
+  id          String   @id @default(uuid())
+  name        String // e.g., "Standard", "VIP", "VVIP"
+  price       Float
+  maxQuantity Int
+  event       Event    @relation(fields: [eventId], references: [id])
+  eventId     String
+  tickets     Ticket[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([eventId, name])
+}
+
+model Ticket {
+  id           String       @id @default(uuid())
+  event        Event        @relation(fields: [eventId], references: [id])
+  eventId      String
+  user         User         @relation(fields: [userId], references: [id])
+  userId       String
+  ticketType   TicketType   @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String
+  status       TicketStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Category {
+  id          String        @id @default(uuid())
+  name        EventCategory @unique
+  description String?
+  events      Event[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Invitation {
+  id        String           @id @default(uuid())
+  event     Event            @relation(fields: [eventId], references: [id])
+  eventId   String
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([eventId, userId])
+}
+
+model CreditPack {
+  id        String           @id @default(uuid())
+  name      String // e.g., "Basic", "Premium"
+  credits   Int
+  price     Float
+  currency  String           @default("XAF")
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  purchases CreditPurchase[]
+}
+
+model CreditPurchase {
+  id           String               @id @default(uuid())
+  user         User                 @relation(fields: [userId], references: [id])
+  userId       String
+  creditPack   CreditPack           @relation(fields: [creditPackId], references: [id])
+  creditPackId String
+  amount       Float
+  currency     String               @default("XAF")
+  phoneNumber  String
+  status       CreditPurchaseStatus @default(PENDING)
+  paymentId    String? // Mobile money transaction ID
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+}
+
+enum CreditPurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}

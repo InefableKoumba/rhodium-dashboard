@@ -1,7 +1,7 @@
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import UserAvatar from "@/components/common/user-avatar";
 import VideoPlayerComponent from "@/components/common/video-player";
-import { EventResponseInterface } from "@/interfaces/interfaces";
+import { EventResponseInterface } from "@/types/types";
 import { CalendarDays, MapPin, Minus, Phone } from "lucide-react";
 import Image from "next/image";
 import React from "react";

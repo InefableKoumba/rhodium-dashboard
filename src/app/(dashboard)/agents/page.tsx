@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getAdmin, getAdmins } from "@/lib/actions";
 import {
   ArrowDownToLine,
   CalendarIcon,
@@ -42,24 +43,10 @@ import {
 } from "lucide-react";
 import React from "react";
 
-const agents = [
-  {
-    id: 1,
-    name: "Inefable KOUMBA",
-    email: "inefable@proton.me",
-    phone: "+242 06 880 19 86",
-  },
-  {
-    id: 2,
-    name: "Gabriel MABIALA",
-    email: "newtonmabiala4@gmail.com",
-    phone: "+242 06 550 38 47",
-  },
-];
-
 export const dynamic = "force-dynamic";
 
 export default async function page() {
+  const { admins } = await getAdmins();
   return (
     <div className="p-8">
       <div className="flex justify-end">
@@ -91,7 +78,7 @@ export default async function page() {
       </div>
       <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
         <CardHeader>
-          <CardTitle>Liste des agents — {agents.length}</CardTitle>
+          <CardTitle>Liste des agents — {admins.length}</CardTitle>
           <CardDescription>Liste de tous les agents</CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,8 +104,8 @@ export default async function page() {
               </PopoverContent>
             </Popover>
             <ExportToExcel
-              data={agents.map((agent) => ({
-                ...agent,
+              data={admins.map((admin) => ({
+                ...admin,
               }))}
               fileName="agents"
             >
@@ -133,17 +120,20 @@ export default async function page() {
               <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
                 <TableHead>Nom de l&apos;agent</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Téléphone</TableHead>
                 <TableHead>Date de creation</TableHead>
                 <TableHead>Actif</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {agents.map((agent) => (
-                <TableRow key={agent.id} className="dark:hover:bg-gray-800 dark:border-gray-800">
-                  <TableCell className="font-medium">{agent.name}</TableCell>
-                  <TableCell>{agent.email}</TableCell>
-                  <TableCell>{agent.phone}</TableCell>
+              {admins.map((admin) => (
+                <TableRow
+                  key={admin.id}
+                  className="dark:hover:bg-gray-800 dark:border-gray-800"
+                >
+                  <TableCell className="font-medium">
+                    {admin.firstname} {admin.lastname}
+                  </TableCell>
+                  <TableCell>{admin.email}</TableCell>
                   <TableCell>
                     {new Date().toLocaleDateString("fr-FR", {
                       month: "short",
@@ -152,7 +142,7 @@ export default async function page() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <Switch />
+                    <Switch defaultChecked={admin.isActive} />
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className="flex gap-3 items-center">

@@ -61,7 +61,7 @@ const columns: ColumnDef<Event>[] = [
     accessorKey: "head",
     accessorFn: (row) => ({
       title: row.title,
-      cover: row.coverImage,
+      cover: row.coverImageId,
     }),
     header: "Couverture",
     cell: ({ row }) => {
@@ -69,10 +69,7 @@ const columns: ColumnDef<Event>[] = [
         row.getValue("head");
       const id = parseInt(row.id) + 1;
       return (
-        <Link
-          className="flex items-center gap-2 group"
-          href={"/rhodium/events/" + id}
-        >
+        <Link className="flex items-center gap-2 group" href={"/events/" + id}>
           {cover ? (
             <div className="relative w-24 h-16 rounded overflow-hidden">
               <Image
@@ -100,10 +97,7 @@ const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "creator",
     accessorFn: (row) => ({
-      creatorName:
-        row.creator?.data?.attributes?.firstname +
-        " " +
-        row.creator?.data?.attributes?.lastname,
+      creatorName: row.organizer?.firstname + " " + row.organizer?.lastname,
     }),
     header: "Organisateur",
     cell: ({ row }) => {
@@ -118,8 +112,8 @@ const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "location",
     accessorFn: (row) => ({
-      country: row.country,
-      location_city: row.location_city,
+      city: row.city,
+      location: row.location,
     }),
     header: "Lieu",
     cell: ({ row }) => {

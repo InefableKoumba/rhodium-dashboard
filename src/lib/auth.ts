@@ -80,7 +80,6 @@ export const authOptions: NextAuthOptions = {
           });
           if (!response.ok) return null;
           const responseData = (await response.json()) as AuthResponseDto;
-          console.log("API Response:", responseData);
           if (responseData.user)
             return {
               id: responseData.user.id,
@@ -89,16 +88,12 @@ export const authOptions: NextAuthOptions = {
               accessToken: responseData.access_token,
             };
         }
-        console.log("Invalid credentials");
         return null;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log("JWT Callback - User:", user);
-      console.log("JWT Callback - Token:", token);
-
       if (user) {
         token.id = user.id;
         token.email = user.email as string;
@@ -109,9 +104,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      console.log("Session Callback - Token:", token);
-      console.log("Session Callback - Session:", session);
-
       if (token) {
         session.user = {
           ...session.user,

@@ -1,4 +1,4 @@
-import SponsorshipsTable from "@/components/admin/tables/sponsorships-table";
+import SponsorshipsTable from "@/components/tables/sponsorships-table";
 import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
@@ -37,7 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserInterface } from "@/types/types";
+import { User } from "@/types/types";
 import {
   ArrowDownToLine,
   Bell,
@@ -54,11 +54,8 @@ import Link from "next/link";
 import React from "react";
 
 export const dynamic = "force-dynamic";
-
+const users: User[] = [];
 export default async function page() {
-  const response = await fetch(process.env.NEXT_API_URL + "/users?populate=*");
-  const users = (await response.json()) as UserInterface[];
-
   const handlePayNow = async () => {
     "use server";
     const response = await fetch(
@@ -109,20 +106,6 @@ export default async function page() {
       );
     }
   };
-
-  const sponsorships = users.reduce((acc, user) => {
-    const referredUsers =
-      user.referred_users?.map((referred) => ({
-        id: referred.id,
-        referred_by: user,
-        referred_user: referred,
-        createdAt: referred.createdAt,
-        paidAt: new Date().toISOString(),
-        amount: 100,
-        agent: "Agent 1",
-      })) ?? [];
-    return acc.concat(referredUsers as any);
-  }, []);
 
   return (
     <div className="p-8">
@@ -193,7 +176,7 @@ export default async function page() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="unpaid">
-          <SponsorshipsTable sponsorships={sponsorships} />
+          <SponsorshipsTable />
         </TabsContent>
         <TabsContent value="paid">
           <Card className="w-full mt-8 dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
@@ -253,7 +236,7 @@ export default async function page() {
                   data={users.map((user) => ({
                     ...user,
                     avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
-                      user.avatar?.url as string
+                      user.avatar as string
                     ),
                   }))}
                   fileName="users"
@@ -288,8 +271,8 @@ export default async function page() {
                               className="rounded-full object-cover"
                               alt="Event creator image"
                               src={
-                                process.env.NEXT_STORAGE_BUCKET_URL +
-                                user?.avatar.url
+                                (process.env.NEXT_STORAGE_BUCKET_URL +
+                                  user?.avatar) as string
                               }
                             />
                           </div>
@@ -299,16 +282,14 @@ export default async function page() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>
                             <span className="font-bold">
                               {user.firstname} {user.lastname}
                             </span>
                           </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.phone_number}
+                          <Link href={"/users/" + user.id}>{user.email}</Link>
+                          <Link href={"/users/" + user.id}>
+                            {user.phoneNumber}
                           </Link>
                         </div>
                       </TableCell>
@@ -321,8 +302,8 @@ export default async function page() {
                                 className="rounded-full object-cover"
                                 alt="Event creator image"
                                 src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
+                                  (process.env.NEXT_STORAGE_BUCKET_URL +
+                                    user?.avatar) as string
                                 }
                               />
                             </div>
@@ -332,16 +313,14 @@ export default async function page() {
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
+                            <Link href={"/users/" + user.id}>
                               <span className="font-bold">
                                 {user.firstname} {user.lastname}
                               </span>
                             </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
+                            <Link href={"/users/" + user.id}>{user.email}</Link>
+                            <Link href={"/users/" + user.id}>
+                              {user.phoneNumber}
                             </Link>
                           </div>
                         </TableCell>
@@ -426,7 +405,7 @@ export default async function page() {
                   data={users.map((user) => ({
                     ...user,
                     avatar: process.env.NEXT_STORAGE_BUCKET_URL!.concat(
-                      user.avatar?.url as string
+                      user.avatar as string
                     ),
                   }))}
                   fileName="users"
@@ -462,8 +441,8 @@ export default async function page() {
                                 className="rounded-full object-cover"
                                 alt="Event creator image"
                                 src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
+                                  (process.env.NEXT_STORAGE_BUCKET_URL +
+                                    user?.avatar) as string
                                 }
                               />
                             </div>
@@ -473,16 +452,14 @@ export default async function page() {
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
+                            <Link href={"/users/" + user.id}>
                               <span className="font-bold">
                                 {user.firstname} {user.lastname}
                               </span>
                             </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
+                            <Link href={"/users/" + user.id}>{user.email}</Link>
+                            <Link href={"/users/" + user.id}>
+                              {user.phoneNumber}
                             </Link>
                           </div>
                         </div>
@@ -496,8 +473,8 @@ export default async function page() {
                                 className="rounded-full object-cover"
                                 alt="Event creator image"
                                 src={
-                                  process.env.NEXT_STORAGE_BUCKET_URL +
-                                  user?.avatar.url
+                                  (process.env.NEXT_STORAGE_BUCKET_URL +
+                                    user?.avatar) as string
                                 }
                               />
                             </div>
@@ -507,16 +484,14 @@ export default async function page() {
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <Link href={"/rhodium/users/" + user.id}>
+                            <Link href={"/users/" + user.id}>
                               <span className="font-bold">
                                 {user.firstname} {user.lastname}
                               </span>
                             </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.email}
-                            </Link>
-                            <Link href={"/rhodium/users/" + user.id}>
-                              {user.phone_number}
+                            <Link href={"/users/" + user.id}>{user.email}</Link>
+                            <Link href={"/users/" + user.id}>
+                              {user.phoneNumber}
                             </Link>
                           </div>
                         </div>

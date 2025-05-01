@@ -39,187 +39,225 @@ export default async function Page() {
   );
 
   return (
-    <div className="flex-1 overflow-y-auto p-8">
-      <h1 className="text-4xl font-medium mb-6 text-dark dark:text-gray-200">
-        Tableau de bord Rhodium
-      </h1>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-10">
-            <CardTitle className="text-sm font-medium dark:text-gray-200">
+    <div className="flex-1 overflow-y-auto p-8 space-y-8">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          Tableau de bord Rhodium
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Aperçu général de votre activité
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-6">
+            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Total évènements
             </CardTitle>
-            <CalendarDays className="size-6 text-muted-foreground" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <CalendarDays className="size-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{events.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-gray-900 dark:text-white">
+              {events.length}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
               +12% par rapport au mois passé
             </p>
           </CardContent>
         </Card>
-        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-10">
-            <CardTitle className="text-sm font-medium dark:text-gray-200">
+
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-6">
+            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Total Invités
             </CardTitle>
-            <Users className="size-6 text-muted-foreground" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Users className="size-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold text-gray-900 dark:text-white">
               {events.reduce(
                 (acc: number, event: Event) =>
                   acc + (event.invitations?.length || 0),
                 0
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-2">
               +18% par rapport au mois passe
             </p>
           </CardContent>
         </Card>
-        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-10">
-            <CardTitle className="text-sm font-medium dark:text-gray-200">
+
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-6">
+            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Total tickets vendus
             </CardTitle>
-            <DollarSign className="size-6 text-muted-foreground" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <DollarSign className="size-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{soldTicketsNum}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-gray-900 dark:text-white">
+              {soldTicketsNum}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
               +5% par rapport au mois passé
             </p>
           </CardContent>
         </Card>
-        <Card className="dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-10">
-            <CardTitle className="text-sm font-medium dark:text-gray-200">
+
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-6">
+            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Publicités
             </CardTitle>
-            <Bell className="size-6 text-muted-foreground" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Bell className="size-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-gray-900 dark:text-white">
+              0
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
               +2% par rapport au mois passe
             </p>
           </CardContent>
         </Card>
       </div>
-      <div className="flex flex-col xl:flex-row gap-4 mt-6">
-        <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="dark:text-gray-200">
+            <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
               Evenement récents
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground">
               Liste des {events.length} derniers événements.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table className="">
-              <TableHeader>
-                <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
-                  <TableHead className="dark:text-gray-200">
-                    Evènement
-                  </TableHead>
-                  <TableHead className="dark:text-gray-200">Date</TableHead>
-                  <TableHead className="dark:text-gray-200">
-                    Type d&apos;accès
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {events.slice(0, 5).map((event: Event) => (
-                  <TableRow
-                    key={event.id}
-                    className="cursor-pointer dark:hover:bg-gray-800/50 dark:border-gray-800"
-                  >
-                    <TableCell className="font-medium w-[50%]">
-                      <Link href={"/rhodium/events/" + event.id}>
-                        {event.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={"/rhodium/events/" + event.id}>
+            <div className="rounded-lg border dark:border-gray-800 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                    <TableHead className="text-gray-600 dark:text-gray-300">
+                      Evènement
+                    </TableHead>
+                    <TableHead className="text-gray-600 dark:text-gray-300">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-gray-600 dark:text-gray-300">
+                      Type d&apos;accès
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {events.slice(0, 5).map((event: Event) => (
+                    <TableRow
+                      key={event.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    >
+                      <TableCell className="font-medium">
+                        <Link
+                          href={"/events/" + event.id}
+                          className="text-primary hover:text-primary/80 transition-colors"
+                        >
+                          {event.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
                         {new Date(event.startsAt).toLocaleDateString("fr-FR", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
                         })}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      {!event.isFree ? (
-                        <div className="bg-darkLight text-white rounded-full px-3 py-1 flex items-center justify-center">
-                          Payant
-                        </div>
-                      ) : (
-                        <div className="border dark:border-gray-800 rounded-full px-3 py-1 flex items-center justify-center">
-                          Gratuit
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      </TableCell>
+                      <TableCell>
+                        {!event.isFree ? (
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                            Payant
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+                            Gratuit
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
             <div className="mt-4">
               <Link
-                href={"/rhodium/events"}
-                className="w-full bg-dark hover:bg-darkLight text-white flex items-center gap-x-2 border dark:border-gray-800 justify-center py-2 rounded-lg"
+                href={"/events"}
+                className="w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center py-2 rounded-lg transition-colors"
               >
                 Tout afficher
               </Link>
             </div>
           </CardContent>
         </Card>
-        <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
+
+        <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle>En attente de validation</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+              En attente de validation
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
               Les évènements ci-dessous sont en attente de validation.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="dark:hover:bg-gray-800/50 dark:border-gray-800">
-                  <TableHead className="dark:text-gray-200">
-                    Evènement
-                  </TableHead>
-                  <TableHead className="dark:text-gray-200">Date</TableHead>
-                  <TableHead className="dark:text-gray-200"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingEvents.map((event: Event) => (
-                  <TableRow
-                    key={event.id}
-                    className="cursor-pointer dark:hover:bg-gray-800/50 dark:border-gray-800"
-                  >
-                    <TableCell className="font-medium">{event.title}</TableCell>
-                    <TableCell>
-                      {new Date(event.startsAt).toLocaleDateString("fr-FR", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        className="border-2 dark:border-gray-800 flex justify-center bg-dark hover:bg-darkLight text-white transform transition-colors duration-200 items-center gap-2 py-2 rounded-full"
-                        href={"/rhodium/events/" + event.id}
-                      >
-                        Ouvrir
-                        <ExternalLink size={14} />
-                      </Link>
-                    </TableCell>
+            <div className="rounded-lg border dark:border-gray-800 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                    <TableHead className="text-gray-600 dark:text-gray-300">
+                      Evènement
+                    </TableHead>
+                    <TableHead className="text-gray-600 dark:text-gray-300">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-gray-600 dark:text-gray-300"></TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {pendingEvents.map((event: Event) => (
+                    <TableRow
+                      key={event.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    >
+                      <TableCell className="font-medium text-gray-900 dark:text-white">
+                        {event.title}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(event.startsAt).toLocaleDateString("fr-FR", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+                          href={"/events/" + event.id}
+                        >
+                          Ouvrir
+                          <ExternalLink size={14} />
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

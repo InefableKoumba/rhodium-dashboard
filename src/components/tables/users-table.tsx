@@ -12,19 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -32,12 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ArrowDownToLine,
-  CalendarDays,
-  CalendarIcon,
-  Search,
-} from "lucide-react";
+import { ArrowDownToLine, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -51,13 +33,14 @@ import {
   SortingState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { UserInterface } from "@/types/types";
+import { User } from "@/types/types";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { cn } from "@/lib/utils";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
-const columns: ColumnDef<UserInterface>[] = [
+const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
     header: "#",
@@ -68,20 +51,14 @@ const columns: ColumnDef<UserInterface>[] = [
     header: "Profile",
     accessorFn: (row) => ({
       id: row.id,
-      avatar: row?.avatarUrl ?? "",
-      name:
-        !row.firstname && row.lastname
-          ? row.firstname + " " + row.lastname
-          : row.username,
+      avatar: row?.avatar ?? "",
+      name: row.firstname + " " + row.lastname,
     }),
     cell: ({ row }) => {
       const { avatar, name, id }: { avatar: string; name: string; id: number } =
         row.getValue("profil");
       return (
-        <Link
-          className="flex items-center gap-2 group"
-          href={"/rhodium/users/" + id}
-        >
+        <Link className="flex items-center gap-2 group" href={"/users/" + id}>
           {typeof avatar === "string" && avatar !== "" ? (
             <div className="w-14 h-14 rounded-full relative">
               <Image
@@ -155,13 +132,16 @@ const columns: ColumnDef<UserInterface>[] = [
 
 export default function UsersTable({
   users,
+  total,
 }: Readonly<{
-  users: UserInterface[];
+  users: User[];
+  total: number;
 }>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
   const table = useReactTable({
     data: users,
@@ -176,8 +156,6 @@ export default function UsersTable({
       columnFilters,
     },
   });
-
-  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
   const handleFilterDate = (range: DateRange | undefined) => {
     if (!range?.from || !range?.to) return;
@@ -225,48 +203,13 @@ export default function UsersTable({
               className="dark:bg-gray-800 dark:border-gray-800"
             />
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={"outline"}
-                className={cn(
-                  "w-[450px] justify-start text-left font-normal dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-900",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Selectionnez plage de date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 dark:bg-gray-800 dark:border-gray-800"
-              align="start"
-            >
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={(range) => {
-                  setDate(range);
-                  handleFilterDate(range);
-                }}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
+          <DatePickerWithRange
+            className="dark:bg-gray-800 dark:border-gray-800"
+            onChange={(range: DateRange | undefined) => {
+              setDate(range);
+              handleFilterDate(range);
+            }}
+          />
           <ExportToExcel
             data={users.map((user) => ({
               ...user,

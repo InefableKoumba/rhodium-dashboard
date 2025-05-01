@@ -30,7 +30,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EventsTable from "@/components/admin/tables/events-table";
+import EventsTable from "@/components/tables/events-table";
 
 export const dynamic = "force-dynamic";
 

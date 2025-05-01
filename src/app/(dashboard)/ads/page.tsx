@@ -1,8 +1,11 @@
-import AddNewsLetterArticleForm from "@/components/admin/add-news-letter-article-form";
-import DeleteNewsLetterArticleForm from "@/components/admin/delete-news-letter-article-form";
-import UpDateNewsLetterArticleForm from "@/components/admin/update-news-letter-article-form";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +25,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { strapiSdk } from "@/strapi";
-import { Pencil, Trash } from "lucide-react";
+import { getAdvertisements, updateAdvertisement } from "@/lib/actions";
+import { Advertisement } from "@/types/types";
+import { Plus, Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -36,73 +40,141 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/webp",
 ];
 
-export default async function page() {
-  const newsLetterSingle = await strapiSdk.single("news-letter").find({
-    populate: {
-      articles: {
-        populate: "*",
-      },
-    },
-  });
-  const articles = newsLetterSingle?.data?.attributes?.articles;
+export default async function AdsPage() {
+  const { advertisements } = await getAdvertisements();
 
   return (
-    <div className="p-12">
-      <h1 className="font-extrabold text-3xl">Publicités</h1>
-      <div className="flex justify-end">
-        <AddNewsLetterArticleForm />
+    <div className="p-8">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Publicités</h1>
+          <p className="text-muted-foreground">
+            Gérez les publicités de votre application
+          </p>
+        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter une publicité
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Nouvelle publicité</DialogTitle>
+              <DialogDescription>
+                Ajoutez une nouvelle publicité à votre application
+              </DialogDescription>
+            </DialogHeader>
+            <form className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label htmlFor="content" className="text-sm font-medium">
+                  Contenu
+                </label>
+                <Textarea
+                  id="content"
+                  placeholder="Entrez le contenu de la publicité"
+                  className="resize-none"
+                />
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="image" className="text-sm font-medium">
+                  Image
+                </label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                />
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="video" className="text-sm font-medium">
+                  Vidéo
+                </label>
+                <Input id="video" type="file" accept="video/*" />
+              </div>
+              <Button type="submit">Créer</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
-      <Table className="mt-12">
-        <TableHeader>
-          <TableRow className="dark:hover:bg-gray-800 dark:border-gray-800">
-            <TableHead>#</TableHead>
-            <TableHead>Image</TableHead>
-            <TableHead>Désignation</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Visible</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {articles &&
-            articles.map((article: any, i: number) => (
-              <TableRow key={article.id} className="cursor-pointer">
-                <TableCell className="font-medium">{i + 1}</TableCell>
-                <TableCell className="font-medium">
-                  <div className="relative w-24 h-24 rounded">
-                    {article.image.data?.attributes?.url && (
-                      <Image
-                        src={
-                          process.env.NEXT_STORAGE_BUCKET_URL +
-                          article.image.data.attributes.url
-                        }
-                        alt={"Publicité"}
-                        fill
-                        className="rounded object-cover"
-                      />
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {article.name ?? "-"}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {article.description ?? "-"}
-                </TableCell>
-                <TableCell className="font-medium">
-                  <div className="flex items-center space-x-2">
-                    <Switch id="airplane-mode" />
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  <div className="flex gap-3 items-center">
-                    <UpDateNewsLetterArticleForm articleId={article.id} />
-                    <DeleteNewsLetterArticleForm articleId={article.id} />
-                  </div>
-                </TableCell>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Liste des publicités</CardTitle>
+          <CardDescription>
+            {advertisements.length} publicité
+            {advertisements.length > 1 ? "s" : ""} au total
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Image</TableHead>
+                <TableHead>Contenu</TableHead>
+                <TableHead>Date de création</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {advertisements.map((ad: Advertisement) => (
+                <TableRow key={ad.id}>
+                  <TableCell>
+                    {ad.imageId ? (
+                      <div className="relative w-20 h-20 rounded-md overflow-hidden">
+                        <Image
+                          src={`${process.env.NEXT_STORAGE_BUCKET_URL}${ad.imageId}`}
+                          alt="Publicité"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">
+                          Aucune image
+                        </span>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="max-w-[300px]">
+                    <p className="truncate">{ad.content}</p>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(ad.createdAt).toLocaleDateString("fr-FR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      defaultChecked={ad.published}
+                      onChange={() => {
+                        updateAdvertisement(ad.id, {
+                          published: !ad.published,
+                        });
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="ghost" size="icon">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

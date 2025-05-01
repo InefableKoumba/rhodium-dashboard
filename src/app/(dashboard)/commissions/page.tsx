@@ -1,4 +1,4 @@
-import CommissionsTable from "@/components/admin/tables/commissions-table";
+import CommissionsTable from "@/components/tables/commissions-table";
 import CalendarRange from "@/components/common/calendarRange";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
@@ -300,15 +300,13 @@ export default async function page() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>
                             <span className="font-bold">
                               {user.firstname} {user.lastname}
                             </span>
                           </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>{user.email}</Link>
+                          <Link href={"/users/" + user.id}>
                             {user.phone_number}
                           </Link>
                         </div>
@@ -332,15 +330,13 @@ export default async function page() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>
                             <span className="font-bold">
                               {user.firstname} {user.lastname}
                             </span>
                           </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>{user.email}</Link>
+                          <Link href={"/users/" + user.id}>
                             {user.phone_number}
                           </Link>
                         </div>
@@ -474,15 +470,13 @@ export default async function page() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>
                             <span className="font-bold">
                               {user.firstname} {user.lastname}
                             </span>
                           </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>{user.email}</Link>
+                          <Link href={"/users/" + user.id}>
                             {user.phone_number}
                           </Link>
                         </div>
@@ -506,15 +500,13 @@ export default async function page() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>
                             <span className="font-bold">
                               {user.firstname} {user.lastname}
                             </span>
                           </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
-                            {user.email}
-                          </Link>
-                          <Link href={"/rhodium/users/" + user.id}>
+                          <Link href={"/users/" + user.id}>{user.email}</Link>
+                          <Link href={"/users/" + user.id}>
                             {user.phone_number}
                           </Link>
                         </div>

@@ -27,6 +27,9 @@ import {
   UpdateInvitationInput,
   UpdateCreditPackInput,
   UpdateCreditPurchaseInput,
+  CreateAdvertisementInput,
+  UpdateAdvertisementInput,
+  Advertisement,
 } from "@/types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
@@ -35,7 +38,6 @@ const API_URL = process.env.API_URL;
 
 async function getAuthHeaders() {
   const session = await getServerSession(authOptions);
-  console.log("session", session);
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${session?.user?.accessToken}`,
@@ -71,6 +73,15 @@ export async function deleteUser(id: string): Promise<void> {
   });
 }
 
+export async function getUsers(): Promise<{ users: User[]; total: number }> {
+  const response = await fetch(`${API_URL}/users`, {
+    headers: await getAuthHeaders(),
+  });
+  const data = await response.json();
+  console.log("data", data);
+  return data;
+}
+
 export async function getUser(id: string): Promise<User> {
   const response = await fetch(`${API_URL}/users/${id}`, {
     headers: await getAuthHeaders(),
@@ -79,6 +90,13 @@ export async function getUser(id: string): Promise<User> {
 }
 
 // Admin Actions
+export async function getAdmins(): Promise<{ admins: Admin[]; total: number }> {
+  const response = await fetch(`${API_URL}/admins`, {
+    headers: await getAuthHeaders(),
+  });
+  return response.json();
+}
+
 export async function createAdmin(data: CreateAdminInput): Promise<Admin> {
   const response = await fetch(`${API_URL}/admins`, {
     method: "POST",
@@ -119,7 +137,7 @@ export async function getEvents(): Promise<{ events: Event[]; total: number }> {
   const response = await fetch(`${API_URL}/events`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  return await response.json();
 }
 
 export async function createEvent(data: CreateEventInput): Promise<Event> {
@@ -381,4 +399,53 @@ export async function getCreditPurchase(id: string): Promise<CreditPurchase> {
     headers: await getAuthHeaders(),
   });
   return response.json();
+}
+
+// Advertisement Actions
+export async function createAdvertisement(
+  data: CreateAdvertisementInput
+): Promise<Advertisement> {
+  const response = await fetch(`${API_URL}/advertisements`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+export async function updateAdvertisement(
+  id: string,
+  data: UpdateAdvertisementInput
+): Promise<Advertisement> {
+  const response = await fetch(`${API_URL}/advertisements/${id}`, {
+    method: "PUT",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+export async function deleteAdvertisement(id: string): Promise<void> {
+  await fetch(`${API_URL}/advertisements/${id}`, {
+    method: "DELETE",
+    headers: await getAuthHeaders(),
+  });
+}
+
+export async function getAdvertisement(id: string): Promise<Advertisement> {
+  const response = await fetch(`${API_URL}/advertisements/${id}`, {
+    headers: await getAuthHeaders(),
+  });
+  return response.json();
+}
+
+export async function getAdvertisements(): Promise<{
+  advertisements: Advertisement[];
+  total: number;
+}> {
+  const response = await fetch(`${API_URL}/advertisements`, {
+    headers: await getAuthHeaders(),
+  });
+  const data = await response.json();
+  return data;
 }

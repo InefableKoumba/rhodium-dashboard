@@ -1,4 +1,4 @@
-import { EventResponseInterface } from "@/types/types";
+import { Event } from "@/types/types";
 import React from "react";
 import EnventDetails from "@/components/common/envent-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

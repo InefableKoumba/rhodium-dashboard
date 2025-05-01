@@ -9,15 +9,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Pencil } from "lucide-react";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
-import { Button } from "../ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Checkbox } from "./ui/checkbox";
+import { Button } from "./ui/button";
 import { toast } from "sonner";
 
-export default function UpDateNewsLetterArticleForm({
-  articleId,
-}: Readonly<{ articleId: number }>) {
+export default function UpDateAdForm({ adId }: Readonly<{ adId: number }>) {
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,9 +27,9 @@ export default function UpDateNewsLetterArticleForm({
       if (!image) return;
 
       formData.append("files", image);
-      formData.append("articleId", articleId.toString());
+      formData.append("adId", adId.toString());
 
-      const response = await fetch("/api/update-news-letter-article", {
+      const response = await fetch("/api/update-ad", {
         method: "POST",
         body: formData,
       });

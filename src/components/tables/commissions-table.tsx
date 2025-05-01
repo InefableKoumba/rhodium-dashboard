@@ -99,10 +99,7 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
         phone_number: string;
       } = row.getValue("referrer");
       return (
-        <Link
-          className="flex items-center gap-4 group"
-          href={"/rhodium/users/" + id}
-        >
+        <Link className="flex items-center gap-4 group" href={"/users/" + id}>
           {typeof avatar === "string" && avatar !== "" ? (
             <div className="size-16 rounded-full relative">
               <Image
@@ -162,10 +159,7 @@ const columns: ColumnDef<SponsorshipInterface>[] = [
         phone_number: string;
       } = row.getValue("referred_user");
       return (
-        <Link
-          className="flex items-center gap-4 group"
-          href={"/rhodium/users/" + id}
-        >
+        <Link className="flex items-center gap-4 group" href={"/users/" + id}>
           {typeof avatar === "string" && avatar !== "" ? (
             <div className="size-16 rounded-full relative">
               <Image

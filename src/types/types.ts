@@ -38,14 +38,9 @@ export enum CreditPurchaseStatus {
 export interface User {
   id: string;
   email: string;
-  password: string;
   lastname: string;
   firstname: string;
-  googleId?: string;
   avatar?: string;
-  sponsorCode: string;
-  sponsorId?: string;
-  credits: number;
   phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -54,10 +49,10 @@ export interface User {
 export interface Admin {
   id: string;
   email: string;
-  password: string;
   lastname: string;
   firstname: string;
   role: "ADMIN" | "SUPER_ADMIN";
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,11 +63,13 @@ export interface Event {
   description: string;
   startsAt: Date;
   endsAt: Date;
+  city: string;
   location: string;
   isPrivate: boolean;
   isFree: boolean;
   price?: number;
   capacity?: number;
+  coverImageId?: string;
   imageIds: string[];
   videoId?: string;
   status: EventStatus;
@@ -84,6 +81,7 @@ export interface Event {
   organizerId: string;
   tickets?: Ticket[];
   invitations?: Invitation[];
+  organizer?: User;
 }
 
 export interface TicketType {
@@ -143,6 +141,16 @@ export interface CreditPurchase {
   phoneNumber: string;
   status: CreditPurchaseStatus;
   paymentId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Advertisement {
+  id: string;
+  imageId?: string;
+  videoId?: string;
+  content: string;
+  published: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -221,6 +229,12 @@ export interface CreateCreditPurchaseInput {
   phoneNumber: string;
 }
 
+export interface CreateAdvertisementInput {
+  imageId?: string;
+  videoId?: string;
+  content: string;
+}
+
 // Update types
 export interface UpdateUserInput {
   email?: string;
@@ -290,4 +304,11 @@ export interface UpdateCreditPackInput {
 export interface UpdateCreditPurchaseInput {
   status: CreditPurchaseStatus;
   paymentId?: string;
+}
+
+export interface UpdateAdvertisementInput {
+  imageId?: string;
+  videoId?: string;
+  content?: string;
+  published?: boolean;
 }

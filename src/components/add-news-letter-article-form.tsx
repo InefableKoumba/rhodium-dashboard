@@ -8,10 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
-import { Button } from "../ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Checkbox } from "./ui/checkbox";
+import { Button } from "./ui/button";
 import { toast } from "sonner";
 
 export default function AddNewsLetterArticleForm() {

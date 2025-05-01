@@ -8,14 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Checkbox } from "../ui/checkbox";
-import { Button } from "../ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Trash } from "lucide-react";
 
-export default function DeleteNewsLetterArticleForm({
-  articleId,
-}: Readonly<{ articleId: number }>) {
+export default function DeleteAdForm({ adId }: Readonly<{ adId: number }>) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,10 +21,10 @@ export default function DeleteNewsLetterArticleForm({
     try {
       setIsLoading(true);
       const formData = new FormData();
-      formData.append("articleId", articleId.toString());
+      formData.append("adId", adId.toString());
 
       setIsLoading(true);
-      const response = await fetch("/api/delete-news-letter-article", {
+      const response = await fetch("/api/delete-ad", {
         method: "POST",
         body: formData,
       });

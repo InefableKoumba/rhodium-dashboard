@@ -51,7 +51,7 @@ import {
   SortingState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { Event } from "@/types/types";
+import { Event, EventCategory } from "@/types/types";
 import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -67,15 +67,17 @@ const columns: ColumnDef<Event>[] = [
     cell: ({ row }) => {
       const { title, cover }: { title: string; cover: string } =
         row.getValue("head");
-      const id = parseInt(row.id) + 1;
       return (
-        <Link className="flex items-center gap-2 group" href={"/events/" + id}>
+        <Link
+          className="flex items-center gap-2 group"
+          href={"/events/" + row.original.id}
+        >
           {cover ? (
             <div className="relative w-24 h-16 rounded overflow-hidden">
               <Image
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 fill
-                src={cover}
+                src={process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + cover}
                 alt={title}
                 className="object-cover group-hover:scale-110 transform transition-all duration-700"
               />
@@ -95,17 +97,14 @@ const columns: ColumnDef<Event>[] = [
     cell: ({ row }) => <div className="w-[200px]">{row.getValue("title")}</div>,
   },
   {
-    accessorKey: "creator",
+    accessorKey: "organizer",
     accessorFn: (row) => ({
       creatorName: row.organizer?.firstname + " " + row.organizer?.lastname,
     }),
     header: "Organisateur",
     cell: ({ row }) => {
-      const {
-        creatorName,
-      }: {
-        creatorName: string;
-      } = row.getValue("creator");
+      const { creatorName }: { creatorName: string } =
+        row.getValue("organizer");
       return <>{creatorName}</>;
     },
   },
@@ -117,68 +116,65 @@ const columns: ColumnDef<Event>[] = [
     }),
     header: "Lieu",
     cell: ({ row }) => {
-      const {
-        location_city,
-        country,
-      }: {
-        location_city: string;
-        country: string;
-      } = row.getValue("location");
-      return <span>{location_city + (country ? `, ${country}` : "")}</span>;
+      const { city, location }: { city: string; location: string } =
+        row.getValue("location");
+      return <span>{location + (city ? `, ${city}` : "")}</span>;
     },
   },
   {
-    accessorKey: "hasCost",
+    accessorKey: "isFree",
     header: "Accès",
     cell: ({ row }) => {
-      const hasCost = row.getValue("hasCost");
-      if (!hasCost)
-        return (
-          <div className="bg-orange-600 whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center">
-            Payant
-          </div>
-        );
+      const isFree = row.getValue("isFree");
       return (
-        <div className="border whitespace-nowrap rounded-full text-sm px-3 py-1 flex items-center justify-center">
-          Gratuit
+        <div
+          className={`whitespace-nowrap rounded-full text-sm px-3 py-1 flex items-center justify-center ${
+            isFree ? "bg-green-600 text-white" : "border"
+          }`}
+        >
+          {isFree ? "Gratuit" : "Payant"}
         </div>
       );
     },
   },
   {
-    accessorKey: "isValidatedByAdmin",
-    header: "Validation",
+    accessorKey: "status",
+    header: "Statut",
     cell: ({ row }) => {
-      const isValidatedByAdmin = row.getValue("isValidatedByAdmin");
+      const status = row.getValue("status");
+      let bgColor = "bg-gray-500";
+      let text = "Inconnu";
 
-      switch (isValidatedByAdmin) {
-        case "VALIDATED":
-          return (
-            <div className="bg-green-600 whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center">
-              Validée
-            </div>
-          );
+      switch (status) {
         case "PENDING":
-          return (
-            <div className="bg-yellow-500 whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center">
-              En attente
-            </div>
-          );
+          bgColor = "bg-yellow-500";
+          text = "En attente";
+          break;
+        case "APPROVED":
+          bgColor = "bg-green-600";
+          text = "Approuvé";
+          break;
         case "REJECTED":
-          return (
-            <div className="bg-red-500 whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center">
-              Rejétée
-            </div>
-          );
+          bgColor = "bg-red-500";
+          text = "Rejeté";
+          break;
       }
+
+      return (
+        <div
+          className={`${bgColor} whitespace-nowrap text-white rounded-full text-sm px-3 py-1 flex items-center justify-center`}
+        >
+          {text}
+        </div>
+      );
     },
   },
   {
-    accessorKey: "date_start",
-    header: "Date",
+    accessorKey: "startsAt",
+    header: "Date de début",
     cell: ({ row }) => (
       <div className="whitespace-nowrap">
-        {new Date(row.getValue("date_start")).toLocaleDateString("fr-FR", {
+        {new Date(row.getValue("startsAt")).toLocaleDateString("fr-FR", {
           month: "short",
           day: "numeric",
           year: "numeric",
@@ -187,8 +183,40 @@ const columns: ColumnDef<Event>[] = [
     ),
     filterFn: (row, id, value) => {
       return (
-        new Date(row.getValue("date_start")) >= new Date(value[0]) &&
-        new Date(row.getValue("date_start")) <= new Date(value[1])
+        new Date(row.getValue("startsAt")) >= new Date(value[0]) &&
+        new Date(row.getValue("startsAt")) <= new Date(value[1])
+      );
+    },
+  },
+  {
+    accessorKey: "endsAt",
+    header: "Date de fin",
+    cell: ({ row }) => (
+      <div className="whitespace-nowrap">
+        {new Date(row.getValue("endsAt")).toLocaleDateString("fr-FR", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "categories",
+    header: "Catégories",
+    cell: ({ row }) => {
+      const categories = row.getValue("categories") as EventCategory[];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {categories.map((category) => (
+            <span
+              key={category}
+              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
       );
     },
   },
@@ -244,7 +272,7 @@ export default function EventsTable({
     });
 
     // Set the filter value for the column
-    table.getColumn("date_start")?.setFilterValue([formattedFrom, formattedTo]);
+    table.getColumn("startsAt")?.setFilterValue([formattedFrom, formattedTo]);
   };
 
   return (
@@ -274,21 +302,19 @@ export default function EventsTable({
             <Select
               onValueChange={(value) => {
                 if (value === "all") {
-                  table
-                    .getColumn("isValidatedByAdmin")
-                    ?.setFilterValue(undefined);
+                  table.getColumn("status")?.setFilterValue(undefined);
                 } else {
-                  table.getColumn("isValidatedByAdmin")?.setFilterValue(value);
+                  table.getColumn("status")?.setFilterValue(value);
                 }
               }}
             >
               <SelectTrigger className="w-[450px] dark:bg-gray-800 dark:border-gray-800">
-                <SelectValue placeholder="Validés et En attente" />
+                <SelectValue placeholder="Approuvés et En attente" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
-                  <SelectItem value="all">Validés et En attente</SelectItem>
-                  <SelectItem value="VALIDATED">Validés</SelectItem>
+                  <SelectItem value="all">Approuvés et En attente</SelectItem>
+                  <SelectItem value="APPROVED">Approuvés</SelectItem>
                   <SelectItem value="PENDING">En attente</SelectItem>
                   <SelectItem value="REJECTED">Rejétés</SelectItem>
                 </SelectGroup>
@@ -312,11 +338,11 @@ export default function EventsTable({
           <Select
             onValueChange={(value) => {
               if (value === "all") {
-                table.getColumn("hasCost")?.setFilterValue(undefined);
+                table.getColumn("isFree")?.setFilterValue(undefined);
               } else if (value === "free") {
-                table.getColumn("hasCost")?.setFilterValue(true);
+                table.getColumn("isFree")?.setFilterValue(true);
               } else if (value === "paid") {
-                table.getColumn("hasCost")?.setFilterValue(false);
+                table.getColumn("isFree")?.setFilterValue(false);
               }
             }}
           >
@@ -334,11 +360,11 @@ export default function EventsTable({
           <Select
             onValueChange={(value) => {
               if (value === "all") {
-                table.getColumn("hasCost")?.setFilterValue(undefined);
+                table.getColumn("isFree")?.setFilterValue(undefined);
               } else if (value === "free") {
-                table.getColumn("hasCost")?.setFilterValue(true);
+                table.getColumn("isFree")?.setFilterValue(true);
               } else if (value === "paid") {
-                table.getColumn("hasCost")?.setFilterValue(false);
+                table.getColumn("isFree")?.setFilterValue(false);
               }
             }}
           >
@@ -414,13 +440,10 @@ export default function EventsTable({
                   #
                 </TableHead>
                 {headerGroup.headers.map((header) => {
-                  if (
-                    !showValidatedFilter &&
-                    header.column.id === "isValidatedByAdmin"
-                  )
+                  if (!showValidatedFilter && header.column.id === "status")
                     return (
                       <TableHead key={header.id} className="whitespace-nowrap">
-                        Rejeté par
+                        Statut
                       </TableHead>
                     );
                   return (
@@ -447,15 +470,8 @@ export default function EventsTable({
                 >
                   <TableCell key={i + 1}>{i + 1}</TableCell>
                   {row.getVisibleCells().map((cell) => {
-                    if (
-                      cell.column.id === "isValidatedByAdmin" &&
-                      !showValidatedFilter
-                    )
-                      return (
-                        <TableCell key={cell.id}>
-                          Nom de l&apos;agent ayant rejeté
-                        </TableCell>
-                      );
+                    if (cell.column.id === "status" && !showValidatedFilter)
+                      return <TableCell key={cell.id}>Statut</TableCell>;
                     return (
                       <TableCell key={cell.id}>
                         {flexRender(

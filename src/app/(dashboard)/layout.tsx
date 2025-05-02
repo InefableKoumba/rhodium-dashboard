@@ -32,7 +32,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`flex-1 flex flex-col overflow-y-scroll ${
+      className={`flex-1 flex flex-col overflow-auto ${
         isExpanded ? "ml-64" : "ml-0"
       } w-full transition-all duration-200`}
     >
@@ -42,8 +42,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
           <ThemeModeToggle />
           <Dialog>
             <DialogTrigger>
-              <div className="border dark:border-gray-800 hover:bg-dark hover:text-white w-10 h-10 flex justify-center items-center rounded-full">
-                <Bell />
+              <div className="border dark:border-gray-800 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 w-10 h-10 flex justify-center items-center rounded-full">
+                <Bell color="#555" />
               </div>
             </DialogTrigger>
             <DialogContent className="max-w-[800px]">
@@ -117,17 +117,15 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
           </Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <div className="w-12 hover:bg-dark hover:text-white h-12 rounded-full border dark:border-gray-800 flex justify-center items-center">
-                <User />
+              <div className="w-12 h-12 rounded-full border hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-100 flex justify-center items-center">
+                <User color="#555" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <form action={async () => await signOut()}>
-                  <button>Déconnexion</button>
-                </form>
+              <DropdownMenuItem onClick={() => signOut()}>
+                Déconnexion
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -149,7 +147,7 @@ export default function Layout({
       disableTransitionOnChange
     >
       <SidebarProvider>
-        <div className="flex w-full h-screen overflow-hidden">
+        <div className="flex w-full h-screen">
           <SidebarNavigation />
           <DashboardContent>{children}</DashboardContent>
         </div>

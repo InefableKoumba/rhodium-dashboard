@@ -9,9 +9,12 @@ import {
   DollarSign,
   Lock,
   Unlock,
+  Plus,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getEvents } from "@/lib/actions";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -35,12 +38,22 @@ export default async function Page() {
   return (
     <div className="p-8 space-y-8">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-          Gestion des évènements
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Gérez et suivez tous vos évènements
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+              Gestion des évènements
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Gérez et suivez tous vos évènements
+            </p>
+          </div>
+          <Link href="/events/new">
+            <Button className="gap-2">
+              <Plus className="size-4" />
+              Ajouter un évènement
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

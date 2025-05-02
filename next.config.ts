@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "www.rhodiumevent.xyz",
+        hostname: "pub-ae088144a8ed4eb88768ecc69b18a04e.r2.dev",
         pathname: "**",
       },
       {

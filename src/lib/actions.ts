@@ -44,6 +44,23 @@ async function getAuthHeaders() {
   };
 }
 
+export async function getPresignedUrl({
+  key,
+  contentType,
+}: {
+  key: string;
+  contentType: string;
+}): Promise<string> {
+  const response = await fetch(`${API_URL}/uploads/presigned-url`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ key, contentType }),
+  });
+  const data = await response.json();
+  console.log("data", data);
+  return data;
+}
+
 // User Actions
 export async function createUser(data: CreateUserInput): Promise<User> {
   const response = await fetch(`${API_URL}/users`, {
@@ -140,13 +157,16 @@ export async function getEvents(): Promise<{ events: Event[]; total: number }> {
   return await response.json();
 }
 
-export async function createEvent(data: CreateEventInput): Promise<Event> {
+export async function createEvent(data: CreateEventInput): Promise<boolean> {
   const response = await fetch(`${API_URL}/events`, {
     method: "POST",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  const event = await response.json();
+  console.log("Input data", data);
+  console.log("Event", event);
+  return response.ok;
 }
 
 export async function updateEvent(

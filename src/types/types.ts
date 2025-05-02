@@ -67,8 +67,6 @@ export interface Event {
   location: string;
   isPrivate: boolean;
   isFree: boolean;
-  price?: number;
-  capacity?: number;
   coverImageId?: string;
   imageIds: string[];
   videoId?: string;
@@ -77,9 +75,11 @@ export interface Event {
   approvedById?: string;
   approvedAt?: Date;
   createdAt: Date;
+  categories: EventCategory[];
   updatedAt: Date;
   organizerId: string;
   tickets?: Ticket[];
+  ticketTypes?: TicketType[];
   invitations?: Invitation[];
   organizer?: User;
 }
@@ -100,14 +100,6 @@ export interface Ticket {
   userId: string;
   ticketTypeId: string;
   status: TicketStatus;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Category {
-  id: string;
-  name: EventCategory;
-  description?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -183,18 +175,17 @@ export interface CreateEventInput {
   location: string;
   isPrivate: boolean;
   isFree: boolean;
-  price?: number;
-  capacity?: number;
+  coverImageId?: string;
+  categories: string[];
   imageIds?: string[];
   videoId?: string;
-  organizerId: string;
+  ticketTypes?: CreateTicketTypeInput[];
 }
 
 export interface CreateTicketTypeInput {
   name: string;
   price: number;
   maxQuantity: number;
-  eventId: string;
 }
 
 export interface CreateTicketInput {
@@ -264,8 +255,8 @@ export interface UpdateEventInput {
   location?: string;
   isPrivate?: boolean;
   isFree?: boolean;
-  price?: number;
-  capacity?: number;
+  coverImageId?: string;
+  categories?: string[];
   imageIds?: string[];
   videoId?: string;
   status?: EventStatus;

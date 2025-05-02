@@ -24,6 +24,7 @@ export default async function page() {
       },
     }
   );
+  console.log(response);
   if (response.ok) {
     const token = (await response.json())["access_token"];
 

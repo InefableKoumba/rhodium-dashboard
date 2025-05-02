@@ -1,21 +1,20 @@
 import { Event } from "@/types/types";
 import React from "react";
-import EnventDetails from "@/components/common/envent-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
-  Check,
-  Info,
-  Pencil,
-  Settings,
-  ShieldX,
-  Sofa,
-  Ticket,
-  TicketCheck,
-  Trash,
+  Calendar,
+  Clock,
+  MapPin,
   Users,
-  X,
+  Ticket,
+  DollarSign,
+  Shield,
+  Info,
+  Settings,
+  Pencil,
+  Trash,
 } from "lucide-react";
 import {
   Table,
@@ -43,55 +42,11 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { getEvent } from "@/lib/actions";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
-
-const tickets = [
-  {
-    category: "Standard",
-    quantity: 120,
-    price: 5000,
-  },
-  {
-    category: "VIP",
-    quantity: 14,
-    price: 20000,
-  },
-  {
-    category: "VVIP",
-    quantity: 5,
-    price: 50000,
-  },
-  {
-    category: "Autres",
-    quantity: 60,
-    price: 2500,
-  },
-];
-
-const invitations = [
-  {
-    name: "Inefable KOUMBA",
-    code: "45210",
-    status: "Acceptée",
-    tickets: ["Normal", "VIP"],
-    scanned: true,
-  },
-  {
-    name: "Gabi MABIALA",
-    code: "45211",
-    status: "Acceptée",
-    tickets: ["Normal", "VIP"],
-    scanned: false,
-  },
-  {
-    name: "Franz OSSETE",
-    code: "45212",
-    status: "Acceptée",
-    tickets: ["Normal", "VIP"],
-    scanned: true,
-  },
-];
 
 export default async function page({
   params,
@@ -100,651 +55,418 @@ export default async function page({
 }) {
   try {
     const id = (await params).id;
-
-    const response = await fetch(
-      process.env.NEXT_API_URL +
-        "/events?filters[id][$eq]=" +
-        id +
-        "&populate=*"
-    );
-    const event = (await response.json())["data"][0] as EventResponseInterface;
+    const event = await getEvent(id);
 
     return (
-      <div>
-        <div className="relative h-[20rem] md:h-[25rem] lg:h-[28rem] xl:h-[30rem] w-full">
+      <div className="space-y-8">
+        {/* Hero Section */}
+        <div className="relative h-[400px] w-full">
           <Image
             fill
-            alt={event.attributes.title}
-            className="object-cover"
+            alt={event.title}
+            className="object-cover rounded-lg"
             src={
-              event.attributes?.coverImage?.data?.attributes.url
-                ? process.env.NEXT_STORAGE_BUCKET_URL! +
-                  event.attributes?.coverImage?.data?.attributes.url
+              event.coverImageId
+                ? process.env.NEXT_PUBLIC_R2_BUCKET_URL +
+                  "/" +
+                  event.coverImageId
                 : "https://via.placeholder.com/150"
             }
           />
-          <div className="absolute left-0 w-full h-full bg-gradient-to-b from-transparent to-[#000000bb]"></div>
-          <div className="absolute right-12 bottom-6 flex gap-2">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 rounded-lg" />
+          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+            <h1 className="text-4xl font-bold mb-2">{event.title}</h1>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="flex items-center gap-1">
+                <Calendar size={16} />
+                {format(new Date(event.startsAt), "PPP", { locale: fr })}
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock size={16} />
+                {format(new Date(event.startsAt), "p", { locale: fr })}
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin size={16} />
+                {event.location}, {event.city}
+              </span>
+            </div>
+          </div>
+          <div className="absolute top-4 right-4 flex gap-2">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant={"destructive"} className=" text-white ">
-                  <X />
-                  Réjeter
+                <Button variant="destructive">
+                  <Shield size={16} className="mr-2" />
+                  Rejeter
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>
-                    Voulez-vous vraiment rejeter cet évènement?
-                  </DialogTitle>
+                  <DialogTitle>Rejeter cet événement</DialogTitle>
                   <DialogDescription>
-                    Vous êtes sur le point de rejeter cet évènement. Les
-                    utilisateurs pourront voir et acheter des tickets pour cet
-                    évènement.
+                    Veuillez fournir une raison pour le rejet de cet événement.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="my-4 flex flex-col gap-4">
-                  <Textarea placeholder="Motif du rejet" rows={6}></Textarea>
-                  <div className="flex gap-2 items-center">
-                    <Checkbox />
-                    <span className="text-sm">
-                      Je confirme vouloir rejeter cet évènement
-                    </span>
+                <div className="space-y-4">
+                  <Textarea placeholder="Raison du rejet" />
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="confirm" />
+                    <label htmlFor="confirm" className="text-sm">
+                      Je confirme vouloir rejeter cet événement
+                    </label>
                   </div>
+                  <Button variant="destructive">Rejeter</Button>
                 </div>
-                <Button variant={"destructive"}>Rejeter</Button>
               </DialogContent>
             </Dialog>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="text-white hover:bg-dark/90">
-                  <Check />
-                  Valider
+                <Button>
+                  <Shield size={16} className="mr-2" />
+                  Approuver
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>
-                    Voulez-vous vraiment valider cet évènement?
-                  </DialogTitle>
+                  <DialogTitle>Approuver cet événement</DialogTitle>
                   <DialogDescription>
-                    Vous êtes sur le point de valider cet évènement. Les
-                    utilisateurs pourront voir et acheter des tickets pour cet
-                    évènement.
+                    Êtes-vous sûr de vouloir approuver cet événement ?
                   </DialogDescription>
                 </DialogHeader>
-                <div className="flex gap-2 my-4 items-center">
-                  <Checkbox />
-                  <span className="text-sm">
-                    Je confirme vouloir valider cet évènement
-                  </span>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="confirm" />
+                    <label htmlFor="confirm" className="text-sm">
+                      Je confirme vouloir approuver cet événement
+                    </label>
+                  </div>
+                  <Button>Approuver</Button>
                 </div>
-                <Button>Valider</Button>
               </DialogContent>
             </Dialog>
           </div>
         </div>
-        <div className="px-12">
-          <Tabs defaultValue="details" className="w-full mt-12">
-            <TabsList>
-              <TabsTrigger value="details" className="gap-2 px-6">
-                <Info color="#333" size={20} />
-                Informations
-              </TabsTrigger>
-              <TabsTrigger value="tickets" className="gap-2 px-6">
-                <Ticket color="#333" size={20} />
-                Tickets
-              </TabsTrigger>
-              <TabsTrigger value="sold_tickets" className="gap-2 px-6">
-                <TicketCheck color="#333" size={20} />
-                Tickets vendus
-              </TabsTrigger>
-              <TabsTrigger value="sold_invitations_pack" className="gap-2 px-6">
-                <TicketCheck color="#333" size={20} />
-                Lot d&apos;invitations vendus
-              </TabsTrigger>
-              <TabsTrigger value="invitations" className="gap-2 px-6">
-                <Users color="#333" size={20} />
-                Invitations
-              </TabsTrigger>
-              <TabsTrigger value="tables" className="gap-2 px-6">
-                <Sofa color="#333" size={20} />
-                Tables
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-2 px-6">
-                <Settings />
-                Paramètres
-              </TabsTrigger>
-            </TabsList>
-            <div className="my-12" />
-            <TabsContent value="details">
-              <EnventDetails event={event} adminView />
-            </TabsContent>
-            <TabsContent value="tickets">
-              <div className="flex flex-col gap-2 mb-10">
-                <span className="text-2xl font-bold">
-                  Liste des catégories de tickets pour cet évènement
-                </span>
-                <span>
-                  Ici vous pouvez ajouter, modifier ou supprimer des catégories
-                  de tickets pour cet évènement
-                </span>
-              </div>
-              <Table className="mb-24 border">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>Catégorie ticket</TableHead>
-                    <TableHead>Quantité de tickets</TableHead>
-                    <TableHead>Prix du ticket</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tickets.map((ticket, i) => (
-                    <TableRow key={ticket.category}>
-                      <TableCell className="font-medium">{i + 1}</TableCell>
-                      <TableCell className="font-medium">Standard</TableCell>
-                      <TableCell className="font-medium">120</TableCell>
-                      <TableCell className="font-medium">5 000 XAF</TableCell>
-                      <TableCell className="font-medium flex gap-2">
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Pencil size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Modifier ce ticket</DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de modifier ce ticket.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col gap-2 mt-4">
-                              <Input placeholder="Catégorie" />
-                              <Input placeholder="Quantité" type="number" />
-                              <Input placeholder="Prix" type="number" />
-                            </div>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir modifier ce ticket
-                              </span>
-                            </div>
-                            <Button>Modifier</Button>
-                          </DialogContent>
-                        </Dialog>
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Trash size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Voulez-vous vraiment supprimer ce ticket ?
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de supprimer ce ticket.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir supprimer ce ticket
-                              </span>
-                            </div>
-                            <Button>Supprimer</Button>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="sold_tickets">
-              <div className="flex gap-4">
-                <div className="w-1/2 border text-sm p-8 rounded flex flex-col bg-gray-50 shadow-sm justify-between gap-4">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span>Montant généré</span>
-                      </div>
-                      <span className="font-bold text-2xl">8 500 XAF</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span>Montant à payer (-10% commissions)</span>
-                      </div>
-                      <span className="font-bold text-2xl text-green-700">
-                        7 650 XAF
-                      </span>
-                    </div>
-                    <hr className="mt-4" />
-                    <div className="flex items-center justify-between">
-                      <span>12 Tickets GOLDEN vendus</span>
-                      <span> 6000 XAF</span>
-                    </div>
-                    <hr />
-                    <div className="flex items-center justify-between">
-                      <span>02 Tickets STANDARD vendus</span>
-                      <span>1000 XAF</span>
-                    </div>
-                    <hr />
-                    <div className="flex items-center justify-between">
-                      <span>02 Tickets VIP vendus</span>
-                      <span>1000 XAF</span>
-                    </div>
-                    <hr />
-                    <div className="flex items-center justify-between">
-                      <span>01 Tickets VVIP vendus</span>
-                      <span>500 XAF</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Tickets scannés : 0</span>
-                    <span>Absents : 0</span>
-                  </div>
-                </div>
-                <div className="w-1/2 border text-sm p-8 rounded flex flex-col bg-gray-50 shadow-sm gap-2">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span>Montant déjà payé</span>
-                    </div>
-                    <span className="font-bold text-2xl text-red-600">
-                      5 000 XAF
-                    </span>
-                  </div>
-                  <hr className="mt-4" />
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span>Montant restant</span>
-                    </div>
-                    <span className="font-bold text-2xl text-blue-800">
-                      2 650 XAF
-                    </span>
-                  </div>
-                  <hr className="mt-4" />
-                  <div className="flex flex-col gap-2 mb-4">
-                    <span className="font-semibold">Procéder au paiement</span>
-                    <span className="text-sm">
-                      Le virement sera éffectué sur le portefeuille electronique
-                      de l&apos;organisateur de l&apos;évènement
-                    </span>
-                  </div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full">Payer maintenant</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>
-                          Payer l&apos;organisateur d&apos;évènement
-                        </DialogTitle>
-                        <DialogDescription>
-                          Vous êtes sur le point de payer cet organisateur
-                          d&apos;évènement
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex flex-col gap-2 mt-4">
-                        <Input
-                          placeholder="Montant à payer"
-                          type="number"
-                          max={2650}
-                        />
-                        <Select>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Opérateur" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="accepted">Airtel</SelectItem>
-                            <SelectItem value="pending">MTN</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex gap-2 my-4 items-center">
-                        <Checkbox />
-                        <span className="text-sm">
-                          Je confirme vouloir payer l&apos;organisateur de cet
-                          évènement
-                        </span>
-                      </div>
-                      <Button>Payer maintenant</Button>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </div>
 
-              <Table className="mb-24 mt-10 border rounded">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="py-4">#</TableHead>
-                    <TableHead>Acheteur</TableHead>
-                    <TableHead>Catégorie</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Date de vente</TableHead>
-                    <TableHead>Scanné</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {event.attributes.tickets_generated?.data.map((ticket, i) => (
-                    <TableRow key={ticket.id}>
-                      <TableCell className="font-medium">{i + 1}</TableCell>
-                      <TableCell className="font-medium">
-                        Nom de l&apos;acheteur
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {ticket.attributes.category}
-                      </TableCell>
-                      <TableCell className="font-medium">500 XAF</TableCell>
-                      <TableCell>
-                        {new Date(ticket.attributes.createdAt).toLocaleString(
-                          "fr-FR",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "numeric",
-                          }
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {ticket.attributes.isScanned ? "Déjà" : "Pas encore"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="invitations">
-              <div className="flex flex-col gap-2 mb-10">
-                <span className="text-2xl font-bold">
-                  Liste d&apos;invitations de cet évènement
-                </span>
-                <span>
-                  Ici vous pouvez ajouter, modifier ou supprimer des invitations
-                </span>
+        {/* Main Content */}
+        <Tabs defaultValue="details" className="w-full p-12 pt-0">
+          <TabsList>
+            <TabsTrigger value="details" className="gap-2">
+              <Info size={16} />
+              Détails
+            </TabsTrigger>
+            <TabsTrigger value="tickets" className="gap-2">
+              <Ticket size={16} />
+              Tickets
+            </TabsTrigger>
+            <TabsTrigger value="invitations" className="gap-2">
+              <Users size={16} />
+              Invitations
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings size={16} />
+              Paramètres
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Description</h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {event.description}
+                </p>
               </div>
-              <Table className="mb-24">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Personne invitée</TableHead>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead>Tickets</TableHead>
-                    <TableHead>Scannée</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {invitations.map((invitation) => (
-                    <TableRow key={invitation.code}>
-                      <TableCell className="font-medium">
-                        {invitation.name}
-                      </TableCell>
-                      <TableCell>{invitation.code}</TableCell>
-                      <TableCell>{invitation.status}</TableCell>
-                      <TableCell>
-                        <ol>
-                          {invitation.tickets.map((ticket) => (
-                            <li key={ticket}>{ticket}</li>
-                          ))}
-                        </ol>
-                      </TableCell>
-                      <TableCell>
-                        {invitation.scanned ? "Déjà" : "Pas encore"}
-                      </TableCell>
-                      <TableCell className="font-medium flex gap-2">
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Pencil size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Modifier cette invitation
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de modifier ce ticket.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col gap-2 mt-4">
-                              <Input placeholder="Personne invitée" />
-                              <Input placeholder="Code" type="number" />
-                              <Select>
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Acceptée" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="accepted">
-                                    Acceptée
-                                  </SelectItem>
-                                  <SelectItem value="pending">
-                                    En attente
-                                  </SelectItem>
-                                  <SelectItem value="rejected">
-                                    Rejeté
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <Select>
-                                <SelectContent>
-                                  <SelectItem value="scanned">
-                                    Déjà scannée
-                                  </SelectItem>
-                                  <SelectItem value="pending">
-                                    Pas encore
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir modifier ces informations
-                              </span>
-                            </div>
-                            <Button>Modifier</Button>
-                          </DialogContent>
-                        </Dialog>
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Trash size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Voulez-vous vraiment supprimer cette invitation
-                                ?
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de supprimer ce ticket.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir supprimer cette invitation
-                              </span>
-                            </div>
-                            <Button>Supprimer</Button>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="tables">
-              <div className="flex flex-col gap-2 mb-10">
-                <span className="text-2xl font-bold">
-                  Liste de tables pour cet évènement
-                </span>
-                <span>
-                  Ici vous pouvez ajouter, modifier ou supprimer des tables pour
-                  cet évènement
-                </span>
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Informations</h2>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} className="text-gray-500" />
+                    <span>
+                      Du{" "}
+                      {format(new Date(event.startsAt), "PPP", { locale: fr })}{" "}
+                      au {format(new Date(event.endsAt), "PPP", { locale: fr })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin size={16} className="text-gray-500" />
+                    <span>
+                      {event.location}, {event.city}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-gray-500" />
+                    <span>
+                      Organisé par {event.organizer?.firstname}{" "}
+                      {event.organizer?.lastname}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DollarSign size={16} className="text-gray-500" />
+                    <span>{event.isFree ? "Gratuit" : "Payant"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Shield size={16} className="text-gray-500" />
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm ${
+                        event.status === "APPROVED"
+                          ? "bg-green-100 text-green-800"
+                          : event.status === "PENDING"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {event.status === "APPROVED"
+                        ? "Approuvé"
+                        : event.status === "PENDING"
+                        ? "En attente"
+                        : "Rejeté"}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <Table className="mb-24">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Désignation</TableHead>
-                    <TableHead>Personnes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Table 1</TableCell>
-                    <TableCell className="font-medium flex flex-col">
-                      <ol className="list-decimal">
-                        <li>Franz OSSETE</li>
-                        <li>Inefable KOUMBA</li>
-                      </ol>
-                    </TableCell>
-                    <TableCell className="font-medium">
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Catégories</h2>
+              <div className="flex flex-wrap gap-2">
+                {event.categories.map((category) => (
+                  <span
+                    key={category}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  >
+                    {category}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tickets" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Types de tickets</h2>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Ticket size={16} className="mr-2" />
+                    Ajouter un type de ticket
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Nouveau type de ticket</DialogTitle>
+                    <DialogDescription>
+                      Créez un nouveau type de ticket pour cet événement
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input placeholder="Nom du ticket" />
+                    <Input placeholder="Prix" type="number" />
+                    <Input placeholder="Quantité maximale" type="number" />
+                    <Button>Créer</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Prix</TableHead>
+                  <TableHead>Quantité</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {event.ticketTypes?.map((ticketType) => (
+                  <TableRow key={ticketType.id}>
+                    <TableCell>{ticketType.name}</TableCell>
+                    <TableCell>{ticketType.price} XAF</TableCell>
+                    <TableCell>{ticketType.maxQuantity}</TableCell>
+                    <TableCell>
                       <div className="flex gap-2">
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Pencil size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Modifier cette table</DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de modifier cette table.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col gap-2 mt-4">
-                              <Input placeholder="Désignation" />
-                            </div>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir modifier cette table
-                              </span>
-                            </div>
-                            <Button>Modifier</Button>
-                          </DialogContent>
-                        </Dialog>
-                        <Dialog>
-                          <DialogTrigger>
-                            <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                              <Trash size={18} color="#333" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Voulez-vous vraiment supprimer cette table ?
-                              </DialogTitle>
-                              <DialogDescription>
-                                Vous êtes sur le point de supprimer ce ticket.
-                                Cette action est irréversible.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex gap-2 my-4 items-center">
-                              <Checkbox />
-                              <span className="text-sm">
-                                Je confirme vouloir supprimer cette table
-                              </span>
-                            </div>
-                            <Button>Supprimer</Button>
-                          </DialogContent>
-                        </Dialog>
+                        <Button variant="ghost" size="icon">
+                          <Pencil size={16} />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash size={16} />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="settings" className="mb-24">
-              <div className="flex flex-col gap-2 mb-10">
-                <span className="text-2xl font-bold">
-                  Paramètres de cet évènement
-                </span>
-                <span>
-                  Ici vous pouvez modifier les paramètres de cet évènement et le
-                  supprimer
-                </span>
-              </div>
-              <div className="flex flex-col gap-4 w-min">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className=" text-white flex items-center justify-center">
-                      <ShieldX size={18} color="#ddd" />
-                      Suspendre cet évènement
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        Voulez-vous vraiment suspendre cet évènement?
-                      </DialogTitle>
-                      <DialogDescription>
-                        Les utilisateurs ne pourront plus acheter de tickets
-                        pour cet évènement ni voir les informations de cet
-                        évènement.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex gap-2 my-4 items-center">
-                      <Checkbox />
-                      <span className="text-sm">
-                        Je confirme vouloir suspendre cet évènement
+                ))}
+              </TableBody>
+            </Table>
+          </TabsContent>
+
+          <TabsContent value="invitations" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Invitations</h2>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Users size={16} className="mr-2" />
+                    Ajouter une invitation
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Nouvelle invitation</DialogTitle>
+                    <DialogDescription>
+                      Créez une nouvelle invitation pour cet événement
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input placeholder="Email de l'invité" />
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Type de ticket" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {event.ticketTypes?.map((ticketType) => (
+                          <SelectItem key={ticketType.id} value={ticketType.id}>
+                            {ticketType.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button>Créer</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invité</TableHead>
+                  <TableHead>Type de ticket</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {event.invitations?.map((invitation) => (
+                  <TableRow key={invitation.id}>
+                    <TableCell>{invitation.userId}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm ${
+                          invitation.status === "ACCEPTED"
+                            ? "bg-green-100 text-green-800"
+                            : invitation.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {invitation.status === "ACCEPTED"
+                          ? "Acceptée"
+                          : invitation.status === "PENDING"
+                          ? "En attente"
+                          : "Refusée"}
                       </span>
-                    </div>
-                    <Button>Suspendre</Button>
-                  </DialogContent>
-                </Dialog>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="bg-red-700 hover:bg-red-600 text-white flex items-center justify-center">
-                      <Trash size={18} color="#ddd" />
-                      Supprimer cet évènement
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        Voulez-vous vraiment supprimer cet évènement?
-                      </DialogTitle>
-                      <DialogDescription>
-                        Vous êtes sur le point de supprimer cet évènement.
-                        Toutes les données liées à cet évènement seront perdues.
-                        Cette action est irréversible
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex gap-2 my-4 items-center">
-                      <Checkbox />
-                      <span className="text-sm">
-                        Je confirme vouloir supprimer cet évènement
-                      </span>
-                    </div>
-                    <Button className="bg-red-700 hover:bg-red-600">
-                      Supprimer
-                    </Button>
-                  </DialogContent>
-                </Dialog>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon">
+                          <Pencil size={16} />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash size={16} />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <h2 className="text-2xl font-bold">Paramètres de l'événement</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Titre</label>
+                  <Input defaultValue={event.title} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Description</label>
+                  <Textarea defaultValue={event.description} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Lieu</label>
+                  <Input defaultValue={event.location} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Ville</label>
+                  <Input defaultValue={event.city} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Date de début</label>
+                  <Input
+                    type="datetime-local"
+                    defaultValue={new Date(event.startsAt)
+                      .toISOString()
+                      .slice(0, 16)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Date de fin</label>
+                  <Input
+                    type="datetime-local"
+                    defaultValue={new Date(event.endsAt)
+                      .toISOString()
+                      .slice(0, 16)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Type d'accès</label>
+                  <Select defaultValue={event.isFree ? "free" : "paid"}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un type d'accès" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="free">Gratuit</SelectItem>
+                      <SelectItem value="paid">Payant</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Catégories</label>
+                  <Select defaultValue={event.categories[0]}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {event.categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </TabsContent>
-          </Tabs>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline">Annuler</Button>
+                <Button>Enregistrer</Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  } catch (error) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Événement non trouvé</h2>
+          <p className="text-gray-600">
+            L'événement que vous recherchez n'existe pas ou a été supprimé.
+          </p>
         </div>
       </div>
     );
-  } catch (_) {
-    return null;
   }
 }

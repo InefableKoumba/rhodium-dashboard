@@ -15,6 +15,7 @@ import {
   Settings,
   Pencil,
   Trash,
+  QrCode,
 } from "lucide-react";
 import {
   Table,
@@ -58,7 +59,7 @@ export default async function page({
     const event = await getEvent(id);
 
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 px-8 pt-4">
         {/* Hero Section */}
         <div className="relative h-[400px] w-full">
           <Image
@@ -194,10 +195,19 @@ export default async function page({
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} className="text-gray-500" />
-                    <span>
-                      Organisé par {event.organizer?.firstname}{" "}
-                      {event.organizer?.lastname}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span>Organisé par </span>
+                      <span className="font-semibold">
+                        {event.organizer?.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <QrCode size={16} className="text-gray-500" />
+                    <div className="flex items-center gap-2">
+                      <span>Code QR </span>
+                      <span className="font-semibold">{event.scanCode}</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <DollarSign size={16} className="text-gray-500" />

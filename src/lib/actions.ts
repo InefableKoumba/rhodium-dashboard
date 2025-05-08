@@ -5,7 +5,6 @@ import {
   Event,
   TicketType,
   Ticket,
-  Category,
   Invitation,
   CreditPack,
   CreditPurchase,
@@ -30,6 +29,7 @@ import {
   CreateAdvertisementInput,
   UpdateAdvertisementInput,
   Advertisement,
+  EventCategory,
 } from "@/types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
@@ -150,11 +150,16 @@ export async function getAdmin(id: string): Promise<Admin> {
 }
 
 // Event Actions
-export async function getEvents(): Promise<{ events: Event[]; total: number }> {
+export async function getEvents(): Promise<{
+  events: Event[];
+  total: number;
+}> {
   const response = await fetch(`${API_URL}/events`, {
     headers: await getAuthHeaders(),
   });
-  return await response.json();
+  const data = await response.json();
+  console.log("data", data);
+  return data;
 }
 
 export async function createEvent(data: CreateEventInput): Promise<boolean> {
@@ -272,7 +277,7 @@ export async function getTicket(id: string): Promise<Ticket> {
 // Category Actions
 export async function createCategory(
   data: CreateCategoryInput
-): Promise<Category> {
+): Promise<EventCategory> {
   const response = await fetch(`${API_URL}/categories`, {
     method: "POST",
     headers: await getAuthHeaders(),
@@ -284,7 +289,7 @@ export async function createCategory(
 export async function updateCategory(
   id: string,
   data: UpdateCategoryInput
-): Promise<Category> {
+): Promise<EventCategory> {
   const response = await fetch(`${API_URL}/categories/${id}`, {
     method: "PUT",
     headers: await getAuthHeaders(),
@@ -300,7 +305,7 @@ export async function deleteCategory(id: string): Promise<void> {
   });
 }
 
-export async function getCategory(id: string): Promise<Category> {
+export async function getCategory(id: string): Promise<EventCategory> {
   const response = await fetch(`${API_URL}/categories/${id}`, {
     headers: await getAuthHeaders(),
   });

@@ -38,8 +38,7 @@ export enum CreditPurchaseStatus {
 export interface User {
   id: string;
   email: string;
-  lastname: string;
-  firstname: string;
+  name: string;
   avatar?: string;
   phoneNumber?: string;
   createdAt: Date;
@@ -65,6 +64,7 @@ export interface Event {
   endsAt: Date;
   city: string;
   location: string;
+  scanCode: string;
   isPrivate: boolean;
   isFree: boolean;
   coverImageId?: string;

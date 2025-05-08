@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
+import { jwtDecode } from "jwt-decode";
 
 export const authResponseSchema = z.object({
   access_token: z.string(),
@@ -42,6 +43,7 @@ declare module "next-auth/jwt" {
     name?: string;
     role?: string;
     accessToken?: string;
+    exp?: number; // JWT expiration time
   }
 }
 
@@ -78,8 +80,9 @@ export const authOptions: NextAuthOptions = {
             },
             body: JSON.stringify({ email, password }),
           });
+          console.log("response", response.status);
           if (!response.ok) return null;
-          const responseData = (await response.json()) as AuthResponseDto;
+          const responseData = (await response.json()).data as AuthResponseDto;
           if (responseData.user)
             return {
               id: responseData.user.id,
@@ -101,6 +104,33 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.accessToken = user.accessToken;
       }
+
+      // Check if the token has expired and log the user out
+      if (token.accessToken) {
+        try {
+          const decodedToken = jwtDecode(token.accessToken) as { exp: number };
+
+          const currentTime = Date.now() / 1000; // Current time in seconds
+
+          if (decodedToken.exp < currentTime) {
+            // Token has expired, create a minimal valid token instead of returning null
+            return {
+              id: token.id || "",
+              email: token.email || "",
+              exp: 0,
+            };
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          // Return minimal valid token instead of null
+          return {
+            id: token.id || "",
+            email: token.email || "",
+            exp: 0,
+          };
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

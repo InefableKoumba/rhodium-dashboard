@@ -99,7 +99,7 @@ const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "organizer",
     accessorFn: (row) => ({
-      creatorName: row.organizer?.firstname + " " + row.organizer?.lastname,
+      creatorName: row.organizer?.name,
     }),
     header: "Organisateur",
     cell: ({ row }) => {

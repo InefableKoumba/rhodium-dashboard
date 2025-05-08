@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
 import { jwtDecode } from "jwt-decode";
+import { API_URL } from "@/constants/constants";
 
 export const authResponseSchema = z.object({
   access_token: z.string(),
@@ -67,20 +68,19 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(6) })
           .safeParse(credentials);
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          const response = await fetch(`${process.env.API_URL}/auth/login`, {
+          const response = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ email, password }),
           });
-          console.log("response", response.status);
+
           if (!response.ok) return null;
           const responseData = (await response.json()).data as AuthResponseDto;
           if (responseData.user)

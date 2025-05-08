@@ -1,4 +1,3 @@
-import { Event } from "@/types/types";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
@@ -43,9 +42,12 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { getEvent } from "@/lib/actions";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import ApproveEventModal from "@/components/modals/approve-event";
+import RejectEventModal from "@/components/modals/reject-event";
+import { getEvent } from "@/lib/actions";
+import AddTicketTypeModal from "@/components/modals/add-ticket";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +59,19 @@ export default async function page({
   try {
     const id = (await params).id;
     const event = await getEvent(id);
+
+    let statusBgColor = "bg-yellow-500";
+    let statusText = "En attente d'approbation";
+    switch (event.status) {
+      case "APPROVED":
+        statusBgColor = "bg-green-600";
+        statusText = "Approuvé";
+        break;
+      case "REJECTED":
+        statusBgColor = "bg-red-500";
+        statusText = "Rejeté";
+        break;
+    }
 
     return (
       <div className="space-y-8 px-8 pt-4">
@@ -76,6 +91,11 @@ export default async function page({
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 rounded-lg" />
           <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+            <div
+              className={`px-2 py-1 rounded-full text-sm ${statusBgColor} w-max py-2 px-4 mb-2`}
+            >
+              {statusText}
+            </div>
             <h1 className="text-4xl font-bold mb-2">{event.title}</h1>
             <div className="flex items-center gap-4 text-sm">
               <span className="flex items-center gap-1">
@@ -93,57 +113,8 @@ export default async function page({
             </div>
           </div>
           <div className="absolute top-4 right-4 flex gap-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="destructive">
-                  <Shield size={16} className="mr-2" />
-                  Rejeter
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Rejeter cet événement</DialogTitle>
-                  <DialogDescription>
-                    Veuillez fournir une raison pour le rejet de cet événement.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Textarea placeholder="Raison du rejet" />
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="confirm" />
-                    <label htmlFor="confirm" className="text-sm">
-                      Je confirme vouloir rejeter cet événement
-                    </label>
-                  </div>
-                  <Button variant="destructive">Rejeter</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>
-                  <Shield size={16} className="mr-2" />
-                  Approuver
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Approuver cet événement</DialogTitle>
-                  <DialogDescription>
-                    Êtes-vous sûr de vouloir approuver cet événement ?
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="confirm" />
-                    <label htmlFor="confirm" className="text-sm">
-                      Je confirme vouloir approuver cet événement
-                    </label>
-                  </div>
-                  <Button>Approuver</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            {event.status !== "REJECTED" && <RejectEventModal eventId={id} />}
+            {event.status !== "APPROVED" && <ApproveEventModal eventId={id} />}
           </div>
         </div>
 
@@ -253,28 +224,7 @@ export default async function page({
           <TabsContent value="tickets" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Types de tickets</h2>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Ticket size={16} className="mr-2" />
-                    Ajouter un type de ticket
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Nouveau type de ticket</DialogTitle>
-                    <DialogDescription>
-                      Créez un nouveau type de ticket pour cet événement
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input placeholder="Nom du ticket" />
-                    <Input placeholder="Prix" type="number" />
-                    <Input placeholder="Quantité maximale" type="number" />
-                    <Button>Créer</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <AddTicketTypeModal eventId={id} />
             </div>
 
             <Table>

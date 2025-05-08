@@ -53,7 +53,7 @@ import {
 } from "@tanstack/react-table";
 import { Event, EventCategory } from "@/types/types";
 import { cn } from "@/lib/utils";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 
 const columns: ColumnDef<Event>[] = [
@@ -94,20 +94,9 @@ const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "title",
     header: "Titre",
-    cell: ({ row }) => <div className="w-[200px]">{row.getValue("title")}</div>,
+    cell: ({ row }) => <div className="w-[180px]">{row.getValue("title")}</div>,
   },
-  {
-    accessorKey: "organizer",
-    accessorFn: (row) => ({
-      creatorName: row.organizer?.name,
-    }),
-    header: "Organisateur",
-    cell: ({ row }) => {
-      const { creatorName }: { creatorName: string } =
-        row.getValue("organizer");
-      return <>{creatorName}</>;
-    },
-  },
+
   {
     accessorKey: "location",
     accessorFn: (row) => ({
@@ -118,12 +107,30 @@ const columns: ColumnDef<Event>[] = [
     cell: ({ row }) => {
       const { city, location }: { city: string; location: string } =
         row.getValue("location");
-      return <span>{location + (city ? `, ${city}` : "")}</span>;
+      return (
+        <div className="w-[150px]">{location + (city ? `, ${city}` : "")}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "isPrivate",
+    header: "Accès",
+    cell: ({ row }) => {
+      const isPrivate = row.getValue("isPrivate");
+      return (
+        <div
+          className={`whitespace-nowrap rounded-full text-sm px-3 py-1 flex items-center justify-center ${
+            isPrivate ? "bg-green-600 text-white" : "border"
+          }`}
+        >
+          {isPrivate ? "Privé" : "Public"}
+        </div>
+      );
     },
   },
   {
     accessorKey: "isFree",
-    header: "Accès",
+    header: "Prix",
     cell: ({ row }) => {
       const isFree = row.getValue("isFree");
       return (
@@ -182,10 +189,18 @@ const columns: ColumnDef<Event>[] = [
       </div>
     ),
     filterFn: (row, id, value) => {
-      return (
-        new Date(row.getValue("startsAt")) >= new Date(value[0]) &&
-        new Date(row.getValue("startsAt")) <= new Date(value[1])
-      );
+      if (!value || !Array.isArray(value) || value.length !== 2) return true;
+
+      const startDate = new Date(row.getValue("startsAt"));
+      const filterStartDate = new Date(value[0]);
+      const filterEndDate = new Date(value[1]);
+
+      // Set times to start/end of day for more accurate comparison
+      startDate.setHours(0, 0, 0, 0);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setHours(23, 59, 59, 999);
+
+      return startDate >= filterStartDate && startDate <= filterEndDate;
     },
   },
   {
@@ -253,23 +268,24 @@ export default function EventsTable({
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
   const handleFilterDate = (range: DateRange | undefined) => {
-    if (!range?.from || !range?.to) return;
+    if (!range?.from || !range?.to) {
+      // Clear the filter if the range is incomplete
+      table.getColumn("startsAt")?.setFilterValue(undefined);
+      return;
+    }
 
     const { from, to } = range;
 
-    // Format the dates to ISO string with added 1 day offset
-    const formattedFrom = new Date(from.getTime() + 1000 * 60 * 60 * 24)
-      .toISOString()
-      .split("T")[0];
+    // Create proper date objects with time set to start/end of day
+    const fromDate = new Date(from);
+    fromDate.setHours(0, 0, 0, 0);
 
-    const formattedTo = new Date(to.getTime() + 1000 * 60 * 60 * 24)
-      .toISOString()
-      .split("T")[0];
+    const toDate = new Date(to);
+    toDate.setHours(23, 59, 59, 999);
 
-    console.log("Applying filter for date range:", {
-      from: formattedFrom,
-      to: formattedTo,
-    });
+    // Format dates as ISO strings for consistency
+    const formattedFrom = fromDate.toISOString();
+    const formattedTo = toDate.toISOString();
 
     // Set the filter value for the column
     table.getColumn("startsAt")?.setFilterValue([formattedFrom, formattedTo]);
@@ -338,11 +354,11 @@ export default function EventsTable({
           <Select
             onValueChange={(value) => {
               if (value === "all") {
-                table.getColumn("isFree")?.setFilterValue(undefined);
-              } else if (value === "free") {
-                table.getColumn("isFree")?.setFilterValue(true);
-              } else if (value === "paid") {
-                table.getColumn("isFree")?.setFilterValue(false);
+                table.getColumn("isPrivate")?.setFilterValue(undefined);
+              } else if (value === "true") {
+                table.getColumn("isPrivate")?.setFilterValue(true);
+              } else if (value === "false") {
+                table.getColumn("isPrivate")?.setFilterValue(false);
               }
             }}
           >
@@ -351,9 +367,9 @@ export default function EventsTable({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup className="dark:bg-gray-800 dark:border-gray-800">
-                <SelectItem value="all">Privé et Public</SelectItem>
-                <SelectItem value="free">Publics</SelectItem>
-                <SelectItem value="paid">Privés</SelectItem>
+                <SelectItem value="all">Tous les évènements</SelectItem>
+                <SelectItem value="true">Privés</SelectItem>
+                <SelectItem value="false">Publics</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

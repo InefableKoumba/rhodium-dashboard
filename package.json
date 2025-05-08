@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@legendapp/state": "^3.0.0-beta.30",
     "@libsql/client": "^0.15.4",
     "@neondatabase/serverless": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.11",

@@ -44,7 +44,7 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
     header: "#",
-    cell: ({ row }) => <div className="w-[10px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="w-[10px]">{row.index + 1}</div>,
   },
   {
     accessorKey: "profil",
@@ -52,7 +52,7 @@ const columns: ColumnDef<User>[] = [
     accessorFn: (row) => ({
       id: row.id,
       avatar: row?.avatar ?? "",
-      name: row.firstname + " " + row.lastname,
+      name: row.name,
     }),
     cell: ({ row }) => {
       const { avatar, name, id }: { avatar: string; name: string; id: number } =
@@ -81,20 +81,15 @@ const columns: ColumnDef<User>[] = [
     accessorKey: "name",
     header: "Nom & prénom",
     accessorFn: (row) => ({
-      firstname: row.firstname,
-      lastname: row.lastname,
+      name: row.name,
     }),
     filterFn: (row, id, value) => {
-      const { firstname, lastname }: { firstname: string; lastname: string } =
-        row.getValue("name");
-      return (firstname + " " + lastname)
-        .toLowerCase()
-        .includes(value.toLowerCase());
+      const { name }: { name: string } = row.getValue("name");
+      return name.toLowerCase().includes(value.toLowerCase());
     },
     cell: ({ row }) => {
-      const { firstname, lastname }: { firstname: string; lastname: string } =
-        row.getValue("name");
-      return <div className="w-[200px]">{firstname + " " + lastname}</div>;
+      const { name }: { name: string } = row.getValue("name");
+      return <div className="w-[200px]">{name}</div>;
     },
   },
   {

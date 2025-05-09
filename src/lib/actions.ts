@@ -11,6 +11,7 @@ import {
   CreateEventInput,
   Advertisement,
   EventCategory,
+  Sponsorship,
 } from "@/types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
@@ -40,8 +41,18 @@ export async function getPresignedUrl({
   return data;
 }
 
-// User Actions
+export async function getSponsorships(): Promise<{
+  sponsorships: Sponsorship[];
+  total: number;
+}> {
+  const response = await fetch(`${API_URL}/sponsorships`, {
+    headers: await getAuthHeaders(),
+  });
+  const responseData = await response.json();
+  return responseData.data;
+}
 
+// User Actions
 export async function getUsers(): Promise<{ users: User[]; total: number }> {
   const response = await fetch(`${API_URL}/users`, {
     headers: await getAuthHeaders(),

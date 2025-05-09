@@ -28,6 +28,7 @@ import {
   CreateAdvertisementInput,
   Advertisement,
   UpdateAdvertisementInput,
+  SponsorshipStatus,
 } from "@/types/types";
 import { getSession } from "next-auth/react";
 
@@ -72,13 +73,13 @@ export async function demoteUserFromCommercial(id: string): Promise<User> {
 export async function updateUser(
   id: string,
   data: UpdateUserInput
-): Promise<User> {
+): Promise<boolean> {
   const response = await fetch(`${API_URL}/users/${id}`, {
     method: "PUT",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  return response.ok;
 }
 
 export async function deleteUser(id: string): Promise<void> {
@@ -370,4 +371,17 @@ export async function deleteAdvertisement(id: string): Promise<void> {
     method: "DELETE",
     headers: await getAuthHeaders(),
   });
+}
+
+// Sponsorship Actions
+export async function updateSponsorshipStatus(
+  id: string,
+  status: SponsorshipStatus
+): Promise<boolean> {
+  const response = await fetch(`${API_URL}/sponsorships/${id}`, {
+    method: "PATCH",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ status }),
+  });
+  return response.ok;
 }

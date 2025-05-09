@@ -66,6 +66,7 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
+  sponsorshipCode?: string;
   phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -73,6 +74,38 @@ export interface User {
   role?: "USER" | "COMMERCIAL";
   credits?: number;
   godsons?: User[];
+}
+
+export enum SponsorshipStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  REJECTED = "REJECTED",
+}
+
+export interface Sponsorship {
+  id: string;
+  sponsorId: string;
+  sponsor: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    phoneNumber?: string;
+    role: "USER" | "COMMERCIAL";
+    sponsorshipCode: string;
+  };
+  godsonId: string;
+  godson: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    phoneNumber?: string;
+    role: "USER" | "COMMERCIAL";
+  };
+  status: SponsorshipStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Admin {

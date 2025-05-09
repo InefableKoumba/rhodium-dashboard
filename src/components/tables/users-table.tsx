@@ -27,6 +27,8 @@ import {
   Award,
   MoreHorizontal,
   X,
+  Lock,
+  Unlock,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -80,14 +82,18 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { use$, useObservable } from "@legendapp/state/react";
 import Loader from "../loader";
+import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 
 // User actions modals
 const BlockUserDialog = ({
   user,
   onSuccess,
+  unblock = false,
 }: {
   user: User;
   onSuccess: () => void;
+  unblock?: boolean;
 }) => {
   const state$ = useObservable({
     isOpen: false,
@@ -98,12 +104,28 @@ const BlockUserDialog = ({
   const handleBlock = async () => {
     try {
       state$.isLoading.set(true);
-      await updateUser(user.id, { isBlocked: true });
-      toast.success(`${user.name} a été bloqué avec succès.`);
-      state$.isOpen.set(false);
-      onSuccess();
+      const ok = await updateUser(user.id, {
+        isBlocked: unblock ? false : true,
+      });
+      if (ok) {
+        toast.success(
+          `${user.name} a été ${unblock ? "débloqué" : "bloqué"} avec succès.`
+        );
+        state$.isOpen.set(false);
+        onSuccess();
+      } else {
+        toast.error(
+          `Une erreur est survenue lors du ${
+            unblock ? "déblocage" : "blocage"
+          } de l'utilisateur.`
+        );
+      }
     } catch (error) {
-      toast.error("Une erreur est survenue lors du blocage de l'utilisateur.");
+      toast.error(
+        `Une erreur est survenue lors du ${
+          unblock ? "déblocage" : "blocage"
+        } de l'utilisateur.`
+      );
     } finally {
       state$.isLoading.set(false);
     }
@@ -113,16 +135,23 @@ const BlockUserDialog = ({
     <Dialog open={state.isOpen} onOpenChange={state$.isOpen.set}>
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Ban className="mr-2 h-4 w-4" />
-          <span>Bloquer</span>
+          {unblock ? (
+            <Unlock className="mr-2 h-4 w-4" />
+          ) : (
+            <Lock className="mr-2 h-4 w-4" />
+          )}
+          <span>{unblock ? "Débloquer" : "Bloquer"}</span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Bloquer l'utilisateur</DialogTitle>
+          <DialogTitle>
+            {unblock ? "Débloquer" : "Bloquer"} l'utilisateur
+          </DialogTitle>
           <DialogDescription>
-            Êtes-vous sûr de vouloir bloquer {user.name} ? Cette action
-            empêchera l'utilisateur de se connecter à son compte.
+            Êtes-vous sûr de vouloir {unblock ? "débloquer" : "bloquer"}{" "}
+            {user.name} ? Cette action empêchera l'utilisateur de se connecter à
+            son compte.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -130,11 +159,11 @@ const BlockUserDialog = ({
             Annuler
           </Button>
           <Button
-            variant="destructive"
+            variant={unblock ? "default" : "destructive"}
             onClick={handleBlock}
             disabled={state.isLoading}
           >
-            {state.isLoading ? <Loader /> : "Bloquer l'utilisateur"}
+            {state.isLoading ? <Loader /> : unblock ? "Débloquer" : "Bloquer"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -142,69 +171,14 @@ const BlockUserDialog = ({
   );
 };
 
-const DeleteUserDialog = ({
-  user,
-  onSuccess,
-}: {
-  user: User;
-  onSuccess: () => void;
-}) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true);
-      await deleteUser(user.id);
-      toast.success(`${user.name} a été supprimé avec succès.`);
-      setIsOpen(false);
-      onSuccess();
-    } catch (error) {
-      toast.error(
-        "Une erreur est survenue lors de la suppression de l'utilisateur."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          <span>Supprimer</span>
-        </DropdownMenuItem>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Supprimer l'utilisateur</AlertDialogTitle>
-          <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer définitivement {user.name} ?
-            Cette action ne peut pas être annulée.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {isLoading ? "Suppression..." : "Supprimer définitivement"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
-
 const PromoteUserDialog = ({
   user,
   onSuccess,
+  demote = false,
 }: {
   user: User;
   onSuccess: () => void;
+  demote?: boolean;
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -212,13 +186,21 @@ const PromoteUserDialog = ({
   const handlePromote = async () => {
     try {
       setIsLoading(true);
-      await updateUser(user.id, {
-        role: "COMMERCIAL",
-        credits: (user.credits || 0) + 100,
+      const ok = await updateUser(user.id, {
+        role: demote ? "USER" : "COMMERCIAL",
       });
-      toast.success(`${user.name} a été promu au rôle commercial avec succès.`);
-      setIsOpen(false);
-      onSuccess();
+      if (ok) {
+        toast.success(
+          `${user.name} a été ${demote ? "rétrogradé" : "promu"} au rôle ${
+            demote ? "utilisateur" : "commercial"
+          } avec succès.`
+        );
+        onSuccess();
+      } else {
+        toast.error(
+          "Une erreur est survenue lors de la promotion de l'utilisateur."
+        );
+      }
     } catch (error) {
       toast.error(
         "Une erreur est survenue lors de la promotion de l'utilisateur."
@@ -233,16 +215,20 @@ const PromoteUserDialog = ({
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <Award className="mr-2 h-4 w-4" />
-          <span>Promouvoir en commercial</span>
+          <span>
+            {demote ? "Rétrograder en utilisateur" : "Promouvoir en commercial"}
+          </span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Promouvoir en commercial</DialogTitle>
+          <DialogTitle>
+            {demote ? "Rétrograder en utilisateur" : "Promouvoir en commercial"}
+          </DialogTitle>
           <DialogDescription>
-            Êtes-vous sûr de vouloir promouvoir {user.name} en tant que
-            commercial ? Cela lui donnera accès à des fonctionnalités
-            supplémentaires.
+            Êtes-vous sûr de vouloir {demote ? "rétrograder" : "promouvoir"}
+            {user.name} en tant que {demote ? "utilisateur" : "commercial"} ?
+            Cela lui donnera accès à des fonctionnalités supplémentaires.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -250,7 +236,7 @@ const PromoteUserDialog = ({
             Annuler
           </Button>
           <Button onClick={handlePromote} disabled={isLoading}>
-            {isLoading ? "Promotion..." : "Promouvoir"}
+            {isLoading ? <Loader /> : demote ? "Rétrograder" : "Promouvoir"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -358,16 +344,19 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
       return (
         <div className="flex flex-wrap gap-1">
           {user.isBlocked && (
-            <Badge variant="destructive" className="whitespace-nowrap">
+            <Badge
+              variant="destructive"
+              className="whitespace-nowrap text-white"
+            >
               Bloqué
             </Badge>
           )}
-          {user.role === "COMMERCIAL" && (
+          {!user.isBlocked && user.role === "COMMERCIAL" && (
             <Badge variant="default" className="whitespace-nowrap bg-blue-500">
               Commercial
             </Badge>
           )}
-          {!user.isBlocked && !user.role && (
+          {!user.isBlocked && user.role === "USER" && (
             <Badge variant="outline" className="whitespace-nowrap">
               Utilisateur
             </Badge>
@@ -396,9 +385,18 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
             <DropdownMenuItem asChild>
               <Link href={`/users/${user.id}`}>Voir le profil</Link>
             </DropdownMenuItem>
-            <BlockUserDialog user={user} onSuccess={refreshData} />
-            <PromoteUserDialog user={user} onSuccess={refreshData} />
-            <DeleteUserDialog user={user} onSuccess={refreshData} />
+            <BlockUserDialog
+              user={user}
+              onSuccess={refreshData}
+              unblock={user.isBlocked}
+            />
+            {!user.isBlocked && (
+              <PromoteUserDialog
+                user={user}
+                onSuccess={refreshData}
+                demote={user.role === "COMMERCIAL"}
+              />
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -423,11 +421,11 @@ export default function UsersTable({
   const [dateFilter, setDateFilter] = React.useState<
     [Date, Date] | undefined
   >();
+  const router = useRouter();
 
   // Function to refresh data that will be passed to action components
   const refreshData = () => {
-    setRefreshTrigger((prev) => prev + 1);
-    // In a real implementation, you might want to refetch users data here
+    router.refresh();
   };
 
   const columns = React.useMemo(

@@ -15,6 +15,7 @@ import { use$, useObservable } from "@legendapp/state/react";
 import { approveEvent } from "@/service/api/api";
 import Loader from "../loader";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ApproveEventModal({ eventId }: { eventId: string }) {
   const formData$ = useObservable({
@@ -22,13 +23,14 @@ export default function ApproveEventModal({ eventId }: { eventId: string }) {
     loading: false,
   });
   const formData = use$(formData$);
-
+  const router = useRouter();
   const handleSubmit = async () => {
     try {
       formData$.loading.set(true);
       const ok = await approveEvent(eventId);
       if (ok) {
-        window.location.reload();
+        router.refresh();
+        toast.success("L'événement a été approuvé avec succès");
       } else {
         toast.error(
           "Une erreur est survenue lors de l'approbation de l'événement"

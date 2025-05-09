@@ -55,7 +55,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -70,9 +69,17 @@ export default async function Page({
 }>) {
   const id = (await params).id;
   const user = await getUser(id);
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        Utilisateur non trouvé
+      </div>
+    );
+  }
   const eventsResponse = await getEvents({ organizerId: id });
   const events = eventsResponse.events || [];
-
+  console.log(user);
   // Format dates properly
   const joinDateFormatted = format(user.createdAt, "PPP", { locale: fr });
 
@@ -145,7 +152,7 @@ export default async function Page({
                     </div>
                   </div>
 
-                  <div className="flex gap-2 mt-2 md:mt-0">
+                  {/* <div className="flex gap-2 mt-2 md:mt-0">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
@@ -167,7 +174,7 @@ export default async function Page({
                         </div>
                       </DialogContent>
                     </Dialog>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">

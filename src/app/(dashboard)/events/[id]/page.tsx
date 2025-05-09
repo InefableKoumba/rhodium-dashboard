@@ -16,6 +16,7 @@ import {
   Trash,
   QrCode,
   Minus,
+  Quote,
 } from "lucide-react";
 import {
   Table,
@@ -195,31 +196,38 @@ export default async function page({
                     <DollarSign size={16} className="text-gray-500" />
                     <span>{event.isFree ? "Gratuit" : "Payant"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Shield size={16} className="text-gray-500" />
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${
-                        event.status === "APPROVED"
-                          ? "bg-green-100 text-green-800"
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Shield size={16} className="text-gray-500" />
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm ${
+                          event.status === "APPROVED"
+                            ? "bg-green-100 text-green-800"
+                            : event.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {event.status === "APPROVED"
+                          ? "Approuvé"
                           : event.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {event.status === "APPROVED"
-                        ? "Approuvé"
-                        : event.status === "PENDING"
-                        ? "En attente"
-                        : "Rejeté"}
-                    </span>
-                    {event.approvedBy && (
-                      <span>
-                        Par{" "}
-                        <span className="font-semibold">
-                          {event.approvedBy?.firstname}{" "}
-                          {event.approvedBy?.lastname}
-                        </span>
+                          ? "En attente"
+                          : "Rejeté"}
                       </span>
+                      {event.approvedBy && (
+                        <span>
+                          Par{" "}
+                          <span className="font-semibold">
+                            {event.approvedBy?.firstname}{" "}
+                            {event.approvedBy?.lastname}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    {event.rejectionReason && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Quote size={18} color="#333" /> {event.rejectionReason}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -237,6 +245,34 @@ export default async function page({
                     {EventCategoryLabels[category as EventCategory] ??
                       "Catégorie inconnue"}
                   </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-full">
+                {event.videoId && (
+                  <video
+                    src={
+                      process.env.NEXT_PUBLIC_R2_BUCKET_URL +
+                      "/" +
+                      event.videoId
+                    }
+                    controls
+                  ></video>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4 w-full">
+                {event.imageIds.map((imageId, i) => (
+                  <div className="w-full h-44 relative" key={i}>
+                    <Image
+                      src={
+                        process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + imageId
+                      }
+                      alt={event.title}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
                 ))}
               </div>
             </div>

@@ -16,6 +16,7 @@ import { use$ } from "@legendapp/state/react";
 import { useObservable } from "@legendapp/state/react";
 import { rejectEvent } from "@/service/api/api";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ApproveEventModal({ eventId }: { eventId: string }) {
   const formData$ = useObservable({
@@ -24,13 +25,17 @@ export default function ApproveEventModal({ eventId }: { eventId: string }) {
     reason: "",
   });
   const formData = use$(formData$);
+  const router = useRouter();
 
   const handleSubmit = async () => {
     try {
       formData$.loading.set(true);
       const ok = await rejectEvent(eventId, formData.reason);
       if (ok) {
-        window.location.reload();
+        router.refresh();
+        toast.success("L'événement a été rejeté avec succès");
+      } else {
+        toast.error("Une erreur est survenue lors du rejet de l'événement");
       }
     } catch (error) {
       toast.error("Une erreur est survenue lors du rejet de l'événement");

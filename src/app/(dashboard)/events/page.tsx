@@ -19,7 +19,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const { events } = await getEvents();
+  const { events } = await getEvents({});
 
   const privateEvents = events.filter((event) => event.isPrivate);
   const publicEvents = events.filter((event) => !event.isPrivate);

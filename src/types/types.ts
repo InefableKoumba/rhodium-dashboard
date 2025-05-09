@@ -25,8 +25,34 @@ export enum EventCategory {
   FESTIVAL = "FESTIVAL",
   SPORTS = "SPORTS",
   NETWORKING = "NETWORKING",
+  TECHNOLOGY = "TECHNOLOGY",
+  RELIGION = "RELIGION",
+  POLITICAL = "POLITICAL",
+  PHILOSOPHY = "PHILOSOPHY",
+  LITERATURE = "LITERATURE",
+  ART = "ART",
+  MUSIC = "MUSIC",
   OTHER = "OTHER",
 }
+
+export const EventCategoryLabels: Record<EventCategory, string> = {
+  [EventCategory.CONFERENCE]: "Conférence",
+  [EventCategory.WORKSHOP]: "Atelier",
+  [EventCategory.SEMINAR]: "Séminaire",
+  [EventCategory.CONCERT]: "Concert",
+  [EventCategory.EXHIBITION]: "Exposition",
+  [EventCategory.FESTIVAL]: "Festival",
+  [EventCategory.SPORTS]: "Sports",
+  [EventCategory.NETWORKING]: "Networking",
+  [EventCategory.TECHNOLOGY]: "Technologie",
+  [EventCategory.RELIGION]: "Religion",
+  [EventCategory.POLITICAL]: "Politique",
+  [EventCategory.PHILOSOPHY]: "Philosophie",
+  [EventCategory.LITERATURE]: "Littérature",
+  [EventCategory.ART]: "Art",
+  [EventCategory.MUSIC]: "Musique",
+  [EventCategory.OTHER]: "Autre",
+};
 
 export enum CreditPurchaseStatus {
   PENDING = "PENDING",
@@ -43,6 +69,10 @@ export interface User {
   phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;
+  isBlocked?: boolean;
+  role?: "USER" | "COMMERCIAL";
+  credits?: number;
+  godsons?: User[];
 }
 
 export interface Admin {
@@ -82,6 +112,10 @@ export interface Event {
   ticketTypes?: TicketType[];
   invitations?: Invitation[];
   organizer?: User;
+  approvedBy?: {
+    firstname: string;
+    lastname: string;
+  };
 }
 
 export interface TicketType {
@@ -237,6 +271,8 @@ export interface UpdateUserInput {
   sponsorId?: string;
   credits?: number;
   phoneNumber?: string;
+  isBlocked?: boolean;
+  role?: string;
 }
 
 export interface UpdateAdminInput {

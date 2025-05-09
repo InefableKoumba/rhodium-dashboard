@@ -48,6 +48,26 @@ export async function createUser(data: CreateUserInput): Promise<User> {
   });
   return response.json();
 }
+export async function promoteUserToCommercial(id: string): Promise<User> {
+  const response = await fetch(`${API_URL}/users/${id}/promote-to-commercial`, {
+    method: "PATCH",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({}),
+  });
+  return response.json();
+}
+
+export async function demoteUserFromCommercial(id: string): Promise<User> {
+  const response = await fetch(
+    `${API_URL}/users/${id}/demote-from-commercial`,
+    {
+      method: "PATCH",
+      headers: await getAuthHeaders(),
+      body: JSON.stringify({}),
+    }
+  );
+  return response.json();
+}
 
 export async function updateUser(
   id: string,

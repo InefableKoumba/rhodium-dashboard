@@ -26,10 +26,11 @@ import Link from "next/link";
 import { Event, EventStatus } from "@/types/types";
 import { getEvents } from "@/lib/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
-  const response = await getEvents();
+  const response = await getEvents({});
   const events = response.events;
-  const totalEvents = response.total;
   const pendingEvents = events.filter(
     (event: Event) => event.status === EventStatus.PENDING
   );
@@ -63,9 +64,6 @@ export default async function Page() {
             <div className="text-3xl font-bold text-gray-900 dark:text-white">
               {events.length}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              +12% par rapport au mois passé
-            </p>
           </CardContent>
         </Card>
 
@@ -86,9 +84,6 @@ export default async function Page() {
                 0
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              +18% par rapport au mois passe
-            </p>
           </CardContent>
         </Card>
 
@@ -105,9 +100,6 @@ export default async function Page() {
             <div className="text-3xl font-bold text-gray-900 dark:text-white">
               {soldTicketsNum}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              +5% par rapport au mois passé
-            </p>
           </CardContent>
         </Card>
 
@@ -124,9 +116,6 @@ export default async function Page() {
             <div className="text-3xl font-bold text-gray-900 dark:text-white">
               0
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              +2% par rapport au mois passe
-            </p>
           </CardContent>
         </Card>
       </div>

@@ -46,16 +46,17 @@ export async function getUsers(): Promise<{ users: User[]; total: number }> {
   const response = await fetch(`${API_URL}/users`, {
     headers: await getAuthHeaders(),
   });
-  const data = await response.json();
+  const responseData = await response.json();
 
-  return data;
+  return responseData.data;
 }
 
 export async function getUser(id: string): Promise<User> {
   const response = await fetch(`${API_URL}/users/${id}`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  const responseData = await response.json();
+  return responseData.data;
 }
 
 // Admin Actions
@@ -74,11 +75,15 @@ export async function getAdmin(id: string): Promise<Admin> {
 }
 
 // Event Actions
-export async function getEvents(): Promise<{
+export async function getEvents({
+  organizerId,
+}: {
+  organizerId?: string;
+}): Promise<{
   events: Event[];
   total: number;
 }> {
-  const response = await fetch(`${API_URL}/events`, {
+  const response = await fetch(`${API_URL}/events?organizerId=${organizerId}`, {
     headers: await getAuthHeaders(),
   });
   const data = await response.json();

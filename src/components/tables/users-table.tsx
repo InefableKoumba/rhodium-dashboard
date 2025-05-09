@@ -19,7 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowDownToLine, Search } from "lucide-react";
+import {
+  ArrowDownToLine,
+  Search,
+  Ban,
+  Trash2,
+  Award,
+  MoreHorizontal,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -39,8 +47,219 @@ import { DateRange } from "react-day-picker";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
 import { cn } from "@/lib/utils";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteUser, updateUser } from "@/service/api/api";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { use$, useObservable } from "@legendapp/state/react";
+import Loader from "../loader";
 
-const columns: ColumnDef<User>[] = [
+// User actions modals
+const BlockUserDialog = ({
+  user,
+  onSuccess,
+}: {
+  user: User;
+  onSuccess: () => void;
+}) => {
+  const state$ = useObservable({
+    isOpen: false,
+    isLoading: false,
+  });
+  const state = use$(state$);
+
+  const handleBlock = async () => {
+    try {
+      state$.isLoading.set(true);
+      await updateUser(user.id, { isBlocked: true });
+      toast.success(`${user.name} a été bloqué avec succès.`);
+      state$.isOpen.set(false);
+      onSuccess();
+    } catch (error) {
+      toast.error("Une erreur est survenue lors du blocage de l'utilisateur.");
+    } finally {
+      state$.isLoading.set(false);
+    }
+  };
+
+  return (
+    <Dialog open={state.isOpen} onOpenChange={state$.isOpen.set}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Ban className="mr-2 h-4 w-4" />
+          <span>Bloquer</span>
+        </DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Bloquer l'utilisateur</DialogTitle>
+          <DialogDescription>
+            Êtes-vous sûr de vouloir bloquer {user.name} ? Cette action
+            empêchera l'utilisateur de se connecter à son compte.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => state$.isOpen.set(false)}>
+            Annuler
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleBlock}
+            disabled={state.isLoading}
+          >
+            {state.isLoading ? <Loader /> : "Bloquer l'utilisateur"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const DeleteUserDialog = ({
+  user,
+  onSuccess,
+}: {
+  user: User;
+  onSuccess: () => void;
+}) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      await deleteUser(user.id);
+      toast.success(`${user.name} a été supprimé avec succès.`);
+      setIsOpen(false);
+      onSuccess();
+    } catch (error) {
+      toast.error(
+        "Une erreur est survenue lors de la suppression de l'utilisateur."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Trash2 className="mr-2 h-4 w-4" />
+          <span>Supprimer</span>
+        </DropdownMenuItem>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Supprimer l'utilisateur</AlertDialogTitle>
+          <AlertDialogDescription>
+            Êtes-vous sûr de vouloir supprimer définitivement {user.name} ?
+            Cette action ne peut pas être annulée.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isLoading ? "Suppression..." : "Supprimer définitivement"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+const PromoteUserDialog = ({
+  user,
+  onSuccess,
+}: {
+  user: User;
+  onSuccess: () => void;
+}) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handlePromote = async () => {
+    try {
+      setIsLoading(true);
+      await updateUser(user.id, {
+        role: "COMMERCIAL",
+        credits: (user.credits || 0) + 100,
+      });
+      toast.success(`${user.name} a été promu au rôle commercial avec succès.`);
+      setIsOpen(false);
+      onSuccess();
+    } catch (error) {
+      toast.error(
+        "Une erreur est survenue lors de la promotion de l'utilisateur."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Award className="mr-2 h-4 w-4" />
+          <span>Promouvoir en commercial</span>
+        </DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Promouvoir en commercial</DialogTitle>
+          <DialogDescription>
+            Êtes-vous sûr de vouloir promouvoir {user.name} en tant que
+            commercial ? Cela lui donnera accès à des fonctionnalités
+            supplémentaires.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            Annuler
+          </Button>
+          <Button onClick={handlePromote} disabled={isLoading}>
+            {isLoading ? "Promotion..." : "Promouvoir"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Add actions column to the columns definition
+const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
   {
     accessorKey: "id",
     header: "#",
@@ -55,7 +274,7 @@ const columns: ColumnDef<User>[] = [
       name: row.name,
     }),
     cell: ({ row }) => {
-      const { avatar, name, id }: { avatar: string; name: string; id: number } =
+      const { avatar, name, id }: { avatar: string; name: string; id: string } =
         row.getValue("profil");
       return (
         <Link className="flex items-center gap-2 group" href={"/users/" + id}>
@@ -98,28 +317,90 @@ const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="w-[200px]">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "phone_number",
+    accessorKey: "phoneNumber",
     header: "Téléphone",
     cell: ({ row }) => (
-      <div className="w-[200px]">{row.getValue("phone_number")}</div>
+      <div className="w-[200px]">
+        {row.getValue("phoneNumber") || "Non renseigné"}
+      </div>
     ),
   },
   {
     accessorKey: "createdAt",
     header: "Date d'adhésion",
-    cell: ({ row }) => (
-      <div className="whitespace-nowrap">
-        {new Date(row.getValue("createdAt")).toLocaleDateString("fr-FR", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}
-      </div>
-    ),
-    filterFn: (row, id, value) => {
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
       return (
-        new Date(row.getValue("createdAt")) >= new Date(value[0]) &&
-        new Date(row.getValue("createdAt")) <= new Date(value[1])
+        <div className="whitespace-nowrap">
+          {date.toLocaleDateString("fr-FR", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      if (!value || !Array.isArray(value) || value.length !== 2) return true;
+
+      const rowDate = new Date(row.getValue("createdAt"));
+      const startDate = new Date(value[0]);
+      const endDate = new Date(value[1]);
+
+      return rowDate >= startDate && rowDate <= endDate;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Statut",
+    cell: ({ row }) => {
+      const user = row.original;
+      return (
+        <div className="flex flex-wrap gap-1">
+          {user.isBlocked && (
+            <Badge variant="destructive" className="whitespace-nowrap">
+              Bloqué
+            </Badge>
+          )}
+          {user.role === "COMMERCIAL" && (
+            <Badge variant="default" className="whitespace-nowrap bg-blue-500">
+              Commercial
+            </Badge>
+          )}
+          {!user.isBlocked && !user.role && (
+            <Badge variant="outline" className="whitespace-nowrap">
+              Utilisateur
+            </Badge>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const user = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Ouvrir le menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={`/users/${user.id}`}>Voir le profil</Link>
+            </DropdownMenuItem>
+            <BlockUserDialog user={user} onSuccess={refreshData} />
+            <PromoteUserDialog user={user} onSuccess={refreshData} />
+            <DeleteUserDialog user={user} onSuccess={refreshData} />
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
@@ -137,10 +418,65 @@ export default function UsersTable({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [dateFilter, setDateFilter] = React.useState<
+    [Date, Date] | undefined
+  >();
+
+  // Function to refresh data that will be passed to action components
+  const refreshData = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    // In a real implementation, you might want to refetch users data here
+  };
+
+  const columns = React.useMemo(
+    () => createColumns(refreshData),
+    [refreshTrigger]
+  );
+
+  // Custom filter function that checks name, email, and phone number
+  const filterUsers = React.useCallback(
+    (users: User[], filterValue: string, dateRange?: [Date, Date]) => {
+      let result = [...users];
+
+      // Text search filter
+      if (filterValue) {
+        const lowerCaseFilter = filterValue.toLowerCase();
+
+        result = result.filter((user) => {
+          const nameMatch = user.name.toLowerCase().includes(lowerCaseFilter);
+          const emailMatch = user.email.toLowerCase().includes(lowerCaseFilter);
+          const phoneMatch = user.phoneNumber
+            ? user.phoneNumber.toLowerCase().includes(lowerCaseFilter)
+            : false;
+
+          return nameMatch || emailMatch || phoneMatch;
+        });
+      }
+
+      // Date filter
+      if (dateRange && dateRange.length === 2) {
+        const [startDate, endDate] = dateRange;
+
+        result = result.filter((user) => {
+          const userDate = new Date(user.createdAt);
+          return userDate >= startDate && userDate <= endDate;
+        });
+      }
+
+      return result;
+    },
+    []
+  );
+
+  const filteredUsers = React.useMemo(() => {
+    return filterUsers(users, globalFilter, dateFilter);
+  }, [users, globalFilter, dateFilter, filterUsers]);
 
   const table = useReactTable({
-    data: users,
-    columns: columns,
+    data: filteredUsers,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -152,138 +488,215 @@ export default function UsersTable({
     },
   });
 
+  // When search or date changes, reset to first page
+  React.useEffect(() => {
+    table.resetPageIndex(true);
+  }, [globalFilter, dateFilter, table]);
+
   const handleFilterDate = (range: DateRange | undefined) => {
-    if (!range?.from || !range?.to) return;
+    setDate(range);
 
-    const { from, to } = range;
+    if (!range?.from || !range?.to) {
+      setDateFilter(undefined);
+      return;
+    }
 
-    // Format the dates to ISO string with added 1 day offset
-    const formattedFrom = new Date(from.getTime() + 1000 * 60 * 60 * 24)
-      .toISOString()
-      .split("T")[0];
+    // Set start date to beginning of day
+    const from = new Date(range.from);
+    from.setHours(0, 0, 0, 0);
 
-    const formattedTo = new Date(to.getTime() + 1000 * 60 * 60 * 24)
-      .toISOString()
-      .split("T")[0];
+    // Set end date to end of day
+    const to = new Date(range.to);
+    to.setHours(23, 59, 59, 999);
 
-    console.log("Applying filter for date range:", {
-      from: formattedFrom,
-      to: formattedTo,
-    });
-
-    // Set the filter value for the column
-    table.getColumn("createdAt")?.setFilterValue([formattedFrom, formattedTo]);
+    // Set date filter for our custom filter function
+    setDateFilter([from, to]);
   };
 
   return (
     <Card className="w-full py-4 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
       <CardHeader>
-        <CardTitle>Liste des utilisateurs — {users.length}</CardTitle>
-        <CardDescription>Liste de tous les utilisateurs</CardDescription>
+        <CardTitle>Liste des utilisateurs — {filteredUsers.length}</CardTitle>
+        <CardDescription>
+          Liste de tous les utilisateurs actifs dans le système
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-end gap-3 mb-12">
-          <div className="relative w-full">
-            <div className="absolute right-4 top-2">
-              <Search className="text-muted-foreground" />
+        <div className="flex flex-col gap-2 mb-12">
+          <div className="flex items-center justify-end gap-3">
+            <div className="relative w-full">
+              <div className="absolute left-3 top-2.5">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <Input
+                value={globalFilter}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                placeholder="Rechercher par nom, email ou téléphone..."
+                className="pl-9 pr-9 dark:bg-gray-800 dark:border-gray-800"
+              />
+              {globalFilter && (
+                <button
+                  onClick={() => setGlobalFilter("")}
+                  className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
-            <Input
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) => {
-                table.getColumn("name")?.setFilterValue(event.target.value);
-              }}
-              placeholder="Rechercher un utilisateur"
+            <DatePickerWithRange
               className="dark:bg-gray-800 dark:border-gray-800"
+              onChange={handleFilterDate}
             />
+            <ExportToExcel data={filteredUsers} fileName="users">
+              <Button>
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                Exporter
+              </Button>
+            </ExportToExcel>
           </div>
-          <DatePickerWithRange
-            className="dark:bg-gray-800 dark:border-gray-800"
-            onChange={(range: DateRange | undefined) => {
-              setDate(range);
-              handleFilterDate(range);
-            }}
-          />
-          <ExportToExcel
-            data={users.map((user) => ({
-              ...user,
-            }))}
-            fileName="users"
-          >
-            <Button>
-              <ArrowDownToLine size={36} />
-              Exporter
-            </Button>
-          </ExportToExcel>
+          <div className="flex flex-wrap items-center gap-2">
+            {globalFilter && (
+              <div className="text-xs text-muted-foreground">
+                Recherche par <span className="font-medium">nom</span>,{" "}
+                <span className="font-medium">email</span> et{" "}
+                <span className="font-medium">téléphone</span>
+              </div>
+            )}
+            {dateFilter && (
+              <div className="text-xs text-muted-foreground ml-2">
+                <span className="font-medium">•</span> Période du{" "}
+                <span className="font-medium">
+                  {dateFilter[0].toLocaleDateString("fr-FR")}
+                </span>{" "}
+                au{" "}
+                <span className="font-medium">
+                  {dateFilter[1].toLocaleDateString("fr-FR")}
+                </span>
+              </div>
+            )}
+            {(globalFilter || dateFilter) &&
+              filteredUsers.length !== users.length && (
+                <div className="text-xs ml-2">
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {filteredUsers.length} sur {users.length} utilisateurs
+                  </Badge>
+                </div>
+              )}
+          </div>
         </div>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup, i) => (
-              <TableRow
-                key={headerGroup.id}
-                className="dark:hover:bg-gray-800 dark:border-gray-800"
-              >
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="whitespace-nowrap">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, i) => (
+        <div className="rounded-md border dark:border-gray-800">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup, i) => (
                 <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  key={headerGroup.id}
                   className="dark:hover:bg-gray-800 dark:border-gray-800"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="whitespace-nowrap">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, i) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="dark:hover:bg-gray-800 dark:border-gray-800"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-32 text-center"
+                  >
+                    {users.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="font-medium">Aucun utilisateur trouvé</p>
+                        <p className="text-sm text-muted-foreground">
+                          Il n'y a aucun utilisateur enregistré dans le système.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="font-medium">Aucun résultat trouvé</p>
+                        <p className="text-sm text-muted-foreground">
+                          Modifiez vos critères de recherche ou réinitialisez
+                          les filtres.
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setGlobalFilter("");
+                            setDateFilter(undefined);
+                            setDate(undefined);
+                          }}
+                          className="mt-2"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Réinitialiser les filtres
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center justify-between space-x-2 py-4">
+          <div className="text-sm text-muted-foreground">
+            {filteredUsers.length > 0 ? (
+              <>
+                Page {table.getState().pagination.pageIndex + 1} sur{" "}
+                {table.getPageCount()}{" "}
+                {filteredUsers.length > table.getState().pagination.pageSize &&
+                  `• ${table.getRowModel().rows.length} sur ${
+                    filteredUsers.length
+                  } utilisateurs affichés`}
+              </>
             ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Aucun résultat.
-                </TableCell>
-              </TableRow>
+              "Aucun résultat"
             )}
-          </TableBody>
-        </Table>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Précédent
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Suivant
-          </Button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Précédent
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Suivant
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -15,6 +15,7 @@ import {
   Pencil,
   Trash,
   QrCode,
+  Minus,
 } from "lucide-react";
 import {
   Table,
@@ -48,6 +49,7 @@ import ApproveEventModal from "@/components/modals/approve-event";
 import RejectEventModal from "@/components/modals/reject-event";
 import { getEvent } from "@/lib/actions";
 import AddTicketTypeModal from "@/components/modals/add-ticket";
+import { EventCategory, EventCategoryLabels } from "@/types/types";
 
 export const dynamic = "force-dynamic";
 
@@ -105,6 +107,15 @@ export default async function page({
               <span className="flex items-center gap-1">
                 <Clock size={16} />
                 {format(new Date(event.startsAt), "p", { locale: fr })}
+              </span>
+              <Minus size={16} />
+              <span className="flex items-center gap-1">
+                <Calendar size={16} />
+                {format(new Date(event.endsAt), "PPP", { locale: fr })}
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock size={16} />
+                {format(new Date(event.endsAt), "p", { locale: fr })}
               </span>
               <span className="flex items-center gap-1">
                 <MapPin size={16} />
@@ -201,6 +212,15 @@ export default async function page({
                         ? "En attente"
                         : "Rejeté"}
                     </span>
+                    {event.approvedBy && (
+                      <span>
+                        Par{" "}
+                        <span className="font-semibold">
+                          {event.approvedBy?.firstname}{" "}
+                          {event.approvedBy?.lastname}
+                        </span>
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -214,7 +234,8 @@ export default async function page({
                     key={category}
                     className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                   >
-                    {category}
+                    {EventCategoryLabels[category as EventCategory] ??
+                      "Catégorie inconnue"}
                   </span>
                 ))}
               </div>

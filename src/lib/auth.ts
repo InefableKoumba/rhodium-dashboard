@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
 
           const currentTime = Date.now() / 1000; // Current time in seconds
 
-          if (decodedToken.exp < currentTime) {
+          if (decodedToken.exp < currentTime + 120) {
             // Token has expired, create a minimal valid token instead of returning null
             return {
               id: token.id || "",

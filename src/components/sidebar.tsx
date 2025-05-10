@@ -59,13 +59,6 @@ export default function SidebarNavigation() {
         pathname === "/sponsorships" || pathname?.startsWith("/sponsorships/"),
     },
     {
-      href: "/commissions",
-      icon: HandCoins,
-      label: "Commissions",
-      active:
-        pathname === "/commissions" || pathname?.startsWith("/commissions/"),
-    },
-    {
       href: "/ads",
       icon: Info,
       label: "Publicités",

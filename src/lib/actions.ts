@@ -177,6 +177,6 @@ export async function getAdvertisements(): Promise<{
   const response = await fetch(`${API_URL}/advertisements`, {
     headers: await getAuthHeaders(),
   });
-  const data = await response.json();
-  return data;
+  const res = await response.json();
+  return res.data;
 }

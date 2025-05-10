@@ -25,7 +25,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { getAdvertisements, updateAdvertisement } from "@/lib/actions";
+import { getAdvertisements } from "@/lib/actions";
+import { updateAdvertisement } from "@/service/api/api";
 import { Advertisement } from "@/types/types";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import Image from "next/image";

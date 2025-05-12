@@ -24,7 +24,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -46,12 +45,12 @@ import React from "react";
 export const dynamic = "force-dynamic";
 
 export default async function page() {
-  const { admins } = await getAdmins();
+  const admins = await getAdmins();
   return (
     <div className="p-8">
       <div className="flex justify-end">
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button>Ajouter un agent</Button>
           </DialogTrigger>
           <DialogContent className="bg-gray-100">
@@ -121,7 +120,6 @@ export default async function page() {
                 <TableHead>Nom de l&apos;agent</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Date de creation</TableHead>
-                <TableHead>Actif</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -140,66 +138,6 @@ export default async function page() {
                       day: "numeric",
                       year: "numeric",
                     })}
-                  </TableCell>
-                  <TableCell>
-                    <Switch defaultChecked={admin.isActive} />
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    <div className="flex gap-3 items-center">
-                      <Dialog>
-                        <DialogTrigger>
-                          <div className="border hover:bg-blue-600 hover:text-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center">
-                            <Pencil size={18} />
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent className="bg-gray-100">
-                          <DialogHeader>
-                            <DialogTitle>Modifier cet agent</DialogTitle>
-                            <DialogDescription>
-                              Vous êtes sur le point de modifier cet agent.
-                              Cette action est irréversible.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="flex flex-col gap-2 mt-4">
-                            <Input placeholder="Nom de l'agent" />
-                            <Input placeholder="Email" type="email" />
-                            <Input placeholder="Téléphone" />
-                          </div>
-                          <div className="flex gap-2 my-4 items-center">
-                            <Checkbox />
-                            <span className="text-sm">
-                              Je confirme vouloir modifier cet agent
-                            </span>
-                          </div>
-                          <Button>Modifier</Button>
-                        </DialogContent>
-                      </Dialog>
-                      <Dialog>
-                        <DialogTrigger>
-                          <div className="border hover:bg-red-600 text-gray-800 hover:text-white rounded-full w-10 h-10 flex items-center justify-center">
-                            <Trash size={18} />
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent className="bg-gray-100">
-                          <DialogHeader>
-                            <DialogTitle>
-                              Voulez-vous vraiment supprimer cet agent ?
-                            </DialogTitle>
-                            <DialogDescription>
-                              Vous êtes sur le point de supprimer cet agent.
-                              Cette action est irréversible.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="flex gap-2 my-4 items-center">
-                            <Checkbox />
-                            <span className="text-sm">
-                              Je confirme vouloir supprimer cet agent
-                            </span>
-                          </div>
-                          <Button>Supprimer</Button>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
                   </TableCell>
                 </TableRow>
               ))}

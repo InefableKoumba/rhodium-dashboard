@@ -59,6 +59,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
+import TicketsTable from "@/components/tables/tickets-table";
 
 export const dynamic = "force-dynamic";
 
@@ -81,7 +83,16 @@ export default async function Page({
   const events = eventsResponse.events || [];
   console.log(user);
   // Format dates properly
-  const joinDateFormatted = format(user.createdAt, "PPP", { locale: fr });
+  const joinDateFormatted = new Date(user.createdAt).toLocaleDateString(
+    "fr-FR",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
 
   // Calculate stats
   const totalEvents = events.length;
@@ -151,7 +162,18 @@ export default async function Page({
                       )}
                     </div>
                   </div>
-
+                  {user.sponsor && (
+                    <div className="flex gap-2 mt-2 md:mt-0">
+                      <Link href={`/users/${user.sponsor?.id}`}>
+                        <Badge
+                          variant="outline"
+                          className="bg-gray-100 text-gray-800"
+                        >
+                          Parrainé par - {user.sponsor?.name}
+                        </Badge>
+                      </Link>
+                    </div>
+                  )}
                   {/* <div className="flex gap-2 mt-2 md:mt-0">
                     <Dialog>
                       <DialogTrigger asChild>
@@ -295,6 +317,7 @@ export default async function Page({
           <TabsTrigger value="profile">Informations</TabsTrigger>
           <TabsTrigger value="events">Événements</TabsTrigger>
           <TabsTrigger value="sponsorship">Parrainages</TabsTrigger>
+          <TabsTrigger value="tickets">Billets</TabsTrigger>
           <TabsTrigger value="settings">Paramètres</TabsTrigger>
         </TabsList>
 
@@ -338,6 +361,14 @@ export default async function Page({
                       ) : (
                         "Utilisateur"
                       )}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col space-y-1">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Code de parrainage
+                    </dt>
+                    <dd className="flex items-center">
+                      {user.sponsorshipCode}
                     </dd>
                   </div>
                 </dl>
@@ -396,31 +427,18 @@ export default async function Page({
         </TabsContent>
 
         <TabsContent value="events" className="mt-6">
-          <Card className="border dark:border-gray-800">
-            <CardHeader>
-              <CardTitle>Événements ({totalEvents})</CardTitle>
-              <CardDescription>
-                Liste des événements créés par l'utilisateur
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <EventsTable events={events} />
-            </CardContent>
-          </Card>
+          <EventsTable events={events} isOneUserEventsTable />
         </TabsContent>
 
         <TabsContent value="sponsorship" className="mt-6">
-          <Card className="border dark:border-gray-800">
-            <CardHeader>
-              <CardTitle>Filleuls ({godsonsCount})</CardTitle>
-              <CardDescription>
-                Liste des utilisateurs parrainés
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UsersTable users={user.godsons || []} total={godsonsCount} />
-            </CardContent>
-          </Card>
+          <UsersTable
+            users={user.godsons || []}
+            total={godsonsCount}
+            isSponsredUsersTable
+          />
+        </TabsContent>
+        <TabsContent value="tickets" className="mt-6">
+          <TicketsTable tickets={user.tickets || []} />
         </TabsContent>
 
         <TabsContent value="settings" className="mt-6">

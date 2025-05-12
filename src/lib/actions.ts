@@ -44,6 +44,8 @@ export async function getPresignedUrl({
 export async function getSponsorships(): Promise<{
   sponsorships: Sponsorship[];
   total: number;
+  paidAmount: number;
+  remainingAmount: number;
 }> {
   const response = await fetch(`${API_URL}/sponsorships`, {
     headers: await getAuthHeaders(),
@@ -71,11 +73,12 @@ export async function getUser(id: string): Promise<User> {
 }
 
 // Admin Actions
-export async function getAdmins(): Promise<{ admins: Admin[]; total: number }> {
-  const response = await fetch(`${API_URL}/admins`, {
+export async function getAdmins(): Promise<Admin[]> {
+  const response = await fetch(`${API_URL}/users/admins/all`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  const responseData = await response.json();
+  return responseData.data;
 }
 
 export async function getAdmin(id: string): Promise<Admin> {
@@ -116,14 +119,14 @@ export async function getEvent(id: string): Promise<Event> {
   const response = await fetch(`${API_URL}/events/${id}`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  return await response.json();
 }
 
 export async function getTicketType(id: string): Promise<TicketType> {
   const response = await fetch(`${API_URL}/ticket-types/${id}`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  return await response.json();
 }
 
 export async function getTicket(id: string): Promise<Ticket> {
@@ -153,9 +156,24 @@ export async function getCreditPack(id: string): Promise<CreditPack> {
   });
   return response.json();
 }
+export async function getCreditPacks(): Promise<CreditPack[]> {
+  const response = await fetch(`${API_URL}/credits/packs`, {
+    headers: await getAuthHeaders(),
+  });
+  const responseData = await response.json();
+  return responseData.data;
+}
+
+export async function getCreditPurchases(): Promise<CreditPurchase[]> {
+  const response = await fetch(`${API_URL}/credits/credits-purchases`, {
+    headers: await getAuthHeaders(),
+  });
+  const res = await response.json();
+  return res.data;
+}
 
 export async function getCreditPurchase(id: string): Promise<CreditPurchase> {
-  const response = await fetch(`${API_URL}/credit-purchases/${id}`, {
+  const response = await fetch(`${API_URL}/credits/purchases/${id}`, {
     headers: await getAuthHeaders(),
   });
   return response.json();

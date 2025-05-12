@@ -1,13 +1,13 @@
 import SponsorshipsTable from "@/components/tables/sponsorships-table";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Bell } from "lucide-react";
 import { DollarSign, Users } from "lucide-react";
 import { getSponsorships } from "@/lib/actions";
 export const dynamic = "force-dynamic";
 
 export default async function SponsorshipsPage() {
-  const { sponsorships, total } = await getSponsorships();
+  const { sponsorships, total, paidAmount, remainingAmount } =
+    await getSponsorships();
   return (
     <div className="p-8 space-y-6">
       <div>
@@ -21,14 +21,14 @@ export default async function SponsorshipsPage() {
         <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-10">
             <CardTitle className="text-sm font-medium">
-              Total commissions
+              Total parrainages
             </CardTitle>
             <Users className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4830</div>
+            <div className="text-2xl font-bold">{total}</div>
             <p className="text-xs text-muted-foreground">
-              Nombre total de commissions
+              Nombre total de parrainages
             </p>
           </CardContent>
         </Card>
@@ -40,9 +40,9 @@ export default async function SponsorshipsPage() {
             <DollarSign className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">534 200 XAF</div>
+            <div className="text-2xl font-bold">{paidAmount} XAF</div>
             <p className="text-xs text-muted-foreground">
-              Dépenses éffectuées pour les commissions
+              Dépenses éffectuées pour les parrainages
             </p>
           </CardContent>
         </Card>
@@ -52,9 +52,9 @@ export default async function SponsorshipsPage() {
             <Bell className="size-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2800 XAF</div>
+            <div className="text-2xl font-bold">{remainingAmount} XAF</div>
             <p className="text-xs text-muted-foreground">
-              Montant restant à payer pour les commissions
+              Montant restant à payer pour les parrainages
             </p>
           </CardContent>
         </Card>

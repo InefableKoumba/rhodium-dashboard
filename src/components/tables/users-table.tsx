@@ -84,6 +84,13 @@ import { use$, useObservable } from "@legendapp/state/react";
 import Loader from "../loader";
 import { Router } from "next/router";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // User actions modals
 const BlockUserDialog = ({
@@ -322,6 +329,8 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
             month: "short",
             day: "numeric",
             year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
           })}
         </div>
       );
@@ -407,9 +416,11 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
 export default function UsersTable({
   users,
   total,
+  isSponsredUsersTable = false,
 }: Readonly<{
   users: User[];
   total: number;
+  isSponsredUsersTable?: boolean;
 }>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -421,6 +432,8 @@ export default function UsersTable({
   const [dateFilter, setDateFilter] = React.useState<
     [Date, Date] | undefined
   >();
+  const [roleFilter, setRoleFilter] = React.useState<string>("all");
+  const [blockedFilter, setBlockedFilter] = React.useState<string>("all");
   const router = useRouter();
 
   // Function to refresh data that will be passed to action components
@@ -433,7 +446,7 @@ export default function UsersTable({
     [refreshTrigger]
   );
 
-  // Custom filter function that checks name, email, and phone number
+  // Custom filter function that checks name, email, phone number, role, and blocked status
   const filterUsers = React.useCallback(
     (users: User[], filterValue: string, dateRange?: [Date, Date]) => {
       let result = [...users];
@@ -463,9 +476,20 @@ export default function UsersTable({
         });
       }
 
+      // Role filter
+      if (roleFilter !== "all") {
+        result = result.filter((user) => user.role === roleFilter);
+      }
+
+      // Blocked status filter
+      if (blockedFilter !== "all") {
+        const isBlocked = blockedFilter === "blocked";
+        result = result.filter((user) => user.isBlocked === isBlocked);
+      }
+
       return result;
     },
-    []
+    [roleFilter, blockedFilter]
   );
 
   const filteredUsers = React.useMemo(() => {
@@ -514,14 +538,21 @@ export default function UsersTable({
   return (
     <Card className="w-full py-4 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
       <CardHeader>
-        <CardTitle>Liste des utilisateurs — {filteredUsers.length}</CardTitle>
+        <CardTitle>
+          {isSponsredUsersTable
+            ? "Liste des filleuls "
+            : "Liste des utilisateurs "}{" "}
+          — {filteredUsers.length}
+        </CardTitle>
         <CardDescription>
-          Liste de tous les utilisateurs actifs dans le système
+          {isSponsredUsersTable
+            ? "Liste des utilisateurs parrainés par cet utilisateur"
+            : "Liste de tous les utilisateurs dans le système"}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2 mb-12">
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-3 flex-wrap">
             <div className="relative w-full">
               <div className="absolute left-3 top-2.5">
                 <Search className="h-4 w-4 text-muted-foreground" />
@@ -541,6 +572,26 @@ export default function UsersTable({
                 </button>
               )}
             </div>
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
+                <SelectValue placeholder="Filtrer par rôle" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les rôles</SelectItem>
+                <SelectItem value="USER">Utilisateurs</SelectItem>
+                <SelectItem value="COMMERCIAL">Commerciaux</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={blockedFilter} onValueChange={setBlockedFilter}>
+              <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
+                <SelectValue placeholder="Filtrer par statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="blocked">Bloqués</SelectItem>
+                <SelectItem value="active">Actifs</SelectItem>
+              </SelectContent>
+            </Select>
             <DatePickerWithRange
               className="dark:bg-gray-800 dark:border-gray-800"
               onChange={handleFilterDate}
@@ -572,7 +623,26 @@ export default function UsersTable({
                 </span>
               </div>
             )}
-            {(globalFilter || dateFilter) &&
+            {roleFilter !== "all" && (
+              <div className="text-xs text-muted-foreground ml-2">
+                <span className="font-medium">•</span> Rôle :{" "}
+                <span className="font-medium">
+                  {roleFilter === "USER" ? "Utilisateur" : "Commercial"}
+                </span>
+              </div>
+            )}
+            {blockedFilter !== "all" && (
+              <div className="text-xs text-muted-foreground ml-2">
+                <span className="font-medium">•</span> Statut :{" "}
+                <span className="font-medium">
+                  {blockedFilter === "blocked" ? "Bloqué" : "Actif"}
+                </span>
+              </div>
+            )}
+            {(globalFilter ||
+              dateFilter ||
+              roleFilter !== "all" ||
+              blockedFilter !== "all") &&
               filteredUsers.length !== users.length && (
                 <div className="text-xs ml-2">
                   <Badge variant="outline" className="text-xs font-normal">

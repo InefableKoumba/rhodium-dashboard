@@ -129,9 +129,6 @@ export default function Page() {
                 </p>
               </div>
             </form>
-            <Button className="w-full" onClick={async () => await signOut()}>
-              Se déconnecter
-            </Button>
           </div>
         </div>
       </div>

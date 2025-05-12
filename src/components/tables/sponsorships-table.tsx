@@ -34,6 +34,7 @@ import {
   MoreHorizontal,
   CheckCircle,
   XCircle,
+  Info,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -78,6 +79,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
 
 // Create column definitions
 const createColumns = (
@@ -202,8 +217,25 @@ const createColumns = (
       const date = new Date(row.original.createdAt);
       return (
         <div className="whitespace-nowrap">
-          {format(date, "PPP", { locale: fr })}
+          {date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "price",
+    header: "Prix",
+    cell: ({ row }) => {
+      return (
+        <Badge variant="outline" className={`bg-gray-100 text-gray-800`}>
+          {row.original.price} XAF
+        </Badge>
       );
     },
   },
@@ -212,36 +244,100 @@ const createColumns = (
     header: "Statut",
     cell: ({ row }) => {
       const status = row.original.status;
-      switch (status) {
-        case "PAID":
-          return (
-            <Badge variant="default" className="bg-green-500 text-white">
-              Payé
-            </Badge>
-          );
-        case "PENDING":
-          return (
-            <Badge
-              variant="outline"
-              className={`border-amber-500 text-amber-500 ${
-                row.original.sponsor.role === "USER" &&
-                "bg-gray-500/10 border-gray-500 text-gray-500"
-              }`}
-            >
-              {row.original.sponsor.role === "USER"
-                ? "Non comptabilisé"
-                : "En attente"}
-            </Badge>
-          );
-        case "REJECTED":
-          return (
-            <Badge variant="destructive" className="text-white">
-              Rejeté
-            </Badge>
-          );
-        default:
-          return null;
+      const rejectionReason = row.original.rejectionReason;
+      const updatedBy = row.original.updatedBy;
+
+      const statusBadge = () => {
+        switch (status) {
+          case "PAID":
+            return (
+              <Badge
+                variant="default"
+                className="bg-green-500 text-white flex gap-2 justify-center cursor-pointer"
+              >
+                <Info size={14} /> Payé
+              </Badge>
+            );
+          case "PENDING":
+            return (
+              <Badge
+                variant="outline"
+                className={`border-amber-500 text-amber-500 ${
+                  row.original.sponsor.role === "USER" &&
+                  "bg-gray-500/10 border-gray-500 text-gray-500"
+                }`}
+              >
+                {row.original.sponsor.role === "USER"
+                  ? "Non comptabilisé"
+                  : "En attente"}
+              </Badge>
+            );
+          case "REJECTED":
+            return (
+              <Badge
+                variant="destructive"
+                className="text-white flex gap-2 justify-center cursor-pointer"
+              >
+                <Info size={14} /> Rejeté
+              </Badge>
+            );
+          default:
+            return null;
+        }
+      };
+
+      if (status !== "PENDING") {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>{statusBadge()}</div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px] p-4">
+                <div className="space-y-2">
+                  {rejectionReason && (
+                    <div>
+                      <p className="font-medium text-sm">Raison du rejet:</p>
+                      <p className="text-sm text-muted-foreground">
+                        {rejectionReason}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-sm">Mis à jour par:</p>
+                    <p className="text-sm text-muted-foreground">
+                      {updatedBy ?? "Information non disponible"}
+                    </p>
+                  </div>
+                  {row.original.updatedAt && (
+                    <div>
+                      <p className="font-medium text-sm">
+                        Date de mise à jour:
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {row.original.updatedAt
+                          ? new Date(row.original.updatedAt).toLocaleDateString(
+                              "fr-FR",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )
+                          : "Information non disponible"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
       }
+
+      return statusBadge();
     },
   },
   {
@@ -302,6 +398,9 @@ export default function SponsorshipsTable({
   const [searchType, setSearchType] = useState<
     "phoneNumber" | "sponsorshipCode"
   >("phoneNumber");
+  const [statusFilter, setStatusFilter] = useState<SponsorshipStatus | "ALL">(
+    "ALL"
+  );
   const [sponsorshipList, setSponsorshipList] =
     useState<Sponsorship[]>(sponsorships);
   const [isMarkingAsPaid, setIsMarkingAsPaid] = useState(false);
@@ -309,6 +408,7 @@ export default function SponsorshipsTable({
   const [selectedSponsorshipId, setSelectedSponsorshipId] = useState<
     string | null
   >(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const router = useRouter();
 
   // Handler for marking sponsorship as paid
@@ -375,7 +475,8 @@ export default function SponsorshipsTable({
       // Call the API
       const success = await updateSponsorshipStatus(
         selectedSponsorshipId,
-        SponsorshipStatus.REJECTED
+        SponsorshipStatus.REJECTED,
+        rejectionReason
       );
 
       if (success) {
@@ -383,7 +484,15 @@ export default function SponsorshipsTable({
         setSponsorshipList((prev) =>
           prev.map((item) =>
             item.id === selectedSponsorshipId
-              ? { ...item, status: SponsorshipStatus.REJECTED }
+              ? {
+                  ...item,
+                  status: SponsorshipStatus.REJECTED,
+                  rejectionReason,
+                  rejectedBy: {
+                    id: "current-admin-id", // This should come from your auth context
+                    name: "Admin Name", // This should come from your auth context
+                  },
+                }
               : item
           )
         );
@@ -391,6 +500,9 @@ export default function SponsorshipsTable({
         toast.success("Parrainage rejeté", {
           description: "Le statut du parrainage a été mis à jour avec succès.",
         });
+
+        // Reset rejection reason
+        setRejectionReason("");
 
         // Refresh the page to get updated data
         router.refresh();
@@ -424,7 +536,8 @@ export default function SponsorshipsTable({
       sponsorships: Sponsorship[],
       term: string,
       type: "phoneNumber" | "sponsorshipCode",
-      dateRange?: [Date, Date]
+      dateRange?: [Date, Date],
+      status?: SponsorshipStatus | "ALL"
     ) => {
       let result = [...sponsorships];
 
@@ -461,6 +574,11 @@ export default function SponsorshipsTable({
         });
       }
 
+      // Filter by status
+      if (status && status !== "ALL") {
+        result = result.filter((sponsorship) => sponsorship.status === status);
+      }
+
       return result;
     },
     []
@@ -472,9 +590,17 @@ export default function SponsorshipsTable({
       filteredByRole,
       searchTerm,
       searchType,
-      dateFilter
+      dateFilter,
+      statusFilter
     );
-  }, [filteredByRole, searchTerm, searchType, dateFilter, filterSponsorships]);
+  }, [
+    filteredByRole,
+    searchTerm,
+    searchType,
+    dateFilter,
+    statusFilter,
+    filterSponsorships,
+  ]);
 
   const columns = useMemo(
     () => createColumns(handleMarkAsPaid, handleMarkAsRejected),
@@ -529,6 +655,7 @@ export default function SponsorshipsTable({
     setSearchTerm("");
     setDate(undefined);
     setDateFilter(undefined);
+    setStatusFilter("ALL");
   };
 
   return (
@@ -624,6 +751,22 @@ export default function SponsorshipsTable({
               </div>
 
               <div className="flex items-center gap-2">
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) =>
+                    setStatusFilter(value as SponsorshipStatus | "ALL")
+                  }
+                >
+                  <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
+                    <SelectValue placeholder="Filtrer par statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">Tous les statuts</SelectItem>
+                    <SelectItem value="PAID">Payé</SelectItem>
+                    <SelectItem value="PENDING">En attente</SelectItem>
+                    <SelectItem value="REJECTED">Rejeté</SelectItem>
+                  </SelectContent>
+                </Select>
                 <DatePickerWithRange
                   className="dark:bg-gray-800 dark:border-gray-800 w-[250px]"
                   onChange={handleDateFilter}
@@ -641,7 +784,7 @@ export default function SponsorshipsTable({
             </div>
 
             {/* Active filters display */}
-            {(searchTerm || dateFilter) && (
+            {(searchTerm || dateFilter || statusFilter !== "ALL") && (
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span className="text-muted-foreground">Filtres actifs:</span>
 
@@ -671,6 +814,26 @@ export default function SponsorshipsTable({
                         setDate(undefined);
                         setDateFilter(undefined);
                       }}
+                      className="ml-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+
+                {statusFilter !== "ALL" && (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    Statut:{" "}
+                    {statusFilter === "PAID"
+                      ? "Payé"
+                      : statusFilter === "PENDING"
+                      ? "En attente"
+                      : "Rejeté"}
+                    <button
+                      onClick={() => setStatusFilter("ALL")}
                       className="ml-1"
                     >
                       <X className="h-3 w-3" />
@@ -830,7 +993,12 @@ export default function SponsorshipsTable({
 
       <AlertDialog
         open={isMarkingAsRejected}
-        onOpenChange={setIsMarkingAsRejected}
+        onOpenChange={(open) => {
+          setIsMarkingAsRejected(open);
+          if (!open) {
+            setRejectionReason("");
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -840,6 +1008,14 @@ export default function SponsorshipsTable({
               irréversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="py-4">
+            <Textarea
+              placeholder="Raison du rejet (optionnel)"
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction

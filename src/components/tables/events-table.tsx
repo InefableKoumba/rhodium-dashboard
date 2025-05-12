@@ -241,10 +241,12 @@ export default function EventsTable({
   events,
   showAgentFilter,
   showValidatedFilter,
+  isOneUserEventsTable,
 }: Readonly<{
   events: Event[];
   showAgentFilter?: boolean;
   showValidatedFilter?: boolean;
+  isOneUserEventsTable?: boolean;
 }>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -295,7 +297,10 @@ export default function EventsTable({
     <Card className="w-full dark:bg-gray-900 dark:border-gray-800 rounded-xl shadow">
       <CardHeader>
         <CardTitle>Evènements — {events.length}</CardTitle>
-        <CardDescription>Liste de tous les événements</CardDescription>
+        <CardDescription>
+          Liste de tous les événements
+          {isOneUserEventsTable && ` créés par cet utilisateur`}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-end gap-3 mb-12">

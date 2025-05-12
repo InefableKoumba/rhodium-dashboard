@@ -32,9 +32,24 @@ import {
 } from "@/types/types";
 import { getSession } from "next-auth/react";
 
+export async function getPresignedUrl({
+  key,
+  contentType,
+}: {
+  key: string;
+  contentType: string;
+}): Promise<string> {
+  const response = await fetch(`${API_URL}/uploads/presigned-url/admin`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ key, contentType }),
+  });
+  const data = await response.json();
+  return data.url;
+}
+
 async function getAuthHeaders() {
   const session = await getSession();
-  console.log(session);
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${session?.user?.accessToken}`,
@@ -284,32 +299,34 @@ export async function deleteInvitation(id: string): Promise<void> {
 // CreditPack Actions
 export async function createCreditPack(
   data: CreateCreditPackInput
-): Promise<CreditPack> {
-  const response = await fetch(`${API_URL}/credit-packs`, {
+): Promise<boolean> {
+  const response = await fetch(`${API_URL}/credits/packs`, {
     method: "POST",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  return response.ok;
 }
 
 export async function updateCreditPack(
   id: string,
   data: UpdateCreditPackInput
-): Promise<CreditPack> {
-  const response = await fetch(`${API_URL}/credit-packs/${id}`, {
-    method: "PUT",
+): Promise<boolean> {
+  const response = await fetch(`${API_URL}/credits/packs/${id}`, {
+    method: "PATCH",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  return response.ok;
 }
 
-export async function deleteCreditPack(id: string): Promise<void> {
-  await fetch(`${API_URL}/credit-packs/${id}`, {
+export async function deleteCreditPack(id: string): Promise<boolean> {
+  const res = await fetch(`${API_URL}/credits/packs/${id}`, {
     method: "DELETE",
     headers: await getAuthHeaders(),
+    body: JSON.stringify({}),
   });
+  return res.ok;
 }
 
 // CreditPurchase Actions
@@ -329,7 +346,7 @@ export async function updateCreditPurchase(
   data: UpdateCreditPurchaseInput
 ): Promise<CreditPurchase> {
   const response = await fetch(`${API_URL}/credit-purchases/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
@@ -345,43 +362,46 @@ export async function deleteCreditPurchase(id: string): Promise<void> {
 
 export async function createAdvertisement(
   data: CreateAdvertisementInput
-): Promise<Advertisement> {
+): Promise<boolean> {
   const response = await fetch(`${API_URL}/advertisements`, {
     method: "POST",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  return response.ok;
 }
 
 export async function updateAdvertisement(
   id: string,
   data: UpdateAdvertisementInput
-): Promise<Advertisement> {
+): Promise<boolean> {
   const response = await fetch(`${API_URL}/advertisements/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
+  return response.ok;
 }
 
-export async function deleteAdvertisement(id: string): Promise<void> {
-  await fetch(`${API_URL}/advertisements/${id}`, {
+export async function deleteAdvertisement(id: string): Promise<boolean> {
+  const response = await fetch(`${API_URL}/advertisements/${id}`, {
     method: "DELETE",
     headers: await getAuthHeaders(),
+    body: JSON.stringify({}),
   });
+  return response.ok;
 }
 
 // Sponsorship Actions
 export async function updateSponsorshipStatus(
   id: string,
-  status: SponsorshipStatus
+  status: SponsorshipStatus,
+  rejectionReason?: string
 ): Promise<boolean> {
   const response = await fetch(`${API_URL}/sponsorships/${id}`, {
     method: "PATCH",
     headers: await getAuthHeaders(),
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, rejectionReason }),
   });
   return response.ok;
 }

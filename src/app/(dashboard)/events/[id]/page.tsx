@@ -17,6 +17,7 @@ import {
   QrCode,
   Minus,
   Quote,
+  BarChart3,
 } from "lucide-react";
 import {
   Table,
@@ -42,15 +43,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import ApproveEventModal from "@/components/modals/approve-event";
 import RejectEventModal from "@/components/modals/reject-event";
 import { getEvent } from "@/lib/actions";
 import AddTicketTypeModal from "@/components/modals/add-ticket";
 import { EventCategory, EventCategoryLabels } from "@/types/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 
@@ -103,20 +102,34 @@ export default async function page({
             <div className="flex items-center gap-4 text-sm">
               <span className="flex items-center gap-1">
                 <Calendar size={16} />
-                {format(new Date(event.startsAt), "PPP", { locale: fr })}
+                {new Date(event.startsAt).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </span>
               <span className="flex items-center gap-1">
                 <Clock size={16} />
-                {format(new Date(event.startsAt), "p", { locale: fr })}
+                {new Date(event.startsAt).toLocaleTimeString("fr-FR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
               <Minus size={16} />
               <span className="flex items-center gap-1">
                 <Calendar size={16} />
-                {format(new Date(event.endsAt), "PPP", { locale: fr })}
+                {new Date(event.endsAt).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </span>
               <span className="flex items-center gap-1">
                 <Clock size={16} />
-                {format(new Date(event.endsAt), "p", { locale: fr })}
+                {new Date(event.endsAt).toLocaleTimeString("fr-FR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
               <span className="flex items-center gap-1">
                 <MapPin size={16} />
@@ -140,6 +153,10 @@ export default async function page({
             <TabsTrigger value="tickets" className="gap-2">
               <Ticket size={16} />
               Tickets
+            </TabsTrigger>
+            <TabsTrigger value="sales" className="gap-2">
+              <BarChart3 size={16} />
+              Ventes
             </TabsTrigger>
             <TabsTrigger value="invitations" className="gap-2">
               <Users size={16} />
@@ -166,8 +183,17 @@ export default async function page({
                     <Calendar size={16} className="text-gray-500" />
                     <span>
                       Du{" "}
-                      {format(new Date(event.startsAt), "PPP", { locale: fr })}{" "}
-                      au {format(new Date(event.endsAt), "PPP", { locale: fr })}
+                      {new Date(event.startsAt).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}{" "}
+                      au{" "}
+                      {new Date(event.endsAt).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -237,7 +263,7 @@ export default async function page({
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">Catégories</h2>
               <div className="flex flex-wrap gap-2">
-                {event.categories.map((category) => (
+                {event.categories?.map((category) => (
                   <span
                     key={category}
                     className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
@@ -262,7 +288,7 @@ export default async function page({
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4 w-full">
-                {event.imageIds.map((imageId, i) => (
+                {event.imageIds?.map((imageId, i) => (
                   <div className="w-full h-44 relative" key={i}>
                     <Image
                       src={
@@ -313,6 +339,197 @@ export default async function page({
                 ))}
               </TableBody>
             </Table>
+          </TabsContent>
+
+          <TabsContent value="sales" className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Chiffre d'affaires total
+                  </CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {event.tickets
+                      ?.reduce((sum, ticket) => {
+                        const ticketType = event.ticketTypes?.find(
+                          (tt) => tt.id === ticket.ticketTypeId
+                        );
+                        return sum + (ticketType?.price || 0);
+                      }, 0)
+                      .toLocaleString()}{" "}
+                    XAF
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Montant total généré par les ventes
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Tickets vendus
+                  </CardTitle>
+                  <Ticket className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {event.tickets?.length || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Nombre total de tickets vendus
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Taux de conversion
+                  </CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {event?.ticketTypes &&
+                    event.ticketTypes.reduce(
+                      (total, tt) => total + tt.maxQuantity,
+                      0
+                    ) > 0
+                      ? `${Math.round(
+                          ((event.tickets?.length || 0) /
+                            event.ticketTypes?.reduce(
+                              (total, tt) => total + tt.maxQuantity,
+                              0
+                            )) *
+                            100
+                        )}%`
+                      : "0%"}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Pourcentage de tickets vendus
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Ventes par type de ticket</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type de ticket</TableHead>
+                    <TableHead>Prix unitaire</TableHead>
+                    <TableHead>Quantité vendue</TableHead>
+                    <TableHead>Quantité partagée</TableHead>
+                    <TableHead>Revenu généré</TableHead>
+                    <TableHead>Disponibilité</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {event.ticketTypes?.map((ticketType) => {
+                    const soldTickets =
+                      event.tickets?.filter(
+                        (t) => t.ticketTypeId === ticketType.id
+                      ).length || 0;
+                    const revenue = soldTickets * ticketType.price;
+                    const availability = `${soldTickets}/${ticketType.maxQuantity}`;
+
+                    return (
+                      <TableRow key={ticketType.id}>
+                        <TableCell>{ticketType.name}</TableCell>
+                        <TableCell>
+                          {ticketType.price.toLocaleString()} XAF
+                        </TableCell>
+                        <TableCell>{soldTickets}</TableCell>
+                        <TableCell>0</TableCell>
+                        <TableCell>{revenue.toLocaleString()} XAF</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                              <div
+                                className="bg-primary h-2.5 rounded-full"
+                                style={{
+                                  width: `${
+                                    (soldTickets / ticketType.maxQuantity) * 100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-muted-foreground">
+                              {availability}
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Historique des ventes</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type de ticket</TableHead>
+                    <TableHead>Prix</TableHead>
+                    <TableHead>Statut</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {event.tickets?.map((ticket) => {
+                    const ticketType = event.ticketTypes?.find(
+                      (tt) => tt.id === ticket.ticketTypeId
+                    );
+                    return (
+                      <TableRow key={ticket.id}>
+                        <TableCell>
+                          {new Date(ticket.createdAt).toLocaleDateString(
+                            "fr-FR",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {ticketType?.name || "Type inconnu"}
+                        </TableCell>
+                        <TableCell>
+                          {(ticketType?.price || 0).toLocaleString()} XAF
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`px-2 py-1 rounded-full text-sm ${
+                              ticket.status === "CONFIRMED"
+                                ? "bg-green-100 text-green-800"
+                                : ticket.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {ticket.status === "CONFIRMED"
+                              ? "Confirmé"
+                              : ticket.status === "PENDING"
+                              ? "En attente"
+                              : "Annulé"}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </TabsContent>
 
           <TabsContent value="invitations" className="space-y-6">
@@ -475,6 +692,7 @@ export default async function page({
       </div>
     );
   } catch (error) {
+    console.error(error);
     return (
       <div className="flex items-center justify-center h-[50vh]">
         <div className="text-center">

@@ -73,7 +73,12 @@ export interface User {
   isBlocked?: boolean;
   role?: "USER" | "COMMERCIAL";
   credits?: number;
+  tickets?: Ticket[];
   godsons?: User[];
+  sponsor?: {
+    id: string;
+    name: string;
+  };
 }
 
 export enum SponsorshipStatus {
@@ -85,6 +90,7 @@ export enum SponsorshipStatus {
 export interface Sponsorship {
   id: string;
   sponsorId: string;
+  price: number;
   sponsor: {
     id: string;
     email: string;
@@ -104,8 +110,10 @@ export interface Sponsorship {
     role: "USER" | "COMMERCIAL";
   };
   status: SponsorshipStatus;
+  rejectionReason?: string;
+  updatedBy?: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Admin {
@@ -116,7 +124,7 @@ export interface Admin {
   role: "ADMIN" | "SUPER_ADMIN";
   isActive: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Event {
@@ -139,7 +147,7 @@ export interface Event {
   approvedAt?: Date;
   createdAt: Date;
   categories: EventCategory[];
-  updatedAt: Date;
+  updatedAt?: Date;
   organizerId: string;
   tickets?: Ticket[];
   ticketTypes?: TicketType[];
@@ -158,7 +166,7 @@ export interface TicketType {
   maxQuantity: number;
   eventId: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Ticket {
@@ -166,9 +174,15 @@ export interface Ticket {
   eventId: string;
   userId: string;
   ticketTypeId: string;
+  ticketType?: TicketType;
   status: TicketStatus;
+  event?: {
+    id: string;
+    title: string;
+    coverImageId?: string;
+  };
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Invitation {
@@ -177,7 +191,7 @@ export interface Invitation {
   userId: string;
   status: InvitationStatus;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface CreditPack {
@@ -185,23 +199,31 @@ export interface CreditPack {
   name: string;
   credits: number;
   price: number;
-  currency: string;
   isActive: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface CreditPurchase {
   id: string;
-  userId: string;
-  creditPackId: string;
-  amount: number;
-  currency: string;
+  buyer: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    phoneNumber?: string;
+  };
+  creditPack: {
+    id: string;
+    name: string;
+    credits: number;
+    price: number;
+  };
   phoneNumber: string;
   status: CreditPurchaseStatus;
   paymentId?: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Advertisement {
@@ -211,7 +233,7 @@ export interface Advertisement {
   content: string;
   published: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 // Create types
@@ -275,7 +297,6 @@ export interface CreateCreditPackInput {
   name: string;
   credits: number;
   price: number;
-  currency?: string;
   isActive?: boolean;
 }
 
@@ -290,7 +311,8 @@ export interface CreateCreditPurchaseInput {
 export interface CreateAdvertisementInput {
   imageId?: string;
   videoId?: string;
-  content: string;
+  content?: string;
+  expiresAt: Date;
 }
 
 // Update types
@@ -357,7 +379,6 @@ export interface UpdateCreditPackInput {
   name?: string;
   credits?: number;
   price?: number;
-  currency?: string;
   isActive?: boolean;
 }
 

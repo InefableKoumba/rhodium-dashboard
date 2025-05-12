@@ -1,3 +1,6 @@
+import AddAds from "@/components/modals/add-ads";
+import DeleteAds from "@/components/modals/delete-ads";
+import PublishAdButton from "@/components/publish-ad-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,13 +37,6 @@ import React from "react";
 
 export const dynamic = "force-dynamic";
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
 export default async function AdsPage() {
   const { advertisements } = await getAdvertisements();
 
@@ -53,51 +49,7 @@ export default async function AdsPage() {
             Gérez les publicités de votre application
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une publicité
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Nouvelle publicité</DialogTitle>
-              <DialogDescription>
-                Ajoutez une nouvelle publicité à votre application
-              </DialogDescription>
-            </DialogHeader>
-            <form className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label htmlFor="content" className="text-sm font-medium">
-                  Contenu
-                </label>
-                <Textarea
-                  id="content"
-                  placeholder="Entrez le contenu de la publicité"
-                  className="resize-none"
-                />
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="image" className="text-sm font-medium">
-                  Image
-                </label>
-                <Input
-                  id="image"
-                  type="file"
-                  accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                />
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="video" className="text-sm font-medium">
-                  Vidéo
-                </label>
-                <Input id="video" type="file" accept="video/*" />
-              </div>
-              <Button type="submit">Créer</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <AddAds />
       </div>
 
       <Card>
@@ -123,20 +75,23 @@ export default async function AdsPage() {
               {advertisements.map((ad: Advertisement) => (
                 <TableRow key={ad.id}>
                   <TableCell>
-                    {ad.imageId ? (
-                      <div className="relative w-20 h-20 rounded-md overflow-hidden">
+                    {ad.imageId && (
+                      <div className="relative w-44 h-44 rounded-md overflow-hidden">
                         <Image
-                          src={`${process.env.NEXT_STORAGE_BUCKET_URL}${ad.imageId}`}
+                          src={`${process.env.NEXT_PUBLIC_R2_BUCKET_URL}/${ad.imageId}`}
                           alt="Publicité"
                           fill
                           className="object-cover"
                         />
                       </div>
-                    ) : (
-                      <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">
-                          Aucune image
-                        </span>
+                    )}
+                    {ad.videoId && (
+                      <div className="relative w-44 h-44   rounded-md overflow-hidden">
+                        <video
+                          src={`${process.env.NEXT_PUBLIC_R2_BUCKET_URL}/${ad.videoId}`}
+                          controls
+                          className="object-cover h-44"
+                        />
                       </div>
                     )}
                   </TableCell>
@@ -151,23 +106,11 @@ export default async function AdsPage() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <Switch
-                      defaultChecked={ad.published}
-                      onChange={() => {
-                        updateAdvertisement(ad.id, {
-                          published: !ad.published,
-                        });
-                      }}
-                    />
+                    <PublishAdButton id={ad.id} published={ad.published} />
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <DeleteAds id={ad.id} />
                     </div>
                   </TableCell>
                 </TableRow>

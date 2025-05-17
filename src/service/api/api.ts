@@ -39,7 +39,7 @@ export async function getPresignedUrl({
   key: string;
   contentType: string;
 }): Promise<string> {
-  const response = await fetch(`${API_URL}/uploads/presigned-url/admin`, {
+  const response = await fetch(`${API_URL}/uploads/presigned-url`, {
     method: "POST",
     headers: await getAuthHeaders(),
     body: JSON.stringify({ key, contentType }),

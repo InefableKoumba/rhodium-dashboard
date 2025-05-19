@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -437,13 +437,13 @@ export default function UsersTable({
   const router = useRouter();
 
   // Function to refresh data that will be passed to action components
-  const refreshData = () => {
+  const refreshData = useCallback(() => {
     router.refresh();
-  };
+  }, [router]);
 
   const columns = React.useMemo(
     () => createColumns(refreshData),
-    [refreshTrigger]
+    [refreshData]
   );
 
   // Custom filter function that checks name, email, phone number, role, and blocked status

@@ -58,7 +58,7 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { fr } from "date-fns/locale";
+import { fr, id } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { getSponsorships } from "@/lib/actions";
 import { updateSponsorshipStatus } from "@/service/api/api";
@@ -412,16 +412,16 @@ export default function SponsorshipsTable({
   const router = useRouter();
 
   // Handler for marking sponsorship as paid
-  const handleMarkAsPaid = (id: string) => {
+  const handleMarkAsPaid = useCallback((id: string) => {
     setSelectedSponsorshipId(id);
     setIsMarkingAsPaid(true);
-  };
+  }, []);
 
   // Handler for marking sponsorship as rejected
-  const handleMarkAsRejected = (id: string) => {
+  const handleMarkAsRejected = useCallback((id: string) => {
     setSelectedSponsorshipId(id);
     setIsMarkingAsRejected(true);
-  };
+  }, []);
 
   // Confirm marking as paid
   const confirmMarkAsPaid = async () => {

@@ -63,7 +63,7 @@ export default async function page({
     const event = await getEvent(id);
 
     let statusBgColor = "bg-yellow-500";
-    let statusText = "En attente d'approbation";
+    let statusText = "En attente d&apos;approbation";
     switch (event.status) {
       case "APPROVED":
         statusBgColor = "bg-green-600";
@@ -346,7 +346,7 @@ export default async function page({
               <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Chiffre d'affaires total
+                    Chiffre d&apos;affaires total
                   </CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
@@ -617,7 +617,9 @@ export default async function page({
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-2xl font-bold">Paramètres de l'événement</h2>
+            <h2 className="text-2xl font-bold">
+              Paramètres de l&apos;événement
+            </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -655,7 +657,9 @@ export default async function page({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Type d'accès</label>
+                  <label className="text-sm font-medium">
+                    Type d&apos;accès
+                  </label>
                   <Select defaultValue={event.isFree ? "free" : "paid"}>
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionnez un type d'accès" />
@@ -698,7 +702,8 @@ export default async function page({
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">Événement non trouvé</h2>
           <p className="text-gray-600">
-            L'événement que vous recherchez n'existe pas ou a été supprimé.
+            L&apos;événement que vous recherchez n&apos;existe pas ou a été
+            supprimé.
           </p>
         </div>
       </div>

@@ -277,7 +277,7 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
                 fill
                 className="rounded-full object-cover"
                 alt={name + " avatar"}
-                src={avatar}
+                src={process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + avatar}
               />
             </div>
           ) : (

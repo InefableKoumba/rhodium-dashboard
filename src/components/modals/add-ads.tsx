@@ -34,7 +34,7 @@ export default function AddAds() {
   const [content, setContent] = useState("");
   const router = useRouter();
   const [date, setDate] = useState(new Date());
-
+  const [title, setTitle] = useState("");
   const uploadFile = async (file: File) => {
     try {
       const key = `${Date.now()}-${file.name}`;
@@ -54,6 +54,7 @@ export default function AddAds() {
         imageId: mediatType === "image" ? key : undefined,
         videoId: mediatType === "video" ? key : undefined,
         content,
+        title,
         expiresAt: date,
       });
 
@@ -86,11 +87,25 @@ export default function AddAds() {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
+            <label htmlFor="title" className="text-sm font-medium">
+              Titre
+            </label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              placeholder="Entrez le titre de la publicité"
+            />
+          </div>
+          <div className="grid gap-2">
             <label htmlFor="content" className="text-sm font-medium">
               Contenu
             </label>
             <Textarea
               id="content"
+              value={content}
               onChange={(e) => {
                 setContent(e.target.value);
               }}

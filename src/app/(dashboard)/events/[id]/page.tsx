@@ -63,7 +63,7 @@ export default async function page({
     const event = await getEvent(id);
 
     let statusBgColor = "bg-yellow-500";
-    let statusText = "En attente d&apos;approbation";
+    let statusText = "En attente d'approbation";
     switch (event.status) {
       case "APPROVED":
         statusBgColor = "bg-green-600";
@@ -182,6 +182,17 @@ export default async function page({
                   <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-gray-500" />
                     <span>
+                      Publié le{" "}
+                      {new Date(event.createdAt).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}{" "}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} className="text-gray-500" />
+                    <span>
                       Du{" "}
                       {new Date(event.startsAt).toLocaleDateString("fr-FR", {
                         day: "numeric",
@@ -196,6 +207,7 @@ export default async function page({
                       })}
                     </span>
                   </div>
+
                   <div className="flex items-center gap-2">
                     <MapPin size={16} className="text-gray-500" />
                     <span>

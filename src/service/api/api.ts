@@ -24,9 +24,7 @@ import {
   UpdateCreditPurchaseInput,
   CreateAdminInput,
   Invitation,
-  CreditPack,
   CreateAdvertisementInput,
-  Advertisement,
   UpdateAdvertisementInput,
   SponsorshipStatus,
 } from "@/types/types";
@@ -62,26 +60,6 @@ export async function createUser(data: CreateUserInput): Promise<User> {
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return response.json();
-}
-export async function promoteUserToCommercial(id: string): Promise<User> {
-  const response = await fetch(`${API_URL}/users/${id}/promote-to-commercial`, {
-    method: "PATCH",
-    headers: await getAuthHeaders(),
-    body: JSON.stringify({}),
-  });
-  return response.json();
-}
-
-export async function demoteUserFromCommercial(id: string): Promise<User> {
-  const response = await fetch(
-    `${API_URL}/users/${id}/demote-from-commercial`,
-    {
-      method: "PATCH",
-      headers: await getAuthHeaders(),
-      body: JSON.stringify({}),
-    }
-  );
   return response.json();
 }
 

@@ -9,55 +9,47 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Dialog } from "../ui/dialog";
-import { Plus } from "lucide-react";
-import { Textarea } from "../ui/textarea";
+import { CalendarIcon, Pen, Plus } from "lucide-react";
 import { Input } from "../ui/input";
 import Loader from "../loader";
-import { getPresignedUrl } from "@/service/api/api";
+import { updateAdvertisement } from "@/service/api/api";
+import { Textarea } from "../ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "../ui/calendar";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-export default function AddAds(ads: {
+export default function EditAd(ads: {
   id: string;
-  name: string;
-  image: string;
-  video: string;
+  title: string;
+  content: string;
+  expiresAt: Date;
 }) {
-  const [mediatType, setMediatType] = useState<"video" | "image">("image");
-  const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [title, setTitle] = useState(ads.title);
+  const [content, setContent] = useState(ads.content);
+  const [expiresAt, setExpiresAt] = useState(new Date(ads.expiresAt));
+  const router = useRouter();
 
-  const uploadFile = async (file: File) => {
+  const updateAd = async () => {
     try {
-      const key = `${Date.now()}-${file.name}`;
-      // Get presigned URL
-      const presignedUrl = await getPresignedUrl({
-        key,
-        contentType: file.type,
+      const ok = await updateAdvertisement(ads.id, {
+        content,
+        title,
+        expiresAt,
       });
 
-      // Upload file to presigned URL
-      const response = await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
-      });
-
-      console.log(response.status);
-
-      if (!response.ok) {
+      if (!ok) {
         throw new Error("Failed to upload file");
       }
 
-      return key;
+      if (ok) {
+        toast("Publicité modifiée avec succès");
+        router.refresh();
+      } else {
+        toast("Erreur lors de la modification de la publicité");
+      }
     } catch (error) {
       console.error(`Error uploading file:`, error);
       throw error;
@@ -67,12 +59,11 @@ export default function AddAds(ads: {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter une publicité
+        <Button variant="outline">
+          <Pen className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Nouvelle publicité</DialogTitle>
           <DialogDescription>
@@ -80,88 +71,73 @@ export default function AddAds(ads: {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {/* <div className="grid gap-2">
+          <div className="grid gap-2">
+            <label htmlFor="title" className="text-sm font-medium">
+              Titre
+            </label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Entrez le titre de la publicité"
+            />
+          </div>
+          <div className="grid gap-2">
+            <label htmlFor="date" className="text-sm font-medium">
+              Date d'expiration
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !expiresAt && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {expiresAt.toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="single"
+                  defaultMonth={expiresAt}
+                  selected={expiresAt}
+                  onSelect={(day) => {
+                    if (day) {
+                      setExpiresAt(day);
+                    }
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="grid gap-2">
             <label htmlFor="content" className="text-sm font-medium">
               Contenu
             </label>
             <Textarea
               id="content"
+              value={content}
+              rows={10}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Entrez le contenu de la publicité"
               className="resize-none"
             />
-          </div> */}
-          <div className="flex justify-between items-center gap-4">
-            <button
-              className={`w-1/2 h-8 rounded-full flex items-center justify-center ${
-                mediatType === "image"
-                  ? "bg-gray-800 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-              onClick={() => {
-                setFile(null);
-                setMediatType("image");
-              }}
-            >
-              Image
-            </button>
-            <button
-              className={`w-1/2 h-8 rounded-full flex items-center justify-center ${
-                mediatType === "video"
-                  ? "bg-gray-800 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-              onClick={() => {
-                setFile(null);
-                setMediatType("video");
-              }}
-            >
-              Vidéo
-            </button>
           </div>
-          {mediatType === "image" && (
-            <div className="grid gap-2">
-              <label htmlFor="image" className="text-sm font-medium">
-                Image
-              </label>
-              <Input
-                disabled={isLoading}
-                id="image"
-                type="file"
-                accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setFile(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-          )}
-          {mediatType === "video" && (
-            <div className="grid gap-2">
-              <label htmlFor="video" className="text-sm font-medium">
-                Vidéo
-              </label>
-              <Input
-                disabled={isLoading}
-                id="video"
-                type="file"
-                accept="video/*"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setFile(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-          )}
           <Button
-            disabled={isLoading || !file}
+            disabled={isLoading}
             onClick={async () => {
-              if (!file) return;
               try {
                 setIsLoading(true);
-                const key = await uploadFile(file);
-                console.log(key);
+                await updateAd();
               } catch (error) {
                 console.error("Error uploading file:", error);
               } finally {
@@ -169,7 +145,7 @@ export default function AddAds(ads: {
               }
             }}
           >
-            {isLoading ? <Loader /> : "Ajouter"}
+            {isLoading ? <Loader /> : "Modifier"}
           </Button>
         </div>
       </DialogContent>

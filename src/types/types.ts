@@ -228,12 +228,14 @@ export interface CreditPurchase {
 
 export interface Advertisement {
   id: string;
+  title: string;
   imageId?: string;
   videoId?: string;
   content: string;
   published: boolean;
   createdAt: Date;
   updatedAt?: Date;
+  expiresAt: Date;
 }
 
 // Create types
@@ -312,6 +314,7 @@ export interface CreateAdvertisementInput {
   imageId?: string;
   videoId?: string;
   content?: string;
+  title: string;
   expiresAt: Date;
 }
 
@@ -388,8 +391,8 @@ export interface UpdateCreditPurchaseInput {
 }
 
 export interface UpdateAdvertisementInput {
-  imageId?: string;
-  videoId?: string;
+  title?: string;
+  expiresAt?: Date;
   content?: string;
   published?: boolean;
 }

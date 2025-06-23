@@ -1,7 +1,7 @@
 import AddAds from "@/components/modals/add-ads";
 import DeleteAds from "@/components/modals/delete-ads";
+import EditAd from "@/components/modals/edit-ads";
 import PublishAdButton from "@/components/publish-ad-button";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,16 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import {
   Table,
   TableBody,
   TableCell,
@@ -27,11 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { getAdvertisements } from "@/lib/actions";
-import { updateAdvertisement } from "@/service/api/api";
 import { Advertisement } from "@/types/types";
-import { Plus, Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -95,8 +82,9 @@ export default async function AdsPage() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-[300px]">
-                    <p className="truncate">{ad.content}</p>
+                  <TableCell className="max-w-[300px] gap-3">
+                    <p className="truncate font-bold">{ad.title}</p>
+                    <p className="truncate text-gray-700">{ad.content}</p>
                   </TableCell>
                   <TableCell>
                     {new Date(ad.createdAt).toLocaleDateString("fr-FR", {
@@ -110,6 +98,12 @@ export default async function AdsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
+                      <EditAd
+                        id={ad.id}
+                        title={ad.title}
+                        content={ad.content}
+                        expiresAt={ad.expiresAt}
+                      />
                       <DeleteAds id={ad.id} />
                     </div>
                   </TableCell>

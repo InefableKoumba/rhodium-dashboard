@@ -1,4 +1,5 @@
 import SponsorshipsTable from "@/components/tables/sponsorships-table";
+import TopCommercialUsersRanking from "@/components/top-commercial-users-ranking";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
 import { Bell } from "lucide-react";
 import { DollarSign, Users } from "lucide-react";
@@ -8,6 +9,38 @@ export const dynamic = "force-dynamic";
 export default async function SponsorshipsPage() {
   const { sponsorships, total, paidAmount, remainingAmount } =
     await getSponsorships();
+
+  const seen = new Set<string>();
+
+  // Get unique commercial sponsors
+  const sponsors = sponsorships
+    .filter(
+      ({ sponsor }) =>
+        sponsor.role === "COMMERCIAL" &&
+        !seen.has(sponsor.id) &&
+        seen.add(sponsor.id)
+    )
+    .map(({ sponsor }) => sponsor);
+
+  // Count godsons per commercial sponsor
+  const godsonCounts = new Map<string, number>();
+
+  for (const { sponsorId } of sponsorships) {
+    if (godsonCounts.has(sponsorId)) {
+      godsonCounts.set(sponsorId, godsonCounts.get(sponsorId)! + 1);
+    } else {
+      godsonCounts.set(sponsorId, 1);
+    }
+  }
+
+  // Combine sponsors with their godsons count
+  const commercialUsersWithGodsonsCount = sponsors
+    .map((sponsor) => ({
+      ...sponsor,
+      godsonsCount: godsonCounts.get(sponsor.id) || 0,
+    }))
+    .sort((a, b) => b.godsonsCount - a.godsonsCount);
+
   return (
     <div className="p-8 space-y-6">
       <div>
@@ -60,7 +93,12 @@ export default async function SponsorshipsPage() {
         </Card>
       </div>
 
-      <SponsorshipsTable sponsorships={sponsorships} />
+      <div className="lg:col-span-2">
+        <SponsorshipsTable sponsorships={sponsorships} />
+      </div>
+      <div className="lg:col-span-1">
+        <TopCommercialUsersRanking users={commercialUsersWithGodsonsCount} />
+      </div>
     </div>
   );
 }

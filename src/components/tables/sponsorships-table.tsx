@@ -183,7 +183,9 @@ const createColumns = (
                   fill
                   className="rounded-full object-cover"
                   alt={`${godson.name} avatar`}
-                  src={godson.avatar}
+                  src={
+                    process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + godson.avatar
+                  }
                 />
               </div>
             ) : (

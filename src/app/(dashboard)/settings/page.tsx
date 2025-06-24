@@ -44,7 +44,7 @@ export default async function SettingsPage() {
                   <Input
                     type="number"
                     placeholder="Prix du parrainage"
-                    defaultValue="50"
+                    defaultValue="100"
                     className="max-w-xs"
                   />
                   <Button>Sauvegarder</Button>

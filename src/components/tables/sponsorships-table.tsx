@@ -118,7 +118,9 @@ const createColumns = (
                   fill
                   className="rounded-full object-cover"
                   alt={`${sponsor.name} avatar`}
-                  src={sponsor.avatar}
+                  src={
+                    process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + sponsor.avatar
+                  }
                 />
               </div>
             ) : (

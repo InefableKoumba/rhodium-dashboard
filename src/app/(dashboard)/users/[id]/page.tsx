@@ -13,7 +13,6 @@ import {
   Calendar,
   CheckCircle2,
   XCircle,
-  Edit,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -23,7 +22,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Event, User } from "@/types/types";
 import Image from "next/image";
 import {
   AlertDialog,

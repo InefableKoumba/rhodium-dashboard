@@ -6,7 +6,6 @@ import { Trophy, Medal, Award, Users, Crown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
-import { User } from "@/types/types";
 
 interface TopCommercialUsersRankingProps {
   users: {
@@ -16,6 +15,7 @@ interface TopCommercialUsersRankingProps {
     avatar?: string;
     phoneNumber?: string;
     godsonsCount: number;
+    todaySponsorships: number;
   }[];
 }
 
@@ -136,7 +136,19 @@ export default function TopCommercialUsersRanking({
                   </div>
 
                   {/* Godsons Count */}
-                  <div className="flex-shrink-0 text-right">
+
+                  <div className="flex gap-x-10">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          {user.todaySponsorships}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Aujourd'hui
+                        </div>
+                      </div>
+                    </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-muted-foreground" />
                       <div>
@@ -144,7 +156,7 @@ export default function TopCommercialUsersRanking({
                           {user.godsonsCount}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          filleul{user.godsonsCount > 1 ? "s" : ""}
+                          Total
                         </div>
                       </div>
                     </div>

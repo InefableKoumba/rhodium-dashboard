@@ -37,9 +37,15 @@ export default async function SponsorshipsPage() {
   const commercialUsersWithGodsonsCount = sponsors
     .map((sponsor) => ({
       ...sponsor,
+      todaySponsorships: sponsorships.filter(
+        (sponsorship) =>
+          sponsorship.sponsorId === sponsor.id &&
+          new Date(sponsorship.createdAt).toDateString() ===
+            new Date().toDateString()
+      ).length,
       godsonsCount: godsonCounts.get(sponsor.id) || 0,
     }))
-    .sort((a, b) => b.godsonsCount - a.godsonsCount);
+    .sort((a, b) => b.todaySponsorships - a.todaySponsorships);
 
   return (
     <div className="p-8 space-y-6">

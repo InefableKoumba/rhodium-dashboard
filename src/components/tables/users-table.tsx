@@ -415,7 +415,6 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
 
 export default function UsersTable({
   users,
-  total,
   isSponsredUsersTable = false,
 }: Readonly<{
   users: User[];
@@ -427,13 +426,13 @@ export default function UsersTable({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
-  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [dateFilter, setDateFilter] = React.useState<
     [Date, Date] | undefined
   >();
   const [roleFilter, setRoleFilter] = React.useState<string>("all");
   const [blockedFilter, setBlockedFilter] = React.useState<string>("all");
+  const [sponsorFilter, setSponsorFilter] = React.useState<string>("all");
   const router = useRouter();
 
   // Function to refresh data that will be passed to action components
@@ -487,9 +486,21 @@ export default function UsersTable({
         result = result.filter((user) => user.isBlocked === isBlocked);
       }
 
+      // Sponsor filter
+      if (sponsorFilter !== "all") {
+        for (const user of result) {
+          console.log(user.sponsor?.name);
+        }
+        if (sponsorFilter === "withSponsor") {
+          result = result.filter((user) => !!user.sponsor);
+        } else if (sponsorFilter === "withoutSponsor") {
+          result = result.filter((user) => !user.sponsor);
+        }
+      }
+
       return result;
     },
-    [roleFilter, blockedFilter]
+    [roleFilter, blockedFilter, sponsorFilter]
   );
 
   const filteredUsers = React.useMemo(() => {
@@ -572,6 +583,16 @@ export default function UsersTable({
                 </button>
               )}
             </div>
+            <Select value={sponsorFilter} onValueChange={setSponsorFilter}>
+              <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
+                <SelectValue placeholder="Filtrer par parrain" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Avec et sans parrain</SelectItem>
+                <SelectItem value="withSponsor">Avec parrain</SelectItem>
+                <SelectItem value="withoutSponsor">Sans parrain</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
                 <SelectValue placeholder="Filtrer par rôle" />
@@ -718,6 +739,9 @@ export default function UsersTable({
                             setGlobalFilter("");
                             setDateFilter(undefined);
                             setDate(undefined);
+                            setSponsorFilter("all");
+                            setRoleFilter("all");
+                            setBlockedFilter("all");
                           }}
                           className="mt-2"
                         >

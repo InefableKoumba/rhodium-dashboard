@@ -79,7 +79,6 @@ export default async function Page({
   }
   const eventsResponse = await getEvents({ organizerId: id });
   const events = eventsResponse.events || [];
-  console.log(user);
   // Format dates properly
   const joinDateFormatted = new Date(user.createdAt).toLocaleDateString(
     "fr-FR",
@@ -128,7 +127,9 @@ export default async function Page({
                     fill
                     className="object-cover"
                     alt={`Photo de profil de ${user.name}`}
-                    src={user.avatar}
+                    src={
+                      process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + user.avatar
+                    }
                   />
                 ) : (
                   <div className="relative w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex justify-center items-center">

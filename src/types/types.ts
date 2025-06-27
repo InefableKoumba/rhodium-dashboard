@@ -67,6 +67,7 @@ export interface User {
   name: string;
   avatar?: string;
   sponsorshipCode?: string;
+  countryCode?: string;
   phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;

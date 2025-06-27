@@ -2,7 +2,6 @@
 
 import ExportToExcel from "@/components/common/export-to-excel";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -22,8 +21,6 @@ import {
 import {
   ArrowDownToLine,
   Search,
-  Ban,
-  Trash2,
   Award,
   MoreHorizontal,
   X,
@@ -44,10 +41,8 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { User } from "@/types/types";
-import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { GeneralAvatar } from "@/components/common/general-user-avatar";
-import { cn } from "@/lib/utils";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import {
   DropdownMenu,
@@ -66,23 +61,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { deleteUser, updateUser } from "@/service/api/api";
+import { updateUser } from "@/service/api/api";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { use$, useObservable } from "@legendapp/state/react";
 import Loader from "../loader";
-import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 import {
   Select,
@@ -312,11 +295,27 @@ const createColumns = (refreshData: () => void): ColumnDef<User>[] => [
   {
     accessorKey: "phoneNumber",
     header: "Téléphone",
-    cell: ({ row }) => (
-      <div className="w-[200px]">
-        {row.getValue("phoneNumber") || "Non renseigné"}
-      </div>
-    ),
+    accessorFn: (row) => ({
+      phoneNumber: row.phoneNumber,
+      countryCode: row.countryCode,
+    }),
+    cell: ({ row }) => {
+      const {
+        phoneNumber,
+        countryCode,
+      }: { phoneNumber: string; countryCode: string } =
+        row.getValue("phoneNumber");
+      return (
+        <Link
+          href={`https://wa.me/${countryCode}${phoneNumber}`}
+          target="_blank"
+          className="w-[160px]"
+        >
+          {countryCode || ""}
+          {phoneNumber || "Non renseigné"}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

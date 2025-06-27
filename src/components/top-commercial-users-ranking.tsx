@@ -152,6 +152,12 @@ export default function TopCommercialUsersRanking({
     setFilterMode("all");
   };
 
+  const setTodayFilter = () => {
+    setSelectedDate(new Date());
+    setDateRange(undefined);
+    setFilterMode("single");
+  };
+
   return (
     <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
       <CardHeader className="pb-4">
@@ -193,6 +199,15 @@ export default function TopCommercialUsersRanking({
               </SelectContent>
             </Select>
 
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={setTodayFilter}
+              className="dark:bg-gray-700 dark:border-gray-600"
+            >
+              Aujourd'hui
+            </Button>
+
             {filterMode === "single" && (
               <Popover>
                 <PopoverTrigger asChild>
@@ -228,6 +243,7 @@ export default function TopCommercialUsersRanking({
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    size="lg"
                     className={cn(
                       "w-full sm:w-[280px] justify-start text-left font-normal dark:bg-gray-700 dark:border-gray-600",
                       !dateRange && "text-muted-foreground"
@@ -265,7 +281,7 @@ export default function TopCommercialUsersRanking({
             {(filterMode !== "all" || selectedDate || dateRange) && (
               <Button
                 variant="outline"
-                size="sm"
+                size="lg"
                 onClick={clearFilters}
                 className="dark:bg-gray-700 dark:border-gray-600"
               >

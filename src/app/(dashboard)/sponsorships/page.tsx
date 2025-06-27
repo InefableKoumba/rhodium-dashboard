@@ -99,11 +99,19 @@ export default async function SponsorshipsPage() {
         </Card>
       </div>
 
-      <div className="lg:col-span-2">
-        <SponsorshipsTable sponsorships={sponsorships} />
-      </div>
-      <div className="lg:col-span-1">
-        <TopCommercialUsersRanking users={commercialUsersWithGodsonsCount} />
+      <div className="w-full flex flex-col gap-8">
+        <div className="">
+          <SponsorshipsTable sponsorships={sponsorships} />
+        </div>
+        <div className="lg:col-span-1">
+          <TopCommercialUsersRanking
+            users={commercialUsersWithGodsonsCount}
+            sponsorships={sponsorships.map((sp) => ({
+              sponsorId: sp.sponsorId,
+              createdAt: sp.createdAt,
+            }))}
+          />
+        </div>
       </div>
     </div>
   );

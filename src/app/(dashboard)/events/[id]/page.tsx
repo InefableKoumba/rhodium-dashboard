@@ -84,11 +84,7 @@ export default async function page({
             alt={event.title}
             className="object-cover rounded-lg"
             src={
-              event.coverImageId
-                ? process.env.NEXT_PUBLIC_R2_BUCKET_URL +
-                  "/" +
-                  event.coverImageId
-                : "https://via.placeholder.com/150"
+              process.env.NEXT_PUBLIC_R2_BUCKET_URL + "/" + event.coverImageId
             }
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 rounded-lg" />

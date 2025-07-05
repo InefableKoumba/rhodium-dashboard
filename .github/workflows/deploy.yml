@@ -13,22 +13,36 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            APP_DIR="/rhodium-dashboard"
-            REPO_URL="git@github.com:InefableKoumba/rhodium-dashboard.git"
+            export NVM_DIR="$HOME/.nvm"
+            export NODE_VERSION="v22.14.0"
+            export PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$HOME/.bun/bin:$HOME/.npm-global/bin:$PATH"
+
+            echo "Node version:"
+            node -v || echo "Node not found"
+
+            echo "PM2 version:"
+            pm2 -v || echo "PM2 not found"
+
+            APP_DIR="$HOME/rhodium-dashboard"
 
             if [ ! -d "$APP_DIR" ]; then
-              echo "Cloning repository..."
-              git clone $REPO_URL $APP_DIR
+              echo "Cloning repository for the first time..."
+              git clone git@github.com:InefableKoumba/rhodium-dashboard.git $APP_DIR
+              cd $APP_DIR
+              bun install
+              bun run build
+              pm2 start bun --name "rhodium-dashboard" -- start
+            else
+              echo "Updating existing repository..."
+              cd $APP_DIR
+              git pull origin main
+              bun install
+              pm2 restart rhodium-dashboard
             fi
-
-            cd $APP_DIR
-            git pull origin main
-            bun install --frozen-lockfile
-            bun run build
-            pm2 restart rhodium-dashboard || pm2 start bun --name "rhodium-dashboard" -- start

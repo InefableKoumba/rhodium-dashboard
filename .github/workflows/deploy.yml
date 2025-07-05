@@ -31,4 +31,4 @@ jobs:
             git pull origin main
             bun install --frozen-lockfile
             bun run build
-            pm2 restart next-app || pm2 start bun --name "next-app" -- start
+            pm2 restart rhodium-dashboard || pm2 start bun --name "rhodium-dashboard" -- start

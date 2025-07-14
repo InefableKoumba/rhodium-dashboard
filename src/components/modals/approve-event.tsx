@@ -21,13 +21,14 @@ export default function ApproveEventModal({ eventId }: { eventId: string }) {
   const formData$ = useObservable({
     confirmed: false,
     loading: false,
+    notifyUsers: false,
   });
   const formData = use$(formData$);
   const router = useRouter();
   const handleSubmit = async () => {
     try {
       formData$.loading.set(true);
-      const ok = await approveEvent(eventId);
+      const ok = await approveEvent(eventId, formData.notifyUsers);
       if (ok) {
         router.refresh();
         toast.success("L'événement a été approuvé avec succès");
@@ -63,14 +64,28 @@ export default function ApproveEventModal({ eventId }: { eventId: string }) {
         <div className="flex items-center gap-2">
           <Checkbox
             id="confirm"
+            checked={formData.notifyUsers}
+            onCheckedChange={(checked) =>
+              formData$.notifyUsers.set(checked as boolean)
+            }
+            className="h-5 w-5"
+          />
+          <span className="text-sm">
+            Notifier les utilisateurs de cet événement
+          </span>
+        </div>
+        <div className="flex items-center gap-2 mb-4">
+          <Checkbox
+            id="confirm"
             checked={formData.confirmed}
             onCheckedChange={(checked) =>
               formData$.confirmed.set(checked as boolean)
             }
+            className="h-5 w-5"
           />
-          <label htmlFor="confirm" className="text-sm">
+          <span className="text-sm">
             Je confirme vouloir approuver cet événement
-          </label>
+          </span>
         </div>
         <Button
           type="button"

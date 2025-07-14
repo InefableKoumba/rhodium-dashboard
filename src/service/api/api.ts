@@ -122,16 +122,21 @@ export async function updateEvent(
   return response.json();
 }
 
-export async function approveEvent(eventId: string): Promise<boolean> {
+export async function approveEvent(
+  eventId: string,
+  notifyUsers: boolean
+): Promise<boolean> {
   const response = await fetch(`${API_URL}/events/approve`, {
     method: "PUT",
     headers: await getAuthHeaders(),
     body: JSON.stringify({
       eventId,
+      notifyUsers,
     }),
   });
   return response.ok;
 }
+
 export async function rejectEvent(
   eventId: string,
   reason: string

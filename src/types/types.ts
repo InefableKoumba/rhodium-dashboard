@@ -69,8 +69,8 @@ export interface User {
   sponsorshipCode?: string;
   countryCode?: string;
   phoneNumber?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isBlocked?: boolean;
   role?: "USER" | "COMMERCIAL";
   credits?: number;
@@ -113,8 +113,8 @@ export interface Sponsorship {
   status: SponsorshipStatus;
   rejectionReason?: string;
   updatedBy?: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Admin {
@@ -124,8 +124,8 @@ export interface Admin {
   firstname: string;
   role: "ADMIN" | "SUPER_ADMIN";
   isActive: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Event {
@@ -145,12 +145,12 @@ export interface Event {
   status: EventStatus;
   rejectionReason?: string;
   approvedById?: string;
-  approvedAt?: Date;
-  createdAt: Date;
+  approvedAt?: string;
+  createdAt: string;
   categories: EventCategory[];
-  updatedAt?: Date;
+  updatedAt?: string;
   organizerId: string;
-  tickets?: Ticket[];
+  orders?: Order[];
   ticketTypes?: TicketType[];
   invitations?: Invitation[];
   organizer?: User;
@@ -160,14 +160,47 @@ export interface Event {
   };
 }
 
+export interface Order {
+  id: string;
+  user?: {
+    id: string;
+    name: string;
+  };
+  phoneNumber: string;
+  amount: number;
+  status: OrderStatus;
+  paymentId: string;
+  items: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+  paidAt: string;
+  cancelledAt: string;
+  failureReason: string;
+}
+
+export enum OrderStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  FAILED = "FAILED",
+  CANCELLED = "CANCELLED",
+}
+
+export interface OrderItem {
+  ticketType: {
+    id: string;
+    name: string;
+    price: number;
+  };
+}
+
 export interface TicketType {
   id: string;
   name: string;
   price: number;
   maxQuantity: number;
   eventId: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Ticket {
@@ -182,8 +215,12 @@ export interface Ticket {
     title: string;
     coverImageId?: string;
   };
-  createdAt: Date;
-  updatedAt?: Date;
+  user?: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Invitation {
@@ -191,8 +228,8 @@ export interface Invitation {
   eventId: string;
   userId: string;
   status: InvitationStatus;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CreditPack {
@@ -201,8 +238,8 @@ export interface CreditPack {
   credits: number;
   price: number;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CreditPurchase {
@@ -223,8 +260,8 @@ export interface CreditPurchase {
   phoneNumber: string;
   status: CreditPurchaseStatus;
   paymentId?: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Advertisement {
@@ -234,9 +271,9 @@ export interface Advertisement {
   videoId?: string;
   content: string;
   published: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
-  expiresAt: Date;
+  createdAt: string;
+  updatedAt?: string;
+  expiresAt: string;
 }
 
 // Create types
@@ -316,7 +353,7 @@ export interface CreateAdvertisementInput {
   videoId?: string;
   content?: string;
   title: string;
-  expiresAt: Date;
+  expiresAt: string;
 }
 
 // Update types

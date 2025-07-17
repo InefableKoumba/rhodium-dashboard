@@ -46,7 +46,7 @@ interface TopCommercialUsersRankingProps {
   }[];
   sponsorships: Array<{
     sponsorId: string;
-    createdAt: Date;
+    createdAt: string;
   }>;
 }
 
@@ -80,7 +80,9 @@ export default function TopCommercialUsersRanking({
   users,
   sponsorships,
 }: TopCommercialUsersRankingProps) {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(
+    undefined
+  );
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [filterMode, setFilterMode] = useState<"all" | "single" | "range">(
     "all"
@@ -103,7 +105,8 @@ export default function TopCommercialUsersRanking({
             const sponsorshipDate = new Date(sp.createdAt);
             return (
               sp.sponsorId === user.id &&
-              sponsorshipDate.toDateString() === selectedDate.toDateString()
+              sponsorshipDate.toDateString() ===
+                new Date(selectedDate).toDateString()
             );
           }).length;
         } else if (filterMode === "range" && dateRange?.from && dateRange?.to) {
@@ -153,7 +156,7 @@ export default function TopCommercialUsersRanking({
   };
 
   const setTodayFilter = () => {
-    setSelectedDate(new Date());
+    setSelectedDate(new Date().toISOString());
     setDateRange(undefined);
     setFilterMode("single");
   };
@@ -229,8 +232,8 @@ export default function TopCommercialUsersRanking({
                 <PopoverContent className="w-auto p-0" align="start">
                   <CalendarComponent
                     mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
+                    selected={selectedDate ? new Date(selectedDate) : undefined}
+                    onSelect={(date) => setSelectedDate(date?.toISOString())}
                     initialFocus
                     locale={fr}
                   />

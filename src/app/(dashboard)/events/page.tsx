@@ -28,8 +28,13 @@ export default async function Page() {
   const upcomingEvents = events.filter(
     (event) => new Date(event.startsAt) > new Date()
   );
+  const ongoingEvents = events.filter(
+    (event) =>
+      new Date(event.startsAt) <= new Date() &&
+      new Date(event.endsAt) >= new Date()
+  );
   const pastEvents = events.filter(
-    (event) => new Date(event.startsAt) <= new Date()
+    (event) => new Date(event.endsAt) < new Date()
   );
   const rejectedEvents = events.filter(
     (event) => event.status === EventStatus.REJECTED
@@ -152,6 +157,13 @@ export default async function Page() {
             Evènements à venir ({upcomingEvents.length})
           </TabsTrigger>
           <TabsTrigger
+            value="ongoing_events"
+            className="gap-2 px-6 data-[state=active]:bg-primary data-[state=active]:text-white"
+          >
+            <Clock size={20} />
+            Evènements en cours ({ongoingEvents.length})
+          </TabsTrigger>
+          <TabsTrigger
             value="passed_events"
             className="gap-2 px-6 data-[state=active]:bg-primary data-[state=active]:text-white"
           >
@@ -173,6 +185,9 @@ export default async function Page() {
           <EventsTable showValidatedFilter events={upcomingEvents} />
         </TabsContent>
 
+        <TabsContent value="ongoing_events">
+          <EventsTable showValidatedFilter events={ongoingEvents} />
+        </TabsContent>
         <TabsContent value="passed_events">
           <EventsTable showValidatedFilter events={pastEvents} />
         </TabsContent>

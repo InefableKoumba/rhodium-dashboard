@@ -55,7 +55,7 @@ export default function AddAds() {
         videoId: mediatType === "video" ? key : undefined,
         content,
         title,
-        expiresAt: date,
+        expiresAt: date.toISOString(),
       });
 
       if (ok) {

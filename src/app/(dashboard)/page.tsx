@@ -35,7 +35,9 @@ export default async function Page() {
     (event: Event) => event.status === EventStatus.PENDING
   );
   const soldTicketsNum = events.reduce(
-    (acc: number, event: Event) => acc + (event.tickets?.length || 0),
+    (acc: number, event: Event) =>
+      acc +
+      (event.orders?.reduce((sum, order) => sum + (order.amount || 0), 0) || 0),
     0
   );
 

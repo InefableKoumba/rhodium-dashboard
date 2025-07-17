@@ -18,6 +18,7 @@ import {
   Minus,
   Quote,
   BarChart3,
+  Phone,
 } from "lucide-react";
 import {
   Table,
@@ -50,6 +51,8 @@ import { getEvent } from "@/lib/actions";
 import AddTicketTypeModal from "@/components/modals/add-ticket";
 import { EventCategory, EventCategoryLabels } from "@/types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -141,7 +144,7 @@ export default async function page({
 
         {/* Main Content */}
         <Tabs defaultValue="details" className="w-full p-12 pt-0">
-          <TabsList>
+          <TabsList className="mb-4">
             <TabsTrigger value="details" className="gap-2">
               <Info size={16} />
               Détails
@@ -219,6 +222,16 @@ export default async function page({
                       <span>Organisé par </span>
                       <span className="font-semibold">
                         {event.organizer?.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone size={16} className="text-gray-500" />
+                    <div className="flex items-center gap-2">
+                      <span>Téléphone </span>
+                      <span className="font-semibold">
+                        +{event.organizer?.countryCode}{" "}
+                        {event.organizer?.phoneNumber}
                       </span>
                     </div>
                   </div>
@@ -327,7 +340,6 @@ export default async function page({
                   <TableHead>Nom</TableHead>
                   <TableHead>Prix</TableHead>
                   <TableHead>Quantité</TableHead>
-                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -336,16 +348,6 @@ export default async function page({
                     <TableCell>{ticketType.name}</TableCell>
                     <TableCell>{ticketType.price} XAF</TableCell>
                     <TableCell>{ticketType.maxQuantity}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="icon">
-                          <Pencil size={16} />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash size={16} />
-                        </Button>
-                      </div>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -363,12 +365,9 @@ export default async function page({
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {event.tickets
-                      ?.reduce((sum, ticket) => {
-                        const ticketType = event.ticketTypes?.find(
-                          (tt) => tt.id === ticket.ticketTypeId
-                        );
-                        return sum + (ticketType?.price || 0);
+                    {event.orders
+                      ?.reduce((sum, order) => {
+                        return sum + (order.amount || 0);
                       }, 0)
                       .toLocaleString()}{" "}
                     XAF
@@ -388,7 +387,7 @@ export default async function page({
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {event.tickets?.length || 0}
+                    {event.orders?.length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Nombre total de tickets vendus
@@ -411,7 +410,7 @@ export default async function page({
                       0
                     ) > 0
                       ? `${Math.round(
-                          ((event.tickets?.length || 0) /
+                          ((event.orders?.length || 0) /
                             event.ticketTypes?.reduce(
                               (total, tt) => total + tt.maxQuantity,
                               0
@@ -443,8 +442,8 @@ export default async function page({
                 <TableBody>
                   {event.ticketTypes?.map((ticketType) => {
                     const soldTickets =
-                      event.tickets?.filter(
-                        (t) => t.ticketTypeId === ticketType.id
+                      event.orders?.filter((o) =>
+                        o.items.some((i) => i.ticketType.id === ticketType.id)
                       ).length || 0;
                     const revenue = soldTickets * ticketType.price;
                     const availability = `${soldTickets}/${ticketType.maxQuantity}`;
@@ -487,6 +486,7 @@ export default async function page({
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Acheteur</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Type de ticket</TableHead>
                     <TableHead>Prix</TableHead>
@@ -494,14 +494,19 @@ export default async function page({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {event.tickets?.map((ticket) => {
+                  {event.orders?.map((order) => {
                     const ticketType = event.ticketTypes?.find(
-                      (tt) => tt.id === ticket.ticketTypeId
+                      (tt) => tt.id === order.items[0].ticketType.id
                     );
                     return (
-                      <TableRow key={ticket.id}>
+                      <TableRow key={order.id}>
                         <TableCell>
-                          {new Date(ticket.createdAt).toLocaleDateString(
+                          <Link href={`/users/${order.user?.id}`}>
+                            {order.user?.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(order.createdAt).toLocaleDateString(
                             "fr-FR",
                             {
                               day: "numeric",
@@ -521,16 +526,16 @@ export default async function page({
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-sm ${
-                              ticket.status === "CONFIRMED"
+                              order.status === "PAID"
                                 ? "bg-green-100 text-green-800"
-                                : ticket.status === "PENDING"
+                                : order.status === "PENDING"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : "bg-red-100 text-red-800"
                             }`}
                           >
-                            {ticket.status === "CONFIRMED"
+                            {order.status === "PAID"
                               ? "Confirmé"
-                              : ticket.status === "PENDING"
+                              : order.status === "PENDING"
                               ? "En attente"
                               : "Annulé"}
                           </span>

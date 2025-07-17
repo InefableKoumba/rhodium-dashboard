@@ -29,12 +29,12 @@ import { DollarSign, CalendarIcon, Search } from "lucide-react";
 import Link from "next/link";
 
 function getTicketSales(event: Event) {
-  if (!event.tickets || !event.ticketTypes) return 0;
+  if (!event.orders || !event.ticketTypes) return 0;
   const ticketTypeMap = Object.fromEntries(
     event.ticketTypes.map((tt) => [tt.id, tt.price])
   );
-  return event.tickets.reduce(
-    (sum, t) => sum + (ticketTypeMap[t.ticketTypeId] || 0),
+  return event.orders.reduce(
+    (sum, o) => sum + (ticketTypeMap[o.items[0].ticketType.id] || 0),
     0
   );
 }
@@ -228,7 +228,7 @@ export default function EarningsDashboard({
                       year: "numeric",
                     })}
                   </TableCell>
-                  <TableCell>{event.tickets?.length || 0}</TableCell>
+                  <TableCell>{event.orders?.length || 0}</TableCell>
                   <TableCell>
                     {getTicketSales(event).toLocaleString()} XAF
                   </TableCell>

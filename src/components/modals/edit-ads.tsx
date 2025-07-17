@@ -24,7 +24,7 @@ export default function EditAd(ads: {
   id: string;
   title: string;
   content: string;
-  expiresAt: Date;
+  expiresAt: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState(ads.title);

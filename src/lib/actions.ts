@@ -12,6 +12,7 @@ import {
   Advertisement,
   EventCategory,
   Sponsorship,
+  Order,
 } from "@/types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
@@ -41,15 +42,26 @@ export async function getPresignedUrl({
   return data;
 }
 
-export async function getSponsorships(): Promise<{
+export async function getSponsorships({
+  page = 1,
+  limit = 10,
+}: {
+  page?: number;
+  limit?: number;
+} = {}): Promise<{
   sponsorships: Sponsorship[];
   total: number;
   paidAmount: number;
   remainingAmount: number;
+  currentPage: number;
+  totalPages: number;
 }> {
-  const response = await fetch(`${API_URL}/sponsorships`, {
-    headers: await getAuthHeaders(),
-  });
+  const response = await fetch(
+    `${API_URL}/sponsorships?page=${page}&limit=${limit}`,
+    {
+      headers: await getAuthHeaders(),
+    }
+  );
   const responseData = await response.json();
   return responseData.data;
 }
@@ -165,7 +177,20 @@ export async function getCreditPacks(): Promise<CreditPack[]> {
 }
 
 export async function getCreditPurchases(): Promise<CreditPurchase[]> {
-  const response = await fetch(`${API_URL}/credits/credits-purchases`, {
+  const response = await fetch(`${API_URL}/payments/credits-purchases`, {
+    headers: await getAuthHeaders(),
+  });
+  const res = await response.json();
+  return res.data.purchases;
+}
+
+export async function getOrders(): Promise<{
+  orders: Order[];
+  total: number;
+  totalRevenue: number;
+  totalFailed: number;
+}> {
+  const response = await fetch(`${API_URL}/payments/orders`, {
     headers: await getAuthHeaders(),
   });
   const res = await response.json();
@@ -176,7 +201,8 @@ export async function getCreditPurchase(id: string): Promise<CreditPurchase> {
   const response = await fetch(`${API_URL}/credits/purchases/${id}`, {
     headers: await getAuthHeaders(),
   });
-  return response.json();
+  const res = await response.json();
+  return res.data;
 }
 
 // Advertisement Actions

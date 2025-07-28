@@ -74,9 +74,7 @@ export default function EarningsDashboard({
   // Filtered credit purchases (completed only)
   const filteredCreditPurchases = useMemo(
     () =>
-      creditPurchases.filter(
-        (cp) => cp.status === CreditPurchaseStatus.COMPLETED
-      ),
+      creditPurchases.filter((cp) => cp.status === CreditPurchaseStatus.PAID),
     [creditPurchases]
   );
 
@@ -274,8 +272,8 @@ export default function EarningsDashboard({
                   className="dark:hover:bg-gray-800 dark:border-gray-800"
                 >
                   <TableCell>{i + 1}</TableCell>
-                  <TableCell>{cp.buyer?.name || "-"}</TableCell>
-                  <TableCell>{cp.buyer?.email || "-"}</TableCell>
+                  <TableCell>{cp.user?.name || "-"}</TableCell>
+                  <TableCell>{cp.user?.email || "-"}</TableCell>
                   <TableCell>{cp.phoneNumber || "-"}</TableCell>
                   <TableCell>{cp.creditPack?.name || "-"}</TableCell>
                   <TableCell>{cp.creditPack?.credits || 0}</TableCell>

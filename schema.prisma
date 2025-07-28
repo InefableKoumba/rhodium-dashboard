@@ -13,27 +13,147 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  COMMERCIAL
+}
+
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  password        String
-  lastname        String
-  firstname       String
-  googleId        String?
-  avatar          String?
-  sponsorCode     String           @unique @default(uuid())
-  sponsorId       String?
-  sponsor         User?            @relation("UserSponsorship", fields: [sponsorId], references: [id])
-  sponsored       User[]           @relation("UserSponsorship")
-  credits         Int              @default(0)
-  phoneNumber     String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  events          Event[]          @relation("EventOrganizer")
-  tickets         Ticket[]
-  Invitation      Invitation[]
-  likedEvents     Event[]          @relation("EventLikes")
-  creditPurchases CreditPurchase[]
+  id                           String             @id @default(uuid())
+  email                        String             @unique
+  password                     String
+  name                         String
+  googleId                     String?
+  avatar                       String?
+  hasDeletedAccount            Boolean            @default(false)
+  isBlocked                    Boolean            @default(false)
+  sponsorshipCode              String             @unique
+  role                         UserRole           @default(USER)
+  credits                      Int                @default(0)
+  countryCode                  String?
+  phoneNumber                  String?            @unique()
+  isPhoneNumberPublic          Boolean            @default(true)
+  createdAt                    DateTime           @default(now())
+  updatedAt                    DateTime           @updatedAt
+  events                       Event[]            @relation("EventOrganizer")
+  tickets                      Ticket[]
+  Invitation                   Invitation[]
+  likedEvents                  Event[]            @relation("EventLikes")
+  creditPurchases              CreditPurchase[]
+  PasswordResetOTP             PasswordResetOTP[]
+  enteredSponsorCode           String?
+  deviceUsedForAccountCreation String?
+  sponsored                    Sponsorship[]      @relation("SponsorRelation")
+  sponsor                      Sponsorship?       @relation("GodsonRelation")
+  orders                       Order[]
+  followersCount               Int                @default(0)
+  followingCount               Int                @default(0)
+  following                    Follow[]           @relation("Following")
+  followers                    Follow[]           @relation("Followers")
+  comments                     Comment[]
+  EventView                    EventView[]
+  EventShare                   EventShare[]
+}
+
+model PushNotificationToken {
+  id        String   @id @default(uuid())
+  userId    String?
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, token])
+}
+
+enum SponsorshipStatus {
+  PENDING
+  PAID
+  REJECTED
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  follower    User     @relation("Followers", fields: [followerId], references: [id])
+  following   User     @relation("Following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  flagCount Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  event     Event?   @relation(fields: [eventId], references: [id])
+  eventId   String?
+}
+
+model EventView {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deviceId String
+  eventId  String
+  userId   String?
+
+  event Event @relation(fields: [eventId], references: [id])
+  user  User? @relation(fields: [userId], references: [id])
+
+  @@unique([deviceId, eventId])
+}
+
+model EventShare {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deviceId String
+  eventId  String
+  userId   String?
+
+  event Event @relation(fields: [eventId], references: [id])
+  user  User? @relation(fields: [userId], references: [id])
+
+  @@unique([deviceId, eventId])
+}
+
+model Sponsorship {
+  id               String            @id @default(uuid())
+  sponsorId        String
+  godsonId         String            @unique
+  price            Float             @default(50)
+  status           SponsorshipStatus @default(PENDING)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime?
+  rejectionReason  String?
+  updatedByAdminId String?
+  sponsor          User              @relation("SponsorRelation", fields: [sponsorId], references: [id])
+  godson           User              @relation("GodsonRelation", fields: [godsonId], references: [id])
+}
+
+model PasswordResetOTP {
+  id        String   @id @default(uuid())
+  email     String
+  user      User     @relation(fields: [email], references: [email])
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model RegistrationOTP {
+  id        String   @id @default(uuid())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Admin {
@@ -42,6 +162,7 @@ model Admin {
   password       String
   lastname       String
   firstname      String
+  isBlocked      Boolean  @default(false)
   role           String   @default("ADMIN") // ADMIN, SUPER_ADMIN
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -49,33 +170,44 @@ model Admin {
 }
 
 model Event {
-  id              String       @id @default(uuid())
+  id              String          @id @default(uuid())
   title           String
   description     String
   startsAt        DateTime
   endsAt          DateTime
+  scanCode        String
+  isArchived      Boolean         @default(false)
+  city            String
   location        String
-  isPrivate       Boolean      @default(false)
-  isFree          Boolean      @default(false)
-  price           Float?
-  capacity        Int?
-  imageIds        String[]     @default([])
+  isPrivate       Boolean         @default(false)
+  isFree          Boolean         @default(false)
+  coverImageId    String
+  imageIds        String[]        @default([])
   videoId         String?
-  status          EventStatus  @default(PENDING)
+  isFeatured      Boolean         @default(false)
+  status          EventStatus     @default(PENDING)
   rejectionReason String?
-  approvedBy      Admin?       @relation("EventApproval", fields: [approvedById], references: [id])
+  approvedBy      Admin?          @relation("EventApproval", fields: [approvedById], references: [id])
   approvedById    String?
   approvedAt      DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  organizer       User         @relation("EventOrganizer", fields: [organizerId], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  organizer       User            @relation("EventOrganizer", fields: [organizerId], references: [id])
   organizerId     String
   tickets         Ticket[]
-  categories      Category[]
+  categories      EventCategory[]
   invitations     Invitation[]
-  likedBy         User[]       @relation("EventLikes")
-  likesCount      Int          @default(0)
+  likedBy         User[]          @relation("EventLikes")
+  likesCount      Int             @default(0)
   ticketTypes     TicketType[]
+  tables          Table[]
+  comments        Comment[]
+  commentsCount   Int             @default(0)
+  sharesCount     Int             @default(0)
+  viewsCount      Int             @default(0)
+  EventView       EventView[]
+  EventShare      EventShare[]
+  Order           Order[]
 }
 
 enum EventStatus {
@@ -88,6 +220,7 @@ enum TicketStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  DELETED_BY_USER
 }
 
 enum InvitationStatus {
@@ -105,19 +238,37 @@ enum EventCategory {
   FESTIVAL
   SPORTS
   NETWORKING
+  TECHNOLOGY
+  RELIGION
+  PHILOSOPHY
+  LITERATURE
+  ART
+  MUSIC
   OTHER
+  SHOW
+  MOVIE_SCREENING
+  PARTY
+  MASTERCLASS
+  TRAINING
+  FORUM
+  FAIR
+  LAUNCH
+  OPEN_HOUSE
+  CELEBRATION
+  KERMESSE
 }
 
 model TicketType {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String // e.g., "Standard", "VIP", "VVIP"
   price       Float
   maxQuantity Int
-  event       Event    @relation(fields: [eventId], references: [id])
+  event       Event       @relation(fields: [eventId], references: [id])
   eventId     String
   tickets     Ticket[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
 
   @@unique([eventId, name])
 }
@@ -128,20 +279,15 @@ model Ticket {
   eventId      String
   user         User         @relation(fields: [userId], references: [id])
   userId       String
-  ticketType   TicketType   @relation(fields: [ticketTypeId], references: [id])
-  ticketTypeId String
+  scanned      Boolean      @default(false)
+  scannedAt    DateTime?
+  ticketType   TicketType?  @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String?
   status       TicketStatus @default(PENDING)
+  orderItem    OrderItem?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-}
-
-model Category {
-  id          String        @id @default(uuid())
-  name        EventCategory @unique
-  description String?
-  events      Event[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  Invitation   Invitation[]
 }
 
 model Invitation {
@@ -149,12 +295,25 @@ model Invitation {
   event     Event            @relation(fields: [eventId], references: [id])
   eventId   String
   user      User             @relation(fields: [userId], references: [id])
+  table     Table?           @relation(fields: [tableId], references: [id])
+  tableId   String?
   userId    String
+  ticket    Ticket?          @relation(fields: [ticketId], references: [id])
+  ticketId  String?
   status    InvitationStatus @default(PENDING)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+}
 
-  @@unique([eventId, userId])
+model Table {
+  id         String       @id @default(uuid())
+  name       String
+  seats      Int
+  eventId    String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Invitation Invitation[]
+  Event      Event        @relation(fields: [eventId], references: [id])
 }
 
 model CreditPack {
@@ -162,7 +321,6 @@ model CreditPack {
   name      String // e.g., "Basic", "Premium"
   credits   Int
   price     Float
-  currency  String           @default("XAF")
   isActive  Boolean          @default(true)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -175,8 +333,6 @@ model CreditPurchase {
   userId       String
   creditPack   CreditPack           @relation(fields: [creditPackId], references: [id])
   creditPackId String
-  amount       Float
-  currency     String               @default("XAF")
   phoneNumber  String
   status       CreditPurchaseStatus @default(PENDING)
   paymentId    String? // Mobile money transaction ID
@@ -186,7 +342,70 @@ model CreditPurchase {
 
 enum CreditPurchaseStatus {
   PENDING
-  COMPLETED
+  PAID
   FAILED
   CANCELLED
+}
+
+enum AdvertisementStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Advertisement {
+  id        String    @id @default(uuid())
+  title     String?
+  imageId   String?
+  videoId   String?
+  expiresAt DateTime?
+  link      String?
+  content   String?
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model AppConfiguration {
+  id                               String   @id @default(uuid())
+  sponsorshipPrice                 Float    @default(50)
+  commissionPercentageOnTicketSale Float    @default(10)
+  createdAt                        DateTime @default(now())
+  updatedAt                        DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  phoneNumber   String
+  amount        Float
+  status        OrderStatus @default(PENDING)
+  eventId       String?
+  event         Event?      @relation(fields: [eventId], references: [id])
+  paymentId     String? // Payment provider's transaction ID
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  paidAt        DateTime?
+  cancelledAt   DateTime?
+  failureReason String?
+}
+
+model OrderItem {
+  id           String     @id @default(uuid())
+  order        Order      @relation(fields: [orderId], references: [id])
+  orderId      String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String
+  ticket       Ticket     @relation(fields: [ticketId], references: [id])
+  ticketId     String     @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }

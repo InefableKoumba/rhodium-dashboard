@@ -56,7 +56,7 @@ export const EventCategoryLabels: Record<EventCategory, string> = {
 
 export enum CreditPurchaseStatus {
   PENDING = "PENDING",
-  COMPLETED = "COMPLETED",
+  PAID = "PAID",
   FAILED = "FAILED",
   CANCELLED = "CANCELLED",
 }
@@ -171,11 +171,17 @@ export interface Order {
   status: OrderStatus;
   paymentId: string;
   items: OrderItem[];
+  eventId?: string;
+  event?: {
+    id: string;
+    title: string;
+    coverImageId?: string;
+  };
   createdAt: string;
   updatedAt: string;
-  paidAt: string;
-  cancelledAt: string;
-  failureReason: string;
+  paidAt?: string;
+  cancelledAt?: string;
+  failureReason?: string;
 }
 
 export enum OrderStatus {
@@ -244,7 +250,7 @@ export interface CreditPack {
 
 export interface CreditPurchase {
   id: string;
-  buyer: {
+  user: {
     id: string;
     email: string;
     name: string;

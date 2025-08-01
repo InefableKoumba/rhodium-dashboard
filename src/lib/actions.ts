@@ -42,26 +42,53 @@ export async function getPresignedUrl({
   return data;
 }
 
-export async function getSponsorships({
-  page = 1,
-  limit = 10,
-}: {
-  page?: number;
-  limit?: number;
-} = {}): Promise<{
-  sponsorships: Sponsorship[];
+export async function getSponsorshipsStats(): Promise<{
   total: number;
   paidAmount: number;
   remainingAmount: number;
+}> {
+  const response = await fetch(`${API_URL}/sponsorships/stats`, {
+    headers: await getAuthHeaders(),
+  });
+  const responseData = await response.json();
+  return responseData.data;
+}
+
+export async function getSponsorships({
+  page = 1,
+  role,
+  search,
+  searchType,
+  status,
+  startDate,
+  endDate,
+}: {
+  page?: number;
+  role?: string;
+  search?: string;
+  searchType?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+} = {}): Promise<{
+  sponsorships: Sponsorship[];
+  total: number;
   currentPage: number;
   totalPages: number;
 }> {
-  const response = await fetch(
-    `${API_URL}/sponsorships?page=${page}&limit=${limit}`,
-    {
-      headers: await getAuthHeaders(),
-    }
-  );
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+
+  if (role) params.append("role", role);
+  if (search) params.append("search", search);
+  if (searchType) params.append("searchType", searchType);
+  if (status) params.append("status", status);
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  const response = await fetch(`${API_URL}/sponsorships?${params.toString()}`, {
+    headers: await getAuthHeaders(),
+  });
   const responseData = await response.json();
   return responseData.data;
 }

@@ -50,6 +50,7 @@ import {
   Event,
 } from "@/types/types";
 import ExportToExcel from "@/components/common/export-to-excel";
+import { useRouter } from "next/navigation";
 
 interface SalesDashboardProps {
   orders: Order[];
@@ -60,6 +61,7 @@ export default function SalesDashboard({
   orders,
   creditPurchases,
 }: SalesDashboardProps) {
+  const router = useRouter();
   // Filters
   const [activeTab, setActiveTab] = useState<"orders" | "credits" | "stats">(
     "orders"
@@ -261,7 +263,10 @@ export default function SalesDashboard({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {filteredStats.totalRevenue.toLocaleString()} XAF
+              {(
+                filteredStats.totalRevenue + filteredStats.totalCreditRevenue
+              ).toLocaleString()}{" "}
+              XAF
             </div>
             <p className="text-xs text-muted-foreground">
               +{filteredStats.totalCreditRevenue.toLocaleString()} XAF crédits
@@ -435,7 +440,14 @@ export default function SalesDashboard({
                       <TableCell className="font-mono text-sm">
                         {order.id.slice(0, 8)}...
                       </TableCell>
-                      <TableCell>{order.user?.name || "N/A"}</TableCell>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() => {
+                          router.push(`/users/${order.user?.id}`);
+                        }}
+                      >
+                        {order.user?.name || "N/A"}
+                      </TableCell>
                       <TableCell>{order.phoneNumber}</TableCell>
                       <TableCell>{order.event?.title || "N/A"}</TableCell>
                       <TableCell className="font-medium">
@@ -507,7 +519,14 @@ export default function SalesDashboard({
                       <TableCell className="font-mono text-sm">
                         {purchase.id.slice(0, 8)}...
                       </TableCell>
-                      <TableCell>{purchase.user.name}</TableCell>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() => {
+                          router.push(`/users/${purchase.user.id}`);
+                        }}
+                      >
+                        {purchase.user.name}
+                      </TableCell>
                       <TableCell>{purchase.phoneNumber}</TableCell>
                       <TableCell>{purchase.creditPack.name}</TableCell>
                       <TableCell>{purchase.creditPack.credits}</TableCell>

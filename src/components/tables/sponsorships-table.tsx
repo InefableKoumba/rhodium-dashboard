@@ -42,7 +42,6 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
   ColumnDef,
   flexRender,
   ColumnFiltersState,
@@ -58,9 +57,7 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { fr, id } from "date-fns/locale";
-import { useRouter } from "next/navigation";
-import { getSponsorships } from "@/lib/actions";
+import { useRouter, useSearchParams } from "next/navigation";
 import { updateSponsorshipStatus } from "@/service/api/api";
 import {
   DropdownMenu,
@@ -388,32 +385,74 @@ const createColumns = (
 
 export default function SponsorshipsTable({
   sponsorships,
+  total,
+  currentPage,
+  totalPages,
+  onPageChange,
+  isLoading = false,
 }: {
   sponsorships: Sponsorship[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  isLoading?: boolean;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  // Initialize state from URL parameters
   const [activeTab, setActiveTab] = useState<"COMMERCIAL" | "USER">(
-    "COMMERCIAL"
+    (typeof window !== "undefined" &&
+      (new URLSearchParams(window.location.search).get("role") as
+        | "COMMERCIAL"
+        | "USER")) ||
+      "COMMERCIAL"
   );
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const startDate = params.get("startDate");
+      const endDate = params.get("endDate");
+      if (startDate && endDate) {
+        return {
+          from: new Date(startDate),
+          to: new Date(endDate),
+        };
+      }
+    }
+    return undefined;
+  });
   const [dateFilter, setDateFilter] = useState<[Date, Date] | undefined>();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("search") || ""
+      : ""
+  );
   const [searchType, setSearchType] = useState<
     "phoneNumber" | "sponsorshipCode"
-  >("phoneNumber");
-  const [statusFilter, setStatusFilter] = useState<SponsorshipStatus | "ALL">(
-    "ALL"
+  >(
+    (typeof window !== "undefined" &&
+      (new URLSearchParams(window.location.search).get("searchType") as
+        | "phoneNumber"
+        | "sponsorshipCode")) ||
+      "phoneNumber"
   );
-  const [sponsorshipList, setSponsorshipList] =
-    useState<Sponsorship[]>(sponsorships);
+  const [statusFilter, setStatusFilter] = useState<SponsorshipStatus | "ALL">(
+    (typeof window !== "undefined" &&
+      (new URLSearchParams(window.location.search).get("status") as
+        | SponsorshipStatus
+        | "ALL")) ||
+      "ALL"
+  );
+
   const [isMarkingAsPaid, setIsMarkingAsPaid] = useState(false);
   const [isMarkingAsRejected, setIsMarkingAsRejected] = useState(false);
   const [selectedSponsorshipId, setSelectedSponsorshipId] = useState<
     string | null
   >(null);
   const [rejectionReason, setRejectionReason] = useState("");
-  const router = useRouter();
 
   // Handler for marking sponsorship as paid
   const handleMarkAsPaid = useCallback((id: string) => {
@@ -439,21 +478,14 @@ export default function SponsorshipsTable({
       );
 
       if (success) {
-        // Optimistic update
-        setSponsorshipList((prev) =>
-          prev.map((item) =>
-            item.id === selectedSponsorshipId
-              ? { ...item, status: SponsorshipStatus.PAID }
-              : item
-          )
-        );
+        // Note: Server will handle the update, no optimistic update needed
 
         toast.success("Parrainage marqué comme payé", {
           description: "Le statut du parrainage a été mis à jour avec succès.",
         });
 
         // Refresh the page to get updated data
-        router.refresh();
+        window.location.reload();
       } else {
         toast.error("Échec de l'opération", {
           description:
@@ -484,22 +516,7 @@ export default function SponsorshipsTable({
       );
 
       if (success) {
-        // Optimistic update
-        setSponsorshipList((prev) =>
-          prev.map((item) =>
-            item.id === selectedSponsorshipId
-              ? {
-                  ...item,
-                  status: SponsorshipStatus.REJECTED,
-                  rejectionReason,
-                  rejectedBy: {
-                    id: "current-admin-id", // This should come from your auth context
-                    name: "Admin Name", // This should come from your auth context
-                  },
-                }
-              : item
-          )
-        );
+        // Note: Server will handle the update, no optimistic update needed
 
         toast.success("Parrainage rejeté", {
           description: "Le statut du parrainage a été mis à jour avec succès.",
@@ -509,7 +526,7 @@ export default function SponsorshipsTable({
         setRejectionReason("");
 
         // Refresh the page to get updated data
-        router.refresh();
+        window.location.reload();
       } else {
         toast.error("Échec de l'opération", {
           description:
@@ -527,84 +544,81 @@ export default function SponsorshipsTable({
     }
   };
 
-  // Filter sponsorships based on the role
-  const filteredByRole = useMemo(() => {
-    return sponsorshipList.filter(
-      (sponsorship) => sponsorship.sponsor.role === activeTab
-    );
-  }, [activeTab, sponsorshipList]);
+  // Use sponsorships directly since filtering is done on the server
+  const filteredSponsorships = sponsorships;
 
-  // Custom filter function for search term and date range
-  const filterSponsorships = useCallback(
-    (
-      sponsorships: Sponsorship[],
-      term: string,
-      type: "phoneNumber" | "sponsorshipCode",
-      dateRange?: [Date, Date],
-      status?: SponsorshipStatus | "ALL"
-    ) => {
-      let result = [...sponsorships];
+  // Handle role filter changes
+  const handleRoleChange = (role: "COMMERCIAL" | "USER") => {
+    const params = new URLSearchParams(searchParams);
+    params.set("role", role);
+    params.set("page", "1"); // Reset to first page when changing role
+    router.push(`/sponsorships?${params.toString()}`);
+  };
 
-      // Filter by search term
-      if (term) {
-        const lowerCaseTerm = term.toLowerCase();
+  // Handle search changes
+  const handleSearchChange = (term: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (term) {
+      params.set("search", term);
+      params.set("searchType", searchType);
+    } else {
+      params.delete("search");
+      params.delete("searchType");
+    }
+    params.set("page", "1"); // Reset to first page when searching
+    router.push(`/sponsorships?${params.toString()}`);
+  };
 
-        result = result.filter((sponsorship) => {
-          if (type === "phoneNumber") {
-            const sponsorPhone =
-              sponsorship.sponsor.phoneNumber?.toLowerCase() || "";
-            const godsonPhone =
-              sponsorship.godson.phoneNumber?.toLowerCase() || "";
-            return (
-              sponsorPhone.includes(lowerCaseTerm) ||
-              godsonPhone.includes(lowerCaseTerm)
-            );
-          } else {
-            // Filter by sponsor code
-            return sponsorship.sponsor.sponsorshipCode
-              .toLowerCase()
-              .includes(lowerCaseTerm);
-          }
-        });
-      }
+  // Handle status filter changes
+  const handleStatusChange = (status: SponsorshipStatus | "ALL") => {
+    const params = new URLSearchParams(searchParams);
+    if (status === "ALL") {
+      params.delete("status");
+    } else {
+      params.set("status", status);
+    }
+    params.set("page", "1"); // Reset to first page when filtering
+    router.push(`/sponsorships?${params.toString()}`);
+  };
 
-      // Filter by date range
-      if (dateRange && dateRange.length === 2) {
-        const [startDate, endDate] = dateRange;
+  // Handle date filter changes
+  const handleDateFilter = (range: DateRange | undefined) => {
+    console.log("Date filter changed:", range);
 
-        result = result.filter((sponsorship) => {
-          const sponsorshipDate = new Date(sponsorship.createdAt);
-          return sponsorshipDate >= startDate && sponsorshipDate <= endDate;
-        });
-      }
+    // Update local state first
+    setDate(range);
 
-      // Filter by status
-      if (status && status !== "ALL") {
-        result = result.filter((sponsorship) => sponsorship.status === status);
-      }
+    // Use router for navigation
+    const params = new URLSearchParams(searchParams);
 
-      return result;
-    },
-    []
-  );
+    if (!range?.from || !range?.to) {
+      params.delete("startDate");
+      params.delete("endDate");
+    } else {
+      // Format dates as ISO strings
+      const startDate = range.from.toISOString().split("T")[0];
+      const endDate = range.to.toISOString().split("T")[0];
+      console.log("Setting dates:", { startDate, endDate });
+      params.set("startDate", startDate);
+      params.set("endDate", endDate);
+    }
+    params.set("page", "1"); // Reset to first page when filtering
 
-  // Apply all filters
-  const filteredSponsorships = useMemo(() => {
-    return filterSponsorships(
-      filteredByRole,
-      searchTerm,
-      searchType,
-      dateFilter,
-      statusFilter
-    );
-  }, [
-    filteredByRole,
-    searchTerm,
-    searchType,
-    dateFilter,
-    statusFilter,
-    filterSponsorships,
-  ]);
+    // Use router.push for smoother navigation
+    router.push(`/sponsorships?${params.toString()}`);
+  };
+
+  // Handle clear filters
+  const clearFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("search");
+    params.delete("searchType");
+    params.delete("status");
+    params.delete("startDate");
+    params.delete("endDate");
+    params.set("page", "1");
+    router.push(`/sponsorships?${params.toString()}`);
+  };
 
   const columns = useMemo(
     () => createColumns(handleMarkAsPaid, handleMarkAsRejected),
@@ -615,52 +629,17 @@ export default function SponsorshipsTable({
     data: filteredSponsorships,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
     state: {
       sorting,
       columnFilters,
     },
   });
 
-  // Reset pagination when filters change
-  useEffect(() => {
-    table.resetPageIndex(true);
-  }, [searchTerm, dateFilter, activeTab, table]);
-
-  const handleDateFilter = (range: DateRange | undefined) => {
-    setDate(range);
-
-    if (!range?.from || !range?.to) {
-      setDateFilter(undefined);
-      return;
-    }
-
-    // Set start date to beginning of day
-    const from = new Date(range.from);
-    from.setHours(0, 0, 0, 0);
-
-    // Set end date to end of day
-    const to = new Date(range.to);
-    to.setHours(23, 59, 59, 999);
-
-    // Set date filter
-    setDateFilter([from, to]);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm("");
-    setDate(undefined);
-    setDateFilter(undefined);
-    setStatusFilter("ALL");
-  };
+  // Note: Server-side pagination and filtering is handled by the parent component
+  // All filtering is done on the server side
 
   return (
     <div className="space-y-6">
@@ -675,9 +654,11 @@ export default function SponsorshipsTable({
             </div>
             <Tabs
               value={activeTab}
-              onValueChange={(value) =>
-                setActiveTab(value as "COMMERCIAL" | "USER")
-              }
+              onValueChange={(value) => {
+                const role = value as "COMMERCIAL" | "USER";
+                setActiveTab(role);
+                handleRoleChange(role);
+              }}
               className="w-full md:w-auto"
             >
               <TabsList className="grid w-full grid-cols-2">
@@ -706,7 +687,11 @@ export default function SponsorshipsTable({
                   </div>
                   <Input
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearchTerm(value);
+                      handleSearchChange(value);
+                    }}
                     placeholder={
                       searchType === "phoneNumber"
                         ? "Rechercher par téléphone..."
@@ -716,7 +701,10 @@ export default function SponsorshipsTable({
                   />
                   {searchTerm && (
                     <button
-                      onClick={() => setSearchTerm("")}
+                      onClick={() => {
+                        setSearchTerm("");
+                        handleSearchChange("");
+                      }}
                       className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
                     >
                       <X className="h-4 w-4" />
@@ -728,7 +716,14 @@ export default function SponsorshipsTable({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSearchType("phoneNumber")}
+                    onClick={() => {
+                      setSearchType("phoneNumber");
+                      if (searchTerm) {
+                        const params = new URLSearchParams(searchParams);
+                        params.set("searchType", "phoneNumber");
+                        router.push(`/sponsorships?${params.toString()}`);
+                      }
+                    }}
                     className={cn(
                       "flex items-center gap-1",
                       searchType === "phoneNumber" &&
@@ -741,7 +736,14 @@ export default function SponsorshipsTable({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSearchType("sponsorshipCode")}
+                    onClick={() => {
+                      setSearchType("sponsorshipCode");
+                      if (searchTerm) {
+                        const params = new URLSearchParams(searchParams);
+                        params.set("searchType", "sponsorshipCode");
+                        router.push(`/sponsorships?${params.toString()}`);
+                      }
+                    }}
                     className={cn(
                       "flex items-center gap-1",
                       searchType === "sponsorshipCode" &&
@@ -757,9 +759,11 @@ export default function SponsorshipsTable({
               <div className="flex items-center gap-2">
                 <Select
                   value={statusFilter}
-                  onValueChange={(value) =>
-                    setStatusFilter(value as SponsorshipStatus | "ALL")
-                  }
+                  onValueChange={(value) => {
+                    const status = value as SponsorshipStatus | "ALL";
+                    setStatusFilter(status);
+                    handleStatusChange(status);
+                  }}
                 >
                   <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-800">
                     <SelectValue placeholder="Filtrer par statut" />
@@ -857,7 +861,17 @@ export default function SponsorshipsTable({
             )}
           </div>
 
-          <div className="rounded-md border dark:border-gray-800">
+          <div className="rounded-md border dark:border-gray-800 relative">
+            {isLoading && (
+              <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm text-muted-foreground">
+                    Chargement...
+                  </span>
+                </div>
+              </div>
+            )}
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -901,7 +915,7 @@ export default function SponsorshipsTable({
                       colSpan={columns.length}
                       className="h-32 text-center"
                     >
-                      {filteredByRole.length === 0 ? (
+                      {sponsorships.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-2">
                           <p className="font-medium">Aucun parrainage trouvé</p>
                           <p className="text-sm text-muted-foreground">
@@ -939,13 +953,8 @@ export default function SponsorshipsTable({
             <div className="text-sm text-muted-foreground">
               {filteredSponsorships.length > 0 ? (
                 <>
-                  Page {table.getState().pagination.pageIndex + 1} sur{" "}
-                  {table.getPageCount()}
-                  {filteredSponsorships.length >
-                    table.getState().pagination.pageSize &&
-                    ` • ${table.getRowModel().rows.length} sur ${
-                      filteredSponsorships.length
-                    } parrainages affichés`}
+                  Page {currentPage} sur {totalPages}
+                  {` • ${filteredSponsorships.length} sur ${total} parrainages affichés`}
                 </>
               ) : (
                 "Aucun résultat"
@@ -955,16 +964,16 @@ export default function SponsorshipsTable({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage <= 1 || isLoading}
               >
                 Précédent
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages || isLoading}
               >
                 Suivant
               </Button>

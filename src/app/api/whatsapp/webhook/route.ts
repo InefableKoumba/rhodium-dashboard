@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
                 data: {
                   messageId: message.id,
                   from: message.from,
-                  to: message.to,
+                  to: change.value.metadata.phone_number_id,
                   type: message.type,
                   content:
                     message.type === "text"
@@ -91,7 +91,8 @@ export async function POST(request: NextRequest) {
                   templateName:
                     message.type === "template" ? message.template.name : null,
                   direction: "incoming",
-                  status: message.status || "received",
+                  status: "received", // always for incoming messages
+                  timestamp: new Date(Number(message.timestamp) * 1000), // convert UNIX to Date
                   metadata: JSON.stringify(message),
                 },
               });

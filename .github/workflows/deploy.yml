@@ -38,7 +38,7 @@ jobs:
               cd $APP_DIR
               bun install
               bun run build
-              pm2 start bun --name "rhodium-dashboard" -- start
+              pm2 start bun --name "rhodium-dashboard" -- restart
             else
               echo "Updating existing repository..."
               cd $APP_DIR

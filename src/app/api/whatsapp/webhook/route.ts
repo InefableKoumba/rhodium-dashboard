@@ -19,13 +19,6 @@ function verifyWhatsAppSignature(
 
     const expectedSignature = `sha256=${hmac}`;
 
-    console.log("Signature verification:", {
-      receivedSignature: signature,
-      calculatedSignature: expectedSignature,
-      bodyLength: body.length,
-      appSecretLength: appSecret.length,
-    });
-
     return signature === expectedSignature;
   } catch (error) {
     console.error("Signature verification error:", error);
@@ -37,28 +30,13 @@ export async function POST(request: NextRequest) {
   try {
     // Get the raw request body as text
     const rawBody = await request.text();
-    console.log(rawBody);
     // Log all headers for debugging
-    console.log(
-      "Request headers:",
-      Object.fromEntries(request.headers.entries())
-    );
 
     // Verify the request signature
     const signature = request.headers.get("x-hub-signature-256");
     const appSecret = process.env.WHATSAPP_APP_SECRET;
 
-    console.log("Signature verification inputs:", {
-      hasSignature: !!signature,
-      hasAppSecret: !!appSecret,
-      signature,
-      // Don't log the full app secret, just its length and first few chars
-      appSecretPreview: appSecret ? `${appSecret.slice(0, 4)}...` : null,
-      appSecretLength: appSecret?.length,
-    });
-
     if (!signature || !appSecret) {
-      console.log("Missing signature or app secret");
       return NextResponse.json(
         { error: "Missing signature or app secret" },
         { status: 401 }
@@ -66,7 +44,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!verifyWhatsAppSignature(signature, rawBody, appSecret)) {
-      console.log("Signature verification failed");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
@@ -79,7 +56,6 @@ export async function POST(request: NextRequest) {
         for (const change of entry.changes) {
           if (change.field === "messages") {
             for (const message of change.value.messages) {
-              console.log(message);
               // Store the message in the database
               await db.insert(whatsappMessages).values({
                 id: uuidv4(),
@@ -121,7 +97,6 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   } catch (error) {
-    console.error("Webhook error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -136,35 +111,16 @@ export async function GET(request: NextRequest) {
   const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
-  // Log the full URL and all search parameters
-  console.log("Webhook verification request URL:", request.nextUrl.toString());
-  console.log(
-    "All search parameters:",
-    Object.fromEntries(searchParams.entries())
-  );
-  console.log("Required parameters:", {
-    "hub.mode": mode,
-    "hub.verify_token": token,
-    "hub.challenge": challenge,
-    expectedToken: process.env.WHATSAPP_VERIFY_TOKEN,
-  });
-
   // Verify the webhook
   if (!mode || !token || !challenge) {
-    console.log("Missing required parameters");
     return new Response("Missing required parameters", { status: 400 });
   }
 
   if (mode !== "subscribe") {
-    console.log("Invalid mode:", mode);
     return new Response("Invalid mode", { status: 400 });
   }
 
   if (token !== process.env.WHATSAPP_VERIFY_TOKEN) {
-    console.log("Token mismatch:", {
-      received: token,
-      expected: process.env.WHATSAPP_VERIFY_TOKEN,
-    });
     return new Response("Invalid verify token", { status: 403 });
   }
 

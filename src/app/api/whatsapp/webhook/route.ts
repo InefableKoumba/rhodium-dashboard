@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
                 data: {
                   messageId: message.id,
                   from: message.from,
-                  to: change.value.metadata.phone_number_id,
+                  to: "242064841864",
                   type: message.type,
                   content:
                     message.type === "text"

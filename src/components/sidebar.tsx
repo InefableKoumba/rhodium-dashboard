@@ -20,6 +20,7 @@ import {
   Info,
   Landmark,
   LayoutDashboard,
+  MessageSquare,
   Settings,
   Tickets,
   Users,
@@ -88,6 +89,12 @@ export default function SidebarNavigation() {
       label: "Mobile Money",
       active:
         pathname === "/mobile-money" || pathname?.startsWith("/mobile-money/"),
+    },
+    {
+      href: "/whatsapp",
+      icon: MessageSquare,
+      label: "WhatsApp",
+      active: pathname === "/whatsapp" || pathname?.startsWith("/whatsapp/"),
     },
     {
       href: "/settings",

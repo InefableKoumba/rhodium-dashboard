@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   try {
     // Get the raw request body as text
     const rawBody = await request.text();
-
+    console.log(rawBody);
     // Verify the request signature
     const signature = request.headers.get("x-hub-signature-256");
     const appSecret = process.env.WHATSAPP_APP_SECRET;
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
       !appSecret ||
       !verifyWhatsAppSignature(signature, rawBody, appSecret)
     ) {
+      console.log("Invalid signature", signature, appSecret);
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 

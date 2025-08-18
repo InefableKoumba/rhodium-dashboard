@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { eq } from "drizzle-orm";
 import crypto from "crypto";
+import { v4 as uuidv4 } from "uuid";
+import { whatsappMessages } from "@/lib/db/schema";
+import { db } from "@/lib/db/index";
 
 // Verify that the request is coming from WhatsApp
 function verifyWhatsAppSignature(
@@ -69,7 +72,6 @@ export async function POST(request: NextRequest) {
 
     // Parse the body
     const body = JSON.parse(rawBody);
-    console.log(body);
 
     // Handle different types of notifications
     if (body.object === "whatsapp_business_account") {
@@ -79,23 +81,22 @@ export async function POST(request: NextRequest) {
             for (const message of change.value.messages) {
               console.log(message);
               // Store the message in the database
-              await prisma.whatsAppMessage.create({
-                data: {
-                  messageId: message.id,
-                  from: message.from,
-                  to: "242064841864",
-                  type: message.type,
-                  content:
-                    message.type === "text"
-                      ? message.text.body
-                      : JSON.stringify(message),
-                  templateName:
-                    message.type === "template" ? message.template.name : null,
-                  direction: "incoming",
-                  status: "received", // always for incoming messages
-                  timestamp: new Date(Number(message.timestamp) * 1000), // convert UNIX to Date
-                  metadata: JSON.stringify(message),
-                },
+              await db.insert(whatsappMessages).values({
+                id: uuidv4(),
+                messageId: message.id,
+                from: message.from,
+                to: "242064841864",
+                type: message.type,
+                content:
+                  message.type === "text"
+                    ? message.text.body
+                    : JSON.stringify(message),
+                templateName:
+                  message.type === "template" ? message.template.name : null,
+                direction: "incoming",
+                status: "received", // always for incoming messages
+                timestamp: new Date(Number(message.timestamp) * 1000), // convert UNIX to Date
+                metadata: JSON.stringify(message),
               });
             }
           }
@@ -103,10 +104,10 @@ export async function POST(request: NextRequest) {
           // Handle status updates
           if (change.field === "message_status") {
             const status = change.value;
-            await prisma.whatsAppMessage.update({
-              where: { messageId: status.id },
-              data: { status: status.status },
-            });
+            await db
+              .update(whatsappMessages)
+              .set({ status: status.status })
+              .where(eq(whatsappMessages.messageId, status.id));
           }
         }
       }

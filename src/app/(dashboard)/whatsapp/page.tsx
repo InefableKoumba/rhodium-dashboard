@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Send } from "lucide-react";
 import { MessageList } from "@/components/whatsapp/message-list";
-import { TemplateSender } from "@/components/whatsapp/template-sender";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -29,29 +28,17 @@ interface Template {
 
 export default function WhatsAppPage() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [messagesRes, templatesRes] = await Promise.all([
-          fetch("/api/whatsapp/messages"),
-          fetch("/api/whatsapp/templates"),
-        ]);
+        const messagesRes = await fetch("/api/whatsapp/messages");
 
-        if (!messagesRes.ok || !templatesRes.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
-        const [messagesData, templatesData] = await Promise.all([
-          messagesRes.json(),
-          templatesRes.json(),
-        ]);
+        const messagesData = await messagesRes.json();
 
         setMessages(messagesData);
-        setTemplates(templatesData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         toast.error("Failed to load WhatsApp data");
@@ -130,10 +117,6 @@ export default function WhatsAppPage() {
             <MessageSquare className="w-4 h-4" />
             Messages
           </TabsTrigger>
-          <TabsTrigger value="templates" className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" />
-            Templates
-          </TabsTrigger>
           <TabsTrigger value="send" className="flex items-center gap-2">
             <Send className="w-4 h-4" />
             Send Message
@@ -163,38 +146,6 @@ export default function WhatsAppPage() {
                   Send
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="templates">
-          <Card>
-            <CardHeader>
-              <CardTitle>Message Templates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <p className="text-muted-foreground">Loading templates...</p>
-              ) : (
-                <TemplateSender
-                  templates={templates}
-                  onSend={handleSendTemplate}
-                />
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="send">
-          <Card>
-            <CardHeader>
-              <CardTitle>Send Message</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TemplateSender
-                templates={templates}
-                onSend={handleSendTemplate}
-              />
             </CardContent>
           </Card>
         </TabsContent>

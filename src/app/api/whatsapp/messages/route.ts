@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { desc } from "drizzle-orm";
 import { WhatsAppService } from "@/lib/services/whatsapp";
+import { whatsappMessages } from "@/lib/db/schema";
+import { db } from "@/lib/db/index";
 
 const whatsappService = new WhatsAppService(
   process.env.WHATSAPP_API_URL || "",
@@ -9,15 +11,14 @@ const whatsappService = new WhatsAppService(
 
 export async function GET() {
   try {
-    const messages = await prisma.whatsAppMessage.findMany({
-      orderBy: {
-        timestamp: "desc",
-      },
-      take: 100,
-    });
+    const messages = await db
+      .select()
+      .from(whatsappMessages)
+      .orderBy(desc(whatsappMessages.timestamp))
+      .limit(100);
 
     return NextResponse.json(
-      messages.map((msg) => ({
+      messages.map((msg: typeof whatsappMessages.$inferSelect) => ({
         id: msg.messageId,
         content: msg.content,
         timestamp: msg.timestamp.toISOString(),

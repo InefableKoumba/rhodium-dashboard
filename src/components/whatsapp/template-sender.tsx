@@ -13,20 +13,11 @@ import {
 import { Card } from "@/components/ui/card";
 import { Send } from "lucide-react";
 
-interface TemplateMessage {
-  name: string;
-  language: {
-    code: string;
-  };
-  components: any[];
-}
-
 interface TemplateSenderProps {
-  onSend: (to: string, template: TemplateMessage) => Promise<void>;
-  templates: TemplateMessage[];
+  onSend: (to: string, template: string) => Promise<void>;
 }
 
-export function TemplateSender({ onSend, templates }: TemplateSenderProps) {
+export function TemplateSender({ onSend }: TemplateSenderProps) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
@@ -34,12 +25,9 @@ export function TemplateSender({ onSend, templates }: TemplateSenderProps) {
   const handleSend = async () => {
     if (!phoneNumber || !selectedTemplate) return;
 
-    const template = templates.find((t) => t.name === selectedTemplate);
-    if (!template) return;
-
     try {
       setIsSending(true);
-      await onSend(phoneNumber, template);
+      await onSend(phoneNumber, selectedTemplate);
       setPhoneNumber("");
       setSelectedTemplate("");
     } catch (error) {
@@ -69,11 +57,8 @@ export function TemplateSender({ onSend, templates }: TemplateSenderProps) {
               <SelectValue placeholder="Select a template" />
             </SelectTrigger>
             <SelectContent>
-              {templates.map((template) => (
-                <SelectItem key={template.name} value={template.name}>
-                  {template.name}
-                </SelectItem>
-              ))}
+              <SelectItem value="template1">Template 1</SelectItem>
+              <SelectItem value="template2">Template 2</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -82,11 +67,7 @@ export function TemplateSender({ onSend, templates }: TemplateSenderProps) {
       {selectedTemplate && (
         <Card className="p-4 bg-gray-50 dark:bg-gray-800">
           <pre className="text-sm overflow-auto">
-            {JSON.stringify(
-              templates.find((t) => t.name === selectedTemplate),
-              null,
-              2
-            )}
+            {JSON.stringify({ name: selectedTemplate }, null, 2)}
           </pre>
         </Card>
       )}

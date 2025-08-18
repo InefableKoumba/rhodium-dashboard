@@ -1,4 +1,7 @@
-import { prisma } from "@/lib/db";
+import { v4 as uuidv4 } from "uuid";
+import { whatsappMessages } from "../db/schema";
+import { db } from "../db/index";
+import { desc } from "drizzle-orm";
 
 interface WhatsAppMessage {
   messaging_product: string;
@@ -38,18 +41,17 @@ export class WhatsAppService {
     const response = await this.sendMessage(message);
 
     // Store the sent message in the local database
-    await prisma.whatsAppMessage.create({
-      data: {
-        messageId: response.messages[0].id,
-        from: process.env.WHATSAPP_PHONE_NUMBER || "",
-        to,
-        type: "template",
-        content: JSON.stringify(template),
-        templateName: template.name,
-        direction: "outgoing",
-        status: "sent",
-        metadata: JSON.stringify(response),
-      },
+    await db.insert(whatsappMessages).values({
+      id: uuidv4(),
+      messageId: response.messages[0].id,
+      from: process.env.WHATSAPP_PHONE_NUMBER || "",
+      to,
+      type: "template",
+      content: JSON.stringify(template),
+      templateName: template.name,
+      direction: "outgoing",
+      status: "sent",
+      metadata: JSON.stringify(response),
     });
 
     return response;
@@ -68,17 +70,16 @@ export class WhatsAppService {
     const response = await this.sendMessage(message);
 
     // Store the sent message in the local database
-    await prisma.whatsAppMessage.create({
-      data: {
-        messageId: response.messages[0].id,
-        from: process.env.WHATSAPP_PHONE_NUMBER || "",
-        to,
-        type: "text",
-        content: text,
-        direction: "outgoing",
-        status: "sent",
-        metadata: JSON.stringify(response),
-      },
+    await db.insert(whatsappMessages).values({
+      id: uuidv4(),
+      messageId: response.messages[0].id,
+      from: process.env.WHATSAPP_PHONE_NUMBER || "",
+      to,
+      type: "text",
+      content: text,
+      direction: "outgoing",
+      status: "sent",
+      metadata: JSON.stringify(response),
     });
 
     return response;
@@ -110,12 +111,11 @@ export class WhatsAppService {
   async getMessageHistory() {
     try {
       // Fetch messages from local database
-      const messages = await prisma.whatsAppMessage.findMany({
-        orderBy: {
-          timestamp: "desc",
-        },
-        take: 100, // Limit to last 100 messages
-      });
+      const messages = await db
+        .select()
+        .from(whatsappMessages)
+        .orderBy(desc(whatsappMessages.timestamp))
+        .limit(100);
 
       return messages.map((msg: any) => ({
         id: msg.messageId,
@@ -127,22 +127,6 @@ export class WhatsAppService {
       }));
     } catch (error) {
       console.error("Failed to fetch message history:", error);
-      throw error;
-    }
-  }
-
-  async getTemplates() {
-    try {
-      // First try to fetch from local database
-      let templates = await prisma.whatsAppTemplate.findMany();
-
-      return templates.map((template: any) => ({
-        name: template.name,
-        language: { code: template.language },
-        components: JSON.parse(template.components),
-      }));
-    } catch (error) {
-      console.error("Failed to fetch templates:", error);
       throw error;
     }
   }

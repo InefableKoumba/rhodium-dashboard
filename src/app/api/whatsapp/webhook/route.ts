@@ -8,12 +8,26 @@ function verifyWhatsAppSignature(
   body: string,
   appSecret: string
 ): boolean {
-  const hmac = crypto
-    .createHmac("sha256", appSecret)
-    .update(body)
-    .digest("hex");
+  try {
+    const hmac = crypto
+      .createHmac("sha256", appSecret)
+      .update(body)
+      .digest("hex");
 
-  return signature === `sha256=${hmac}`;
+    const expectedSignature = `sha256=${hmac}`;
+
+    console.log("Signature verification:", {
+      receivedSignature: signature,
+      calculatedSignature: expectedSignature,
+      bodyLength: body.length,
+      appSecretLength: appSecret.length,
+    });
+
+    return signature === expectedSignature;
+  } catch (error) {
+    console.error("Signature verification error:", error);
+    return false;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -21,16 +35,35 @@ export async function POST(request: NextRequest) {
     // Get the raw request body as text
     const rawBody = await request.text();
     console.log(rawBody);
+    // Log all headers for debugging
+    console.log(
+      "Request headers:",
+      Object.fromEntries(request.headers.entries())
+    );
+
     // Verify the request signature
     const signature = request.headers.get("x-hub-signature-256");
     const appSecret = process.env.WHATSAPP_APP_SECRET;
 
-    if (
-      !signature ||
-      !appSecret ||
-      !verifyWhatsAppSignature(signature, rawBody, appSecret)
-    ) {
-      console.log("Invalid signature", signature, appSecret);
+    console.log("Signature verification inputs:", {
+      hasSignature: !!signature,
+      hasAppSecret: !!appSecret,
+      signature,
+      // Don't log the full app secret, just its length and first few chars
+      appSecretPreview: appSecret ? `${appSecret.slice(0, 4)}...` : null,
+      appSecretLength: appSecret?.length,
+    });
+
+    if (!signature || !appSecret) {
+      console.log("Missing signature or app secret");
+      return NextResponse.json(
+        { error: "Missing signature or app secret" },
+        { status: 401 }
+      );
+    }
+
+    if (!verifyWhatsAppSignature(signature, rawBody, appSecret)) {
+      console.log("Signature verification failed");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 

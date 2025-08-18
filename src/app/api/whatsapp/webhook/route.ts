@@ -99,10 +99,16 @@ export async function GET(request: NextRequest) {
   const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
-  console.log("Webhook verification request:", {
-    mode,
-    token,
-    challenge,
+  // Log the full URL and all search parameters
+  console.log("Webhook verification request URL:", request.nextUrl.toString());
+  console.log(
+    "All search parameters:",
+    Object.fromEntries(searchParams.entries())
+  );
+  console.log("Required parameters:", {
+    "hub.mode": mode,
+    "hub.verify_token": token,
+    "hub.challenge": challenge,
     expectedToken: process.env.WHATSAPP_VERIFY_TOKEN,
   });
 

@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
         for (const change of entry.changes) {
           if (change.field === "messages") {
             for (const message of change.value.messages) {
+              console.log(message);
               // Store the message in the database
               await prisma.whatsAppMessage.create({
                 data: {

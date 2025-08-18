@@ -99,10 +99,33 @@ export async function GET(request: NextRequest) {
   const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
+  console.log("Webhook verification request:", {
+    mode,
+    token,
+    challenge,
+    expectedToken: process.env.WHATSAPP_VERIFY_TOKEN,
+  });
+
   // Verify the webhook
-  if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
-    return new Response(challenge, { status: 200 });
+  if (!mode || !token || !challenge) {
+    console.log("Missing required parameters");
+    return new Response("Missing required parameters", { status: 400 });
   }
 
-  return new Response("Forbidden", { status: 403 });
+  if (mode !== "subscribe") {
+    console.log("Invalid mode:", mode);
+    return new Response("Invalid mode", { status: 400 });
+  }
+
+  if (token !== process.env.WHATSAPP_VERIFY_TOKEN) {
+    console.log("Token mismatch:", {
+      received: token,
+      expected: process.env.WHATSAPP_VERIFY_TOKEN,
+    });
+    return new Response("Invalid verify token", { status: 403 });
+  }
+
+  // All checks passed, return the challenge
+  console.log("Webhook verified successfully");
+  return new Response(challenge, { status: 200 });
 }

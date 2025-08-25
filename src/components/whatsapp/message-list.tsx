@@ -44,6 +44,7 @@ export function MessageList({ messages }: MessageListProps) {
                   Template: {message.templateName}
                 </div>
               )}
+              <span>{message.sender}</span>
               <p className="text-sm">{message.content}</p>
               <div
                 className={cn(

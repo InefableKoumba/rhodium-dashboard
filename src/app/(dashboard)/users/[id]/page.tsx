@@ -43,22 +43,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import Link from "next/link";
-import TicketsTable from "@/components/tables/tickets-table";
+import UserTicketsTable from "@/components/tables/user-tickets-table";
+import { InvitationList } from "@/components/invitations/invitation-list";
 
 export const dynamic = "force-dynamic";
 
@@ -317,9 +307,9 @@ export default async function Page({
           <TabsTrigger value="events">Événements</TabsTrigger>
           <TabsTrigger value="sponsorship">Parrainages</TabsTrigger>
           <TabsTrigger value="tickets">Billets</TabsTrigger>
+          <TabsTrigger value="invitations">Invitations</TabsTrigger>
           <TabsTrigger value="settings">Paramètres</TabsTrigger>
         </TabsList>
-
         <TabsContent value="profile" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="border dark:border-gray-800">
@@ -424,11 +414,9 @@ export default async function Page({
             </Card>
           </div>
         </TabsContent>
-
         <TabsContent value="events" className="mt-6">
           <EventsTable events={events} isOneUserEventsTable />
         </TabsContent>
-
         <TabsContent value="sponsorship" className="mt-6">
           <UsersTable
             users={user.godsons || []}
@@ -437,9 +425,14 @@ export default async function Page({
           />
         </TabsContent>
         <TabsContent value="tickets" className="mt-6">
-          <TicketsTable tickets={user.tickets || []} />
+          <UserTicketsTable tickets={user.tickets || []} />
         </TabsContent>
-
+        <TabsContent value="invitations" className="mt-6">
+          <InvitationList
+            sentInvitations={user.sentInvitations || []}
+            receivedInvitations={user.receivedInvitations || []}
+          />
+        </TabsContent>
         <TabsContent value="settings" className="mt-6">
           <Card className="border dark:border-gray-800">
             <CardHeader>

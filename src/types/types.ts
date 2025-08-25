@@ -8,6 +8,7 @@ export enum TicketStatus {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
   CANCELLED = "CANCELLED",
+  DELETED_BY_USER = "DELETED_BY_USER",
 }
 
 export enum InvitationStatus {
@@ -80,6 +81,8 @@ export interface User {
     id: string;
     name: string;
   };
+  sentInvitations?: Invitation[];
+  receivedInvitations?: Invitation[];
 }
 
 export enum SponsorshipStatus {
@@ -216,6 +219,8 @@ export interface Ticket {
   ticketTypeId: string;
   ticketType?: TicketType;
   status: TicketStatus;
+  scannedAt?: string;
+  scanned: boolean;
   event?: {
     id: string;
     title: string;
@@ -236,6 +241,18 @@ export interface Invitation {
   status: InvitationStatus;
   createdAt: string;
   updatedAt?: string;
+  ticket?: {
+    id: string;
+    ticketType?: TicketType;
+    status: TicketStatus;
+    scannedAt?: string;
+    scanned: boolean;
+  };
+  event?: {
+    id: string;
+    title: string;
+    coverImageId?: string;
+  };
 }
 
 export interface CreditPack {

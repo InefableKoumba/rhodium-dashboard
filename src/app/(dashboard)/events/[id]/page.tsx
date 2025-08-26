@@ -19,6 +19,7 @@ import {
   Quote,
   BarChart3,
   Phone,
+  Wallet,
 } from "lucide-react";
 import {
   Table,
@@ -64,6 +65,10 @@ export default async function page({
   try {
     const id = (await params).id;
     const event = await getEvent(id);
+
+    const validatedTickets = event.orders?.filter(
+      (order) => order.status === "PAID"
+    );
 
     let statusBgColor = "bg-yellow-500";
     let statusText = "En attente d'approbation";
@@ -144,29 +149,49 @@ export default async function page({
 
         {/* Main Content */}
         <Tabs defaultValue="details" className="w-full p-12 pt-0">
-          <TabsList className="mb-4">
-            <TabsTrigger value="details" className="gap-2">
-              <Info size={16} />
-              Détails
-            </TabsTrigger>
-            <TabsTrigger value="tickets" className="gap-2">
-              <Ticket size={16} />
-              Tickets
-            </TabsTrigger>
-            <TabsTrigger value="sales" className="gap-2">
-              <BarChart3 size={16} />
-              Ventes
-            </TabsTrigger>
-            <TabsTrigger value="invitations" className="gap-2">
-              <Users size={16} />
-              Invitations
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-2">
-              <Settings size={16} />
-              Paramètres
-            </TabsTrigger>
-          </TabsList>
-
+          <div className="flex justify-between items-center">
+            <TabsList className="mb-4">
+              <TabsTrigger value="details" className="gap-2">
+                <Info size={16} />
+                Détails
+              </TabsTrigger>
+              <TabsTrigger value="tickets" className="gap-2">
+                <Ticket size={16} />
+                Tickets
+              </TabsTrigger>
+              <TabsTrigger value="sales" className="gap-2">
+                <BarChart3 size={16} />
+                Ventes
+              </TabsTrigger>
+              <TabsTrigger value="invitations" className="gap-2">
+                <Users size={16} />
+                Invitations
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="gap-2">
+                <Settings size={16} />
+                Paramètres
+              </TabsTrigger>
+            </TabsList>
+            <div className="flex items-center gap-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Wallet size={24} />
+                    <span>Procéder au paiement</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Procéder au paiement</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex items-center gap-2">
+                    <Input type="number" placeholder="Montant" />
+                    <Button>Procéder au paiement</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
           <TabsContent value="details" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
@@ -365,12 +390,7 @@ export default async function page({
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {event.orders
-                      ?.reduce((sum, order) => {
-                        return sum + (order.amount || 0);
-                      }, 0)
-                      .toLocaleString()}{" "}
-                    XAF
+                    {event.totalEarnings?.toLocaleString()} XAF
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Montant total généré par les ventes
@@ -387,7 +407,7 @@ export default async function page({
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {event.orders?.length || 0}
+                    {validatedTickets?.length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Nombre total de tickets vendus
@@ -442,9 +462,15 @@ export default async function page({
                 <TableBody>
                   {event.ticketTypes?.map((ticketType) => {
                     const soldTickets =
+                      validatedTickets?.filter((o) =>
+                        o.items.some((i) => i.ticketType.id === ticketType.id)
+                      ).length || 0;
+
+                    const sharedTickets =
                       event.orders?.filter((o) =>
                         o.items.some((i) => i.ticketType.id === ticketType.id)
                       ).length || 0;
+
                     const revenue = soldTickets * ticketType.price;
                     const availability = `${soldTickets}/${ticketType.maxQuantity}`;
 

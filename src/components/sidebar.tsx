@@ -78,12 +78,6 @@ export default function SidebarNavigation() {
       active: pathname === "/sales" || pathname?.startsWith("/sales/"),
     },
     {
-      href: "/earnings",
-      icon: DollarSign,
-      label: "Bénéfices",
-      active: pathname === "/earnings" || pathname?.startsWith("/earnings/"),
-    },
-    {
       href: "/mobile-money",
       icon: Landmark,
       label: "Mobile Money",

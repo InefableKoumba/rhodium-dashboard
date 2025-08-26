@@ -1,5 +1,5 @@
 import React from "react";
-import { getEvents, getOrders, getCreditPurchases } from "@/lib/actions";
+import { getOrders, getCreditPurchases } from "@/lib/actions";
 import SalesDashboard from "@/components/SalesDashboard";
 
 export default async function SalesPage() {

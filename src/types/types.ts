@@ -154,6 +154,7 @@ export interface Event {
   updatedAt?: string;
   organizerId: string;
   orders?: Order[];
+  totalEarnings?: number;
   ticketTypes?: TicketType[];
   invitations?: Invitation[];
   organizer?: User;

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -52,12 +53,12 @@ import { getEvent } from "@/lib/actions";
 import AddTicketTypeModal from "@/components/modals/add-ticket";
 import { EventCategory, EventCategoryLabels } from "@/types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { redirect } from "next/navigation";
+import DeleteEventModal from "@/components/modals/delete-event";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function page({
+export default async function EventPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -190,6 +191,7 @@ export default async function page({
                   </div>
                 </DialogContent>
               </Dialog>
+              <DeleteEventModal eventId={id} />
             </div>
           </div>
           <TabsContent value="details" className="space-y-6">

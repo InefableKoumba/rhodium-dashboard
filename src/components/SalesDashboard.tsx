@@ -47,19 +47,37 @@ import {
   CreditPurchase,
   OrderStatus,
   CreditPurchaseStatus,
-  Event,
 } from "@/types/types";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { useRouter } from "next/navigation";
 
 interface SalesDashboardProps {
-  orders: Order[];
-  creditPurchases: CreditPurchase[];
+  ordersData: {
+    orders: Order[];
+    total: number;
+    totalRevenue: number;
+    totalFailed: number;
+    profit: number;
+    profitByEvent: {
+      event: {
+        id: string;
+        title: string;
+        coverImageId: string;
+      };
+      revenue: number;
+      profit: number;
+    }[];
+  };
+  creditPurchasesData: {
+    purchases: CreditPurchase[];
+    total: number;
+    profit: number;
+  };
 }
 
 export default function SalesDashboard({
-  orders,
-  creditPurchases,
+  ordersData,
+  creditPurchasesData,
 }: SalesDashboardProps) {
   const router = useRouter();
   // Filters
@@ -76,7 +94,7 @@ export default function SalesDashboard({
 
   // Filtered data
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    return ordersData.orders.filter((order) => {
       // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
@@ -119,7 +137,7 @@ export default function SalesDashboard({
       return true;
     });
   }, [
-    orders,
+    ordersData.orders,
     searchTerm,
     statusFilter,
     eventFilter,
@@ -128,7 +146,7 @@ export default function SalesDashboard({
   ]);
 
   const filteredCreditPurchases = useMemo(() => {
-    return creditPurchases.filter((purchase) => {
+    return creditPurchasesData.purchases.filter((purchase) => {
       // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
@@ -173,7 +191,13 @@ export default function SalesDashboard({
 
       return true;
     });
-  }, [creditPurchases, searchTerm, statusFilter, dateRange, transactionType]);
+  }, [
+    creditPurchasesData.purchases,
+    searchTerm,
+    statusFilter,
+    dateRange,
+    transactionType,
+  ]);
 
   // Calculate filtered stats
   const filteredStats = useMemo(() => {
@@ -190,18 +214,47 @@ export default function SalesDashboard({
       (c) => c.status === CreditPurchaseStatus.FAILED
     );
 
+    // Calculate ticket sales revenue and profit
+    const ticketSalesRevenue = successfulOrders.reduce(
+      (sum, o) => sum + o.amount,
+      0
+    );
+    const ticketSalesProfit = ordersData.profit;
+
+    // Calculate credit purchases revenue and profit
+    const creditPurchasesRevenue = successfulCredits.reduce(
+      (sum, c) => sum + c.creditPack.price,
+      0
+    );
+    const creditPurchasesProfit = creditPurchasesData.profit;
+
+    // Calculate totals
+    const totalRevenue = ticketSalesRevenue + creditPurchasesRevenue;
+    const totalProfit = ticketSalesProfit + creditPurchasesProfit;
+
     return {
-      totalRevenue: successfulOrders.reduce((sum, o) => sum + o.amount, 0),
-      totalCreditRevenue: successfulCredits.reduce(
-        (sum, c) => sum + c.creditPack.price,
-        0
-      ),
+      // Ticket sales
+      ticketSalesRevenue,
+      ticketSalesProfit,
       totalOrders: filteredOrders.length,
-      totalCreditPurchases: filteredCreditPurchases.length,
       failedOrders: failedOrders.length,
+
+      // Credit purchases
+      creditPurchasesRevenue,
+      creditPurchasesProfit,
+      totalCreditPurchases: filteredCreditPurchases.length,
       failedCreditPurchases: failedCredits.length,
+
+      // Totals
+      totalRevenue,
+      totalProfit,
     };
-  }, [filteredOrders, filteredCreditPurchases]);
+  }, [
+    filteredOrders,
+    filteredCreditPurchases,
+    ordersData.profit,
+    creditPurchasesData.profit,
+  ]);
 
   const getStatusBadge = (status: string, type: "order" | "credit") => {
     const isOrder = type === "order";
@@ -254,29 +307,54 @@ export default function SalesDashboard({
     <div className="space-y-6">
       {/* Global Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Total Revenue Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Revenus Totaux
+              Chiffre d'affaire
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(
-                filteredStats.totalRevenue + filteredStats.totalCreditRevenue
-              ).toLocaleString()}{" "}
-              XAF
+              {filteredStats.totalRevenue.toLocaleString()} XAF
             </div>
             <p className="text-xs text-muted-foreground">
-              +{filteredStats.totalCreditRevenue.toLocaleString()} XAF crédits
+              Tickets: {filteredStats.ticketSalesRevenue.toLocaleString()} XAF
+              <br />
+              Crédits: {filteredStats.creditPurchasesRevenue.toLocaleString()}{" "}
+              XAF
             </p>
           </CardContent>
         </Card>
 
+        {/* Total Profit Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Commandes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Bénéfices Totaux
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {filteredStats.totalProfit.toLocaleString()} XAF
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Tickets: {filteredStats.ticketSalesProfit.toLocaleString()} XAF
+              <br />
+              Crédits: {filteredStats.creditPurchasesProfit.toLocaleString()}{" "}
+              XAF
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Ticket Sales Card */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Ventes Tickets
+            </CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -284,11 +362,15 @@ export default function SalesDashboard({
               {filteredStats.totalOrders}
             </div>
             <p className="text-xs text-muted-foreground">
+              {filteredStats.totalOrders - filteredStats.failedOrders} réussies
+            </p>
+            <p className="text-xs text-muted-foreground">
               {filteredStats.failedOrders} échouées
             </p>
           </CardContent>
         </Card>
 
+        {/* Credit Purchases Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -301,36 +383,12 @@ export default function SalesDashboard({
               {filteredStats.totalCreditPurchases}
             </div>
             <p className="text-xs text-muted-foreground">
-              {filteredStats.failedCreditPurchases} échoués
+              {filteredStats.totalCreditPurchases -
+                filteredStats.failedCreditPurchases}{" "}
+              réussis
             </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Taux de Réussite
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {filteredStats.totalOrders + filteredStats.totalCreditPurchases >
-              0
-                ? Math.round(
-                    ((filteredStats.totalOrders +
-                      filteredStats.totalCreditPurchases -
-                      filteredStats.failedOrders -
-                      filteredStats.failedCreditPurchases) /
-                      (filteredStats.totalOrders +
-                        filteredStats.totalCreditPurchases)) *
-                      100
-                  )
-                : 0}
-              %
-            </div>
             <p className="text-xs text-muted-foreground">
-              Transactions réussies
+              {filteredStats.failedCreditPurchases} échoués
             </p>
           </CardContent>
         </Card>

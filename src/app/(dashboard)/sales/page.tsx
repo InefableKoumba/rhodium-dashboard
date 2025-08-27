@@ -9,8 +9,6 @@ export default async function SalesPage() {
     getCreditPurchases(),
   ]);
 
-  const orders = ordersResponse.orders;
-  const creditPurchases = creditPurchasesResponse;
   return (
     <div className="flex-1 overflow-y-auto p-8 space-y-8">
       <div className="flex flex-col space-y-2">
@@ -22,7 +20,10 @@ export default async function SalesPage() {
         </p>
       </div>
 
-      <SalesDashboard orders={orders} creditPurchases={creditPurchases} />
+      <SalesDashboard
+        ordersData={ordersResponse}
+        creditPurchasesData={creditPurchasesResponse}
+      />
     </div>
   );
 }

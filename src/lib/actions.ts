@@ -203,12 +203,16 @@ export async function getCreditPacks(): Promise<CreditPack[]> {
   return responseData.data;
 }
 
-export async function getCreditPurchases(): Promise<CreditPurchase[]> {
+export async function getCreditPurchases(): Promise<{
+  purchases: CreditPurchase[];
+  total: number;
+  profit: number;
+}> {
   const response = await fetch(`${API_URL}/payments/credits-purchases`, {
     headers: await getAuthHeaders(),
   });
   const res = await response.json();
-  return res.data.purchases;
+  return res.data;
 }
 
 export async function getOrders(): Promise<{
@@ -216,6 +220,16 @@ export async function getOrders(): Promise<{
   total: number;
   totalRevenue: number;
   totalFailed: number;
+  profit: number;
+  profitByEvent: {
+    event: {
+      id: string;
+      title: string;
+      coverImageId: string;
+    };
+    revenue: number;
+    profit: number;
+  }[];
 }> {
   const response = await fetch(`${API_URL}/payments/orders`, {
     headers: await getAuthHeaders(),

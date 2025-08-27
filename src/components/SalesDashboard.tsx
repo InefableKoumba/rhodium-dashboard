@@ -232,6 +232,41 @@ export default function SalesDashboard({
     const totalRevenue = ticketSalesRevenue + creditPurchasesRevenue;
     const totalProfit = ticketSalesProfit + creditPurchasesProfit;
 
+    // Calculate credit pack summary
+    const creditPackSummary = successfulCredits.reduce(
+      (acc, purchase) => {
+        const packId = purchase.creditPack.id;
+        if (!acc[packId]) {
+          acc[packId] = {
+            name: purchase.creditPack.name,
+            credits: purchase.creditPack.credits,
+            price: purchase.creditPack.price,
+            count: 0,
+            revenue: 0,
+          };
+        }
+        acc[packId].count += 1;
+        acc[packId].revenue += purchase.creditPack.price;
+        return acc;
+      },
+      {} as Record<
+        string,
+        {
+          name: string;
+          credits: number;
+          price: number;
+          count: number;
+          revenue: number;
+        }
+      >
+    );
+
+    // Calculate event profits with margins
+    const eventProfits = ordersData.profitByEvent.map((event) => ({
+      ...event,
+      margin: (event.profit / event.revenue) * 100,
+    }));
+
     return {
       // Ticket sales
       ticketSalesRevenue,
@@ -248,11 +283,18 @@ export default function SalesDashboard({
       // Totals
       totalRevenue,
       totalProfit,
+
+      // Detailed summaries
+      creditPackSummary: Object.values(creditPackSummary).sort(
+        (a, b) => b.revenue - a.revenue
+      ),
+      eventProfits: eventProfits.sort((a, b) => b.profit - a.profit),
     };
   }, [
     filteredOrders,
     filteredCreditPurchases,
     ordersData.profit,
+    ordersData.profitByEvent,
     creditPurchasesData.profit,
   ]);
 
@@ -390,6 +432,88 @@ export default function SalesDashboard({
             <p className="text-xs text-muted-foreground">
               {filteredStats.failedCreditPurchases} échoués
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Event Profits */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Profits par évènement
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredStats.eventProfits.map((event) => (
+                <div key={event.event.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{event.event.title}</span>
+                    <Badge variant="secondary" className="font-mono">
+                      {event.margin.toFixed(1)}% marge
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Revenue: {event.revenue.toLocaleString()} XAF</span>
+                    <span>Profit: {event.profit.toLocaleString()} XAF</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${event.margin}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+              {filteredStats.eventProfits.length === 0 && (
+                <p className="text-center text-muted-foreground">
+                  Aucun événement trouvé
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Credit Pack Sales */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5" />
+              Ventes par pack de crédits
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredStats.creditPackSummary.map((pack) => (
+                <div
+                  key={pack.name}
+                  className="space-y-2 border p-4 rounded-lg"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{pack.name}</span>
+                    <Badge variant="secondary" className="font-mono">
+                      {pack.count} vendu{pack.count > 1 ? "s" : ""}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>{pack.credits} crédits</span>
+                    <span>{pack.price.toLocaleString()} XAF/unité</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-medium">
+                    <span>Revenu total:</span>
+                    <span>{pack.revenue.toLocaleString()} XAF</span>
+                  </div>
+                </div>
+              ))}
+              {filteredStats.creditPackSummary.length === 0 && (
+                <p className="text-center text-muted-foreground">
+                  Aucun pack de crédits vendu
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

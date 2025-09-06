@@ -149,16 +149,13 @@ export async function rejectEvent(
   return response.json();
 }
 
-export async function deleteEvent(
-  id: string,
-  reason: string
-): Promise<boolean> {
+export async function deleteEvent(id: string, reason: string): Promise<number> {
   const response = await fetch(`${API_URL}/events/${id}`, {
     method: "DELETE",
     headers: await getAuthHeaders(),
     body: JSON.stringify({ reason }),
   });
-  return response.ok;
+  return response.status;
 }
 
 // TicketType Actions

@@ -9,12 +9,12 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Loader, Shield, Trash } from "lucide-react";
+import { Loader, Trash } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { use$ } from "@legendapp/state/react";
 import { useObservable } from "@legendapp/state/react";
-import { deleteEvent, rejectEvent } from "@/service/api/api";
+import { deleteEvent } from "@/service/api/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -30,10 +30,14 @@ export default function DeleteEventModal({ eventId }: { eventId: string }) {
   const handleSubmit = async () => {
     try {
       formData$.loading.set(true);
-      const ok = await deleteEvent(eventId, formData.reason);
-      if (ok) {
-        router.refresh();
+      const statusCode = await deleteEvent(eventId, formData.reason);
+      if (statusCode === 200) {
+        router.push("/events");
         toast.success("L'événement a été supprimé avec succès");
+      } else if (statusCode === 403) {
+        toast.error(
+          "Cet évenement ne peut pas être supprimé car il contient des tickets déjà vendus ou en attente de paiement"
+        );
       } else {
         toast.error(
           "Une erreur est survenue lors de la suppression de l'événement"

@@ -524,7 +524,7 @@ export default async function EventPage({
                 <TableBody>
                   {event.orders?.map((order) => {
                     const ticketType = event.ticketTypes?.find(
-                      (tt) => tt.id === order.items[0].ticketType.id
+                      (tt) => tt.id === order.items[0]?.ticketType.id
                     );
                     return (
                       <TableRow key={order.id}>

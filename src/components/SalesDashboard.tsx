@@ -50,6 +50,7 @@ import {
 } from "@/types/types";
 import ExportToExcel from "@/components/common/export-to-excel";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface SalesDashboardProps {
   ordersData: {
@@ -451,7 +452,12 @@ export default function SalesDashboard({
               {filteredStats.eventProfits.map((event) => (
                 <div key={event.event.id} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium">{event.event.title}</span>
+                    <Link
+                      href={`/events/${event.event.id}`}
+                      className="font-medium hover:underline"
+                    >
+                      {event.event.title}
+                    </Link>
                     <Badge variant="secondary" className="font-mono">
                       {event.margin.toFixed(1)}% marge
                     </Badge>
@@ -628,10 +634,22 @@ export default function SalesDashboard({
                           router.push(`/users/${order.user?.id}`);
                         }}
                       >
-                        {order.user?.name || "N/A"}
+                        <Link
+                          href={`/users/${order.user?.id}`}
+                          className="hover:underline"
+                        >
+                          {order.user?.name || "N/A"}
+                        </Link>
                       </TableCell>
                       <TableCell>{order.phoneNumber}</TableCell>
-                      <TableCell>{order.event?.title || "N/A"}</TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/events/${order.event?.id}`}
+                          className="hover:underline"
+                        >
+                          {order.event?.title || "N/A"}
+                        </Link>
+                      </TableCell>
                       <TableCell className="font-medium">
                         {order.amount.toLocaleString()} XAF
                       </TableCell>

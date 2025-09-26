@@ -67,9 +67,8 @@ export default async function EventPage({
     const id = (await params).id;
     const event = await getEvent(id);
 
-    const validatedTickets = event.orders?.filter(
-      (order) => order.status === "PAID"
-    );
+    const paidOrders =
+      event.orders?.filter((order) => order.status === "PAID") ?? [];
 
     let statusBgColor = "bg-yellow-500";
     let statusText = "En attente d'approbation";
@@ -409,7 +408,10 @@ export default async function EventPage({
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {validatedTickets?.length || 0}
+                    {paidOrders?.reduce(
+                      (total, order) => total + order.items.length,
+                      0
+                    ) || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Nombre total de tickets vendus
@@ -463,10 +465,15 @@ export default async function EventPage({
                 </TableHeader>
                 <TableBody>
                   {event.ticketTypes?.map((ticketType) => {
-                    const soldTickets =
-                      validatedTickets?.filter((o) =>
-                        o.items.some((i) => i.ticketType.id === ticketType.id)
-                      ).length || 0;
+                    let soldTickets = 0;
+
+                    for (const order of paidOrders) {
+                      for (const item of order.items) {
+                        if (item.ticketType.id === ticketType.id) {
+                          soldTickets++;
+                        }
+                      }
+                    }
 
                     const sharedTickets =
                       event.orders?.filter((o) =>

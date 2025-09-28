@@ -530,9 +530,24 @@ export default async function EventPage({
                 </TableHeader>
                 <TableBody>
                   {event.orders?.map((order) => {
-                    const ticketType = event.ticketTypes?.find(
-                      (tt) => tt.id === order.items[0]?.ticketType.id
-                    );
+                    // Group items by ticket type and count quantities
+                    const ticketCounts = order.items.reduce((acc, item) => {
+                      const id = item.ticketType.id;
+                      if (!acc[id]) {
+                        acc[id] = {
+                          type: item.ticketType,
+                          count: 0,
+                        };
+                      }
+                      acc[id].count++;
+                      return acc;
+                    }, {} as Record<string, { type: any; count: number }>);
+
+                    // Calculate total price
+                    const totalPrice = order.items.reduce((total, item) => {
+                      return total + (item.ticketType.price || 0);
+                    }, 0);
+
                     return (
                       <TableRow key={order.id}>
                         <TableCell>
@@ -553,11 +568,17 @@ export default async function EventPage({
                           )}
                         </TableCell>
                         <TableCell>
-                          {ticketType?.name || "Type inconnu"}
+                          <div className="space-y-1">
+                            {Object.values(ticketCounts).map(
+                              ({ type, count }) => (
+                                <div key={type.id} className="text-sm">
+                                  {type.name} x{count}
+                                </div>
+                              )
+                            )}
+                          </div>
                         </TableCell>
-                        <TableCell>
-                          {(ticketType?.price || 0).toLocaleString()} XAF
-                        </TableCell>
+                        <TableCell>{totalPrice.toLocaleString()} XAF</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-sm ${

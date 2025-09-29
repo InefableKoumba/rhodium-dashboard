@@ -222,6 +222,7 @@ export interface Ticket {
   status: TicketStatus;
   scannedAt?: string;
   scanned: boolean;
+  isPhysical: boolean;
   event?: {
     id: string;
     title: string;
@@ -246,6 +247,7 @@ export interface Invitation {
     id: string;
     ticketType?: TicketType;
     status: TicketStatus;
+    isPhysical: boolean;
     scannedAt?: string;
     scanned: boolean;
   };

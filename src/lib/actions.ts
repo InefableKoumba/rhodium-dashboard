@@ -168,6 +168,29 @@ export async function getTicketType(id: string): Promise<TicketType> {
   return await response.json();
 }
 
+export async function getEventTickets(
+  eventId: string,
+  { page = 1, pageSize = 10 }
+): Promise<{
+  physicalTickets: Ticket[];
+  totalPhysicalTickets: number;
+  totalPhysicalScannedAmount: number;
+  totalScannedPhysicalTickets: number;
+  amountGeneratedPerTicketType: Record<string, number>;
+}> {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("pageSize", pageSize.toString());
+
+  const response = await fetch(
+    `${API_URL}/tickets/event/${eventId}?${params.toString()}`,
+    {
+      headers: await getAuthHeaders(),
+    }
+  );
+  return await response.json();
+}
+
 export async function getTicket(id: string): Promise<Ticket> {
   const response = await fetch(`${API_URL}/tickets/${id}`, {
     headers: await getAuthHeaders(),

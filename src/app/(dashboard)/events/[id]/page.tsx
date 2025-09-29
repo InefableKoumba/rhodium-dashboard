@@ -20,6 +20,7 @@ import {
   BarChart3,
   Phone,
   Wallet,
+  Smartphone,
 } from "lucide-react";
 import {
   Table,
@@ -49,7 +50,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import ApproveEventModal from "@/components/modals/approve-event";
 import RejectEventModal from "@/components/modals/reject-event";
-import { getEvent } from "@/lib/actions";
+import { getEvent, getEventTickets } from "@/lib/actions";
 import AddTicketTypeModal from "@/components/modals/add-ticket";
 import { EventCategory, EventCategoryLabels } from "@/types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +67,16 @@ export default async function EventPage({
   try {
     const id = (await params).id;
     const event = await getEvent(id);
+    const {
+      physicalTickets,
+      totalPhysicalTickets,
+      totalPhysicalScannedAmount,
+      totalScannedPhysicalTickets,
+      amountGeneratedPerTicketType,
+    } = await getEventTickets(id, {
+      page: 1,
+      pageSize: 10,
+    });
 
     const paidOrders =
       event.orders?.filter((order) => order.status === "PAID") ?? [];
@@ -378,6 +389,198 @@ export default async function EventPage({
                 ))}
               </TableBody>
             </Table>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold">Tickets confirmés</h2>
+
+              {/* Statistics Cards */}
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total des tickets physiques
+                    </CardTitle>
+                    <Ticket className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {totalPhysicalTickets.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Nombre total de tickets physiques émis
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Tickets scannés
+                    </CardTitle>
+                    <QrCode className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {totalScannedPhysicalTickets.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Nombre de tickets physiques utilisés
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Montant généré
+                    </CardTitle>
+                    <QrCode className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {totalPhysicalScannedAmount.toLocaleString()} XAF
+                    </div>
+                    <div>
+                      {Object.entries(amountGeneratedPerTicketType).map(
+                        ([name, amount]) => (
+                          <div key={name}>
+                            {name}: {amount.toLocaleString()} XAF
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Montant généré par les tickets physiques scannés
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Marge de profit
+                    </CardTitle>
+                    <QrCode className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {(totalPhysicalScannedAmount * 0.1).toLocaleString()} XAF
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Marge de profit par les tickets physiques scannés
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100 rounded-xl shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Taux d'utilisation
+                    </CardTitle>
+                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {totalPhysicalTickets > 0
+                        ? Math.round(
+                            (totalScannedPhysicalTickets /
+                              totalPhysicalTickets) *
+                              100
+                          )
+                        : 0}
+                      %
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Pourcentage de tickets physiques scannés
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-4 items-end">
+                <div className="space-y-2 flex-1">
+                  <label className="text-sm font-medium">
+                    Rechercher un utilisateur
+                  </label>
+                  <Input placeholder="Nom de l'utilisateur..." />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Type de ticket</label>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Tous les types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les types</SelectItem>
+                      {event.ticketTypes?.map((type) => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Statut</label>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Tous les statuts" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les statuts</SelectItem>
+                      <SelectItem value="scanned">Scanné</SelectItem>
+                      <SelectItem value="not_scanned">Non scanné</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button variant="outline">Réinitialiser les filtres</Button>
+              </div>
+
+              {/* Table */}
+              <div className="space-y-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Propriétaire</TableHead>
+                      <TableHead>Type de ticket</TableHead>
+                      <TableHead>Scanné à</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {physicalTickets.map((ticket) => (
+                      <TableRow key={ticket.id}>
+                        <TableCell>{ticket.user?.name ?? "Inconnu"}</TableCell>
+                        <TableCell>{ticket.ticketType?.name}</TableCell>
+                        <TableCell>
+                          {ticket.scannedAt ? (
+                            new Date(ticket.scannedAt).toLocaleDateString(
+                              "fr-FR",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )
+                          ) : (
+                            <span className="text-gray-500">Non scanné</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Pagination */}
+                <div className="flex items-center justify-end space-x-2">
+                  <Button variant="outline" size="sm">
+                    Précédent
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Suivant
+                  </Button>
+                </div>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="sales" className="space-y-6">
